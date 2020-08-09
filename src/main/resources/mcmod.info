@@ -1,0 +1,16 @@
+[
+{
+  "modid": "zenutils",
+  "name": "ZenUtils",
+  "description": "Expose more method to zenscript",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["youyihj"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
