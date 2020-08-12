@@ -30,7 +30,7 @@ public class ZenUtilsMutableItemStack {
             stackField.setAccessible(true);
             return (ItemStack) stackField.get(mutableItemStack);
         } catch (Exception e) {
-            CraftTweakerAPI.logError("cannot reflect MCMutableItemStack::itemStack!", e);
+            CraftTweakerAPI.logError("fail to reflect MCMutableItemStack::itemStack!", e);
             return null;
         }
     }
