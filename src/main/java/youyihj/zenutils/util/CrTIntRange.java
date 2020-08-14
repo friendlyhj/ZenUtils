@@ -9,21 +9,21 @@ import stanhebben.zenscript.value.IntRange;
 @ZenRegister
 @ZenClass("mods.zenutils.IntRange")
 @SuppressWarnings("unused")
-public class CTIntRange {
+public class CrTIntRange {
     private IntRange intRange;
 
-    private CTIntRange(IntRange range) {
+    private CrTIntRange(IntRange range) {
         this.intRange = range;
     }
 
     @ZenMethod
-    public static CTIntRange get(int from, int to) {
-        return new CTIntRange(new IntRange(from, to));
+    public static CrTIntRange get(int from, int to) {
+        return new CrTIntRange(new IntRange(from, to));
     }
 
     @ZenMethod
-    public static CTIntRange get(IntRange range) {
-        return new CTIntRange(range);
+    public static CrTIntRange get(IntRange range) {
+        return new CrTIntRange(range);
     }
 
     @ZenCaster

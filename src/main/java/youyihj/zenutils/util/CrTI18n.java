@@ -8,7 +8,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenRegister
 @ZenClass("mods.zenutils.I18n")
 @SuppressWarnings("unused")
-public class CTI18n {
+public class CrTI18n {
 
     @ZenMethod
     public static boolean hasKey(String key) {

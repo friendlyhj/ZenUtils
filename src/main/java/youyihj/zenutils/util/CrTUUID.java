@@ -8,11 +8,11 @@ import java.util.UUID;
 @ZenRegister
 @ZenClass("mods.zenutils.UUID")
 @SuppressWarnings("unused")
-public class CTUUID {
+public class CrTUUID {
 
     private final UUID uuid;
 
-    public CTUUID(UUID uuid) {
+    public CrTUUID(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -33,22 +33,22 @@ public class CTUUID {
     }
 
     @ZenMethod
-    public static CTUUID randomUUID() {
-        return new CTUUID(UUID.randomUUID());
+    public static CrTUUID randomUUID() {
+        return new CrTUUID(UUID.randomUUID());
     }
 
     @ZenMethod
-    public static CTUUID fromString(String name) {
-        return new CTUUID(UUID.fromString(name));
+    public static CrTUUID fromString(String name) {
+        return new CrTUUID(UUID.fromString(name));
     }
 
     @ZenOperator(OperatorType.EQUALS)
-    public boolean equals(CTUUID other) {
+    public boolean equals(CrTUUID other) {
         return this.uuid.equals(other.uuid);
     }
 
     @ZenOperator(OperatorType.COMPARE)
-    public int compareTo(CTUUID other) {
+    public int compareTo(CrTUUID other) {
         return this.uuid.compareTo(other.uuid);
     }
 

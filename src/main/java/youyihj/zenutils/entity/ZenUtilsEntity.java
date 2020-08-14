@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.util.CTUUID;
+import youyihj.zenutils.util.CrTUUID;
 
 @ZenRegister
 @ZenClass("mods.zenutils.ZenUtilsEntity")
@@ -38,7 +38,7 @@ public class ZenUtilsEntity {
     }
 
     @ZenMethod
-    public static CTUUID getUUID(IEntity entity) {
-        return new CTUUID(((Entity) entity.getInternal()).getUniqueID());
+    public static CrTUUID getUUID(IEntity entity) {
+        return new CrTUUID(((Entity) entity.getInternal()).getUniqueID());
     }
 }

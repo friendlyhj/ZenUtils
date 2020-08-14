@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.util.CTUUID;
+import youyihj.zenutils.util.CrTUUID;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -32,7 +32,7 @@ public class ZenUtilsWorld {
 
     @Nullable
     @ZenMethod
-    public static IPlayer getPlayerByUUID(IWorld iWorld, CTUUID uuid) {
+    public static IPlayer getPlayerByUUID(IWorld iWorld, CrTUUID uuid) {
         EntityPlayer player = ((World) iWorld.getInternal()).getPlayerEntityByUUID((UUID) uuid.getInternal());
         return (player == null) ? null : new MCPlayer(player);
     }
