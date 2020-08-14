@@ -65,7 +65,7 @@ public class ZenUtilsCommandSender implements crafttweaker.api.command.ICommandS
     }
 
     @ZenMethod
-    public MCServer castToServer() {
+    public IServer castToServer() {
         if (this.isServer()) {
             return new MCServer((MinecraftServer) this.commandSender);
         } else {
