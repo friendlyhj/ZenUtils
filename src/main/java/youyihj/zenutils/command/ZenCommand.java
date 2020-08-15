@@ -43,6 +43,7 @@ public class ZenCommand extends CommandBase {
 
     @Override
     @Nonnull
+    @ZenMethod
     public String getUsage(ICommandSender sender) {
         return this.getCommandUsage.getCommandUsage(new ZenUtilsCommandSender(sender));
     }
