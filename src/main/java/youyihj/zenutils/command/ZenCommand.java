@@ -29,7 +29,7 @@ public class ZenCommand extends CommandBase {
     public ICommandExecute execute = ((server, sender, args) -> {});
 
     @ZenProperty
-    public IGetCommandUsage getCommandUsage = (sender -> "don't define command usage!");
+    public IGetCommandUsage getCommandUsage = (sender -> "commands.undefined.usage");
 
     @ZenProperty
     public int requiredPermissionLevel = 4;
