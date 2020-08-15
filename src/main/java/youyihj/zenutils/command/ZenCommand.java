@@ -26,7 +26,7 @@ public class ZenCommand extends CommandBase {
     }
 
     @ZenProperty
-    public ICommandExecute execute = ((server, sender, args) -> {});
+    public ICommandExecute execute = ((command, server, sender, args) -> {});
 
     @ZenProperty
     public IGetCommandUsage getCommandUsage = (sender -> "commands.undefined.usage");
@@ -49,7 +49,7 @@ public class ZenCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        this.execute.execute(new MCServer(server), new ZenUtilsCommandSender(sender), args);
+        this.execute.execute(this, new MCServer(server), new ZenUtilsCommandSender(sender), args);
     }
 
     @Override

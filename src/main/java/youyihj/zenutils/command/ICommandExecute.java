@@ -9,5 +9,5 @@ import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 @ZenRegister
 @ZenClass("mods.zenutils.command.ICommandExecute")
 public interface ICommandExecute {
-    void execute(MCServer server, ZenUtilsCommandSender sender, String[] args) throws CommandException;
+    void execute(ZenCommand command,MCServer server, ZenUtilsCommandSender sender, String[] args) throws CommandException;
 }

@@ -8,7 +8,7 @@ import youyihj.zenutils.command.ZenCommandRegistrar;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.1.1";
+    public static final String VERSION = "1.1.2";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker";
 
 

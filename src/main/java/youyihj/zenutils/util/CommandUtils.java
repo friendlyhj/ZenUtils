@@ -10,6 +10,7 @@ import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.server.MinecraftServer;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.command.ZenCommand;
 import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
 import java.util.ArrayList;
@@ -45,5 +46,10 @@ public class CommandUtils {
     @ZenMethod
     public static void notifyWrongUsage(String message) throws WrongUsageException {
         throw new WrongUsageException(message);
+    }
+
+    @ZenMethod
+    public static void notifyWrongUsage(ZenCommand command, ZenUtilsCommandSender sender) throws WrongUsageException {
+        throw new WrongUsageException(command.getCommandUsage.getCommandUsage(sender));
     }
 }
