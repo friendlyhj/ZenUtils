@@ -1,8 +1,12 @@
 package youyihj.zenutils.util;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.block.IBlockDefinition;
 import crafttweaker.api.entity.IEntity;
+import crafttweaker.api.item.IItemDefinition;
+import crafttweaker.mc1120.block.MCBlockDefinition;
 import crafttweaker.mc1120.entity.MCEntity;
+import crafttweaker.mc1120.item.MCItemDefinition;
 import net.minecraft.command.*;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.server.IServer;
@@ -48,6 +52,16 @@ public class CommandUtils {
         List<IEntity> list = new ArrayList<>();
         list.addAll(CommandBase.getEntityList((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target).stream().map(MCEntity::new).collect(Collectors.toList()));
         return list;
+    }
+
+    @ZenMethod
+    public static IItemDefinition getItemByText(ZenUtilsCommandSender sender, String id) throws NumberInvalidException {
+        return new MCItemDefinition(id, CommandBase.getItemByText((ICommandSender) sender.getInternal(), id));
+    }
+
+    @ZenMethod
+    public static IBlockDefinition getBlockByText(ZenUtilsCommandSender sender, String id) throws NumberInvalidException {
+        return new MCBlockDefinition(CommandBase.getBlockByText((ICommandSender) sender.getInternal(), id));
     }
 
     @ZenMethod
