@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 @ZenRegister
-@ZenClass("mods.zenutils.IGetTabCompletion")
+@ZenClass("mods.zenutils.command.IGetTabCompletion")
 public interface IGetTabCompletion {
     Collection<?> get(IServer server, ZenUtilsCommandSender sender, String[] args, @Nullable IBlockPos targetPos);
 }

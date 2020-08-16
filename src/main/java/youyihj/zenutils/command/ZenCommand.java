@@ -3,15 +3,11 @@ package youyihj.zenutils.command;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.mc1120.server.MCServer;
 import crafttweaker.mc1120.world.MCBlockPos;
-import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
@@ -41,7 +37,7 @@ public class ZenCommand extends CommandBase {
     public IGetCommandUsage getCommandUsage = (sender -> "commands.undefined.usage");
 
     @ZenProperty
-    public TabCompletion tabCompletion = null;
+    public IGetTabCompletion[] tabCompletionGetters = {};
 
     @ZenProperty
     public int requiredPermissionLevel = 4;
@@ -74,11 +70,9 @@ public class ZenCommand extends CommandBase {
     @Nonnull
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         int index = args.length - 1;
-        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return Collections.emptyList();
-        return getListOfStringsMatchingLastWord(args,
-                TabCompletionCase.cases
-                        .getOrDefault(this.tabCompletion.getInfo()[index], TabCompletionCase.EMPTY_CASE)
-                        .get(new MCServer(server), new ZenUtilsCommandSender(sender), args, new MCBlockPos(targetPos)));
+        if (this.tabCompletionGetters.length == 0 || index >= this.tabCompletionGetters.length || index < 0) return Collections.emptyList();
+        return getListOfStringsMatchingLastWord(args, this.tabCompletionGetters[index]
+                .get(new MCServer(server), new ZenUtilsCommandSender(sender), args, new MCBlockPos(targetPos)));
     }
 
     @ZenMethod
