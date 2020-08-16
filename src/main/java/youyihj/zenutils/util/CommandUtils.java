@@ -32,6 +32,13 @@ public class CommandUtils {
     }
 
     @ZenMethod
+    public static List<IPlayer> getPlayers(IServer server, ZenUtilsCommandSender sender, String target) throws CommandException {
+        List<IPlayer> list = new ArrayList<>();
+        list.addAll(CommandBase.getPlayers((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target).stream().map(MCPlayer::new).collect(Collectors.toList()));
+        return list;
+    }
+
+    @ZenMethod
     public static IEntity getEntity(IServer server, ZenUtilsCommandSender sender, String target) throws CommandException {
         return new MCEntity(CommandBase.getEntity((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target));
     }
