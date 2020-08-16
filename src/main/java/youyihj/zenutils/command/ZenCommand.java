@@ -2,6 +2,7 @@ package youyihj.zenutils.command;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.mc1120.server.MCServer;
+import crafttweaker.mc1120.world.MCBlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -10,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
@@ -72,31 +74,11 @@ public class ZenCommand extends CommandBase {
     @Nonnull
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         int index = args.length - 1;
-        List<String> list = Collections.emptyList();
-        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return list;
-        switch (this.tabCompletion.getInfo()[index]) {
-            case "empty":
-                return list;
-            case "item":
-                return getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys());
-            case "block":
-                return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
-            case "player":
-                return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
-            case "potion":
-                return getListOfStringsMatchingLastWord(args, Potion.REGISTRY.getKeys());
-            case "x":
-                list.add(String.valueOf(sender.getPosition().getX()));
-                return list;
-            case "y":
-                list.add(String.valueOf(sender.getPosition().getY()));
-                return list;
-            case "z":
-                list.add(String.valueOf(sender.getPosition().getZ()));
-                return list;
-            default:
-                return TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], list);
-        }
+        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return Collections.emptyList();
+        return getListOfStringsMatchingLastWord(args,
+                TabCompletionCase.cases
+                        .getOrDefault(this.tabCompletion.getInfo()[index], TabCompletionCase.EMPTY_CASE)
+                        .get(new MCServer(server), new ZenUtilsCommandSender(sender), args, new MCBlockPos(targetPos)));
     }
 
     @ZenMethod
