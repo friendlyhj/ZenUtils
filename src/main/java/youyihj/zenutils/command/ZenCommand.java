@@ -95,7 +95,7 @@ public class ZenCommand extends CommandBase {
                 list.add(String.valueOf(sender.getPosition().getZ()));
                 return list;
             default:
-                return TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], list);
+                return getListOfStringsMatchingLastWord(args, TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], list));
         }
     }
 
