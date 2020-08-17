@@ -65,11 +65,11 @@ public class ZenCommand extends CommandBase implements IZenCommand {
     @Nonnull
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         int index = args.length - 1;
-        List<String> list = Collections.emptyList();
-        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return list;
+        List<String> emptyList = Collections.emptyList();
+        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return emptyList;
         switch (this.tabCompletion.getInfo()[index]) {
             case "empty":
-                return list;
+                return emptyList;
             case "item":
                 return getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys());
             case "block":
@@ -79,16 +79,13 @@ public class ZenCommand extends CommandBase implements IZenCommand {
             case "potion":
                 return getListOfStringsMatchingLastWord(args, Potion.REGISTRY.getKeys());
             case "x":
-                list.add(String.valueOf(sender.getPosition().getX()));
-                return list;
+                return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getX()));
             case "y":
-                list.add(String.valueOf(sender.getPosition().getY()));
-                return list;
+                return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getY()));
             case "z":
-                list.add(String.valueOf(sender.getPosition().getZ()));
-                return list;
+                return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getZ()));
             default:
-                return getListOfStringsMatchingLastWord(args, TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], list));
+                return getListOfStringsMatchingLastWord(args, TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], emptyList));
         }
     }
 }
