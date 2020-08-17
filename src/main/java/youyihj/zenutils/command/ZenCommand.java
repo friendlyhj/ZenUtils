@@ -21,7 +21,7 @@ import java.util.List;
 @ZenRegister
 @ZenClass("mods.zenutils.command.ZenCommand")
 @SuppressWarnings("unused")
-public class ZenCommand extends CommandBase {
+public class ZenCommand extends CommandBase implements IZenCommand {
     private ZenCommand(@Nonnull String name) {
         this.name = name;
     }
@@ -49,13 +49,6 @@ public class ZenCommand extends CommandBase {
     @Nonnull
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    @Nonnull
-    @ZenMethod
-    public String getUsage(ICommandSender sender) {
-        return this.getCommandUsage.getCommandUsage(new ZenUtilsCommandSender(sender));
     }
 
     @Override
@@ -97,10 +90,5 @@ public class ZenCommand extends CommandBase {
             default:
                 return getListOfStringsMatchingLastWord(args, TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], list));
         }
-    }
-
-    @ZenMethod
-    public void register() {
-        ZenCommandRegistrar.zenCommandMap.put(this.name, this);
     }
 }

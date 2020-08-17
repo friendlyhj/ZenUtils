@@ -70,6 +70,11 @@ public class CommandUtils {
     }
 
     @ZenMethod
+    public static void notifyWrongUsage(String message, String... replacements) throws WrongUsageException {
+        throw new WrongUsageException(message, replacements);
+    }
+
+    @ZenMethod
     public static void notifyWrongUsage(ZenCommand command, ZenUtilsCommandSender sender) throws WrongUsageException {
         throw new WrongUsageException(command.getCommandUsage.getCommandUsage(sender));
     }
