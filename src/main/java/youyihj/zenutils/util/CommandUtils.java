@@ -14,6 +14,7 @@ import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.server.MinecraftServer;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.command.IGetCommandUsage;
 import youyihj.zenutils.command.ZenCommand;
 import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 

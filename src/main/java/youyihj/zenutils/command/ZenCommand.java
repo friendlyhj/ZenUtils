@@ -36,7 +36,7 @@ public class ZenCommand extends CommandBase implements IZenCommand {
     public ICommandExecute execute = ((command, server, sender, args) -> {});
 
     @ZenProperty
-    public IGetCommandUsage getCommandUsage = (sender -> "commands.undefined.usage");
+    public IGetCommandUsage getCommandUsage = IGetCommandUsage.UNDEFINED;
 
     @ZenProperty
     public TabCompletion tabCompletion = null;
@@ -49,6 +49,13 @@ public class ZenCommand extends CommandBase implements IZenCommand {
     @Nonnull
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    @ZenMethod
+    @Nonnull
+    public String getUsage(ICommandSender sender) {
+        return this.getCommandUsage.getCommandUsage(new ZenUtilsCommandSender(sender));
     }
 
     @Override

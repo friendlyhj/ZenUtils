@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.util.CrTUUID;
+import youyihj.zenutils.util.object.CrTUUID;
 
 import javax.annotation.Nullable;
 import java.util.List;

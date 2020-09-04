@@ -1,4 +1,4 @@
-package youyihj.zenutils.util;
+package youyihj.zenutils.util.object;
 
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenCaster;

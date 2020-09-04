@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.util.CrTUUID;
+import youyihj.zenutils.util.object.CrTUUID;
 
 @ZenRegister
 @ZenClass("mods.zenutils.ZenUtilsEntity")

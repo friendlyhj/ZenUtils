@@ -1,11 +1,13 @@
 package youyihj.zenutils.command;
 
 import crafttweaker.annotations.ZenRegister;
+import net.minecraft.command.ICommandSender;
 import net.minecraftforge.server.command.CommandTreeBase;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
+import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
 import javax.annotation.Nonnull;
 
@@ -31,13 +33,20 @@ public class ZenCommandTree extends CommandTreeBase implements IZenCommand {
     public int requiredPermissionLevel = 0;
 
     @ZenProperty
-    public IGetCommandUsage getCommandUsage = (sender -> "commands.undefined.usage");
+    public IGetCommandUsage getCommandUsage = IGetCommandUsage.UNDEFINED;
 
     @Override
     @Nonnull
     @ZenGetter("name")
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    @ZenMethod
+    @Nonnull
+    public String getUsage(ICommandSender sender) {
+        return this.getCommandUsage.getCommandUsage(new ZenUtilsCommandSender(sender));
     }
 
     @Override
