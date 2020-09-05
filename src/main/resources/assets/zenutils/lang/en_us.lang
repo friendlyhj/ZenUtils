@@ -1,1 +1,2 @@
 commands.undefined.usage=Command Usage is undefined.
+tooltip.zenutils.energy=Energy： %s / %s RF

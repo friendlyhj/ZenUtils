@@ -1,1 +1,2 @@
 commands.undefined.usage=未定义命令用法
+tooltip.zenutils.energy=能量： %s / %s RF
