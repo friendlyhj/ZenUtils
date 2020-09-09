@@ -7,10 +7,10 @@ public class ZenUtilsGlobal {
     }
 
     public static String typeof(Object object) {
-        return object.getClass().getName();
+        return (object == null) ? "null" : object.getClass().getName();
     }
 
     public static String toString(Object object) {
-        return object.toString();
+        return String.valueOf(object);
     }
 }
