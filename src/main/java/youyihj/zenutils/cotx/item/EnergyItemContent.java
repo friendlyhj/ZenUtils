@@ -1,4 +1,4 @@
-package youyihj.zenutils.item;
+package youyihj.zenutils.cotx.item;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
 import cofh.redstoneflux.util.EnergyContainerItemWrapper;

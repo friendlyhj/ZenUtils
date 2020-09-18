@@ -2,6 +2,7 @@ package youyihj.zenutils.player;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,6 @@ import stanhebben.zenscript.annotations.ZenMethod;
 public class ZenUtilsPlayer {
     @ZenMethod
     public static boolean replaceItemInInventory(IPlayer iPlayer, int inventorySlot, IItemStack itemStack) {
-        return ((EntityPlayer) iPlayer.getInternal()).replaceItemInInventory(inventorySlot, (ItemStack) itemStack.getInternal());
+        return CraftTweakerMC.getPlayer(iPlayer).replaceItemInInventory(inventorySlot, (ItemStack) itemStack.getInternal());
     }
 }

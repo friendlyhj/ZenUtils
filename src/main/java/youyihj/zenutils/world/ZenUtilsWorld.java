@@ -3,6 +3,7 @@ package youyihj.zenutils.world;
 import com.google.common.collect.Lists;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.entity.IEntity;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.player.MCPlayer;
@@ -26,21 +27,19 @@ public class ZenUtilsWorld {
     @Nullable
     @ZenMethod
     public static IPlayer getPlayerByName(IWorld iWorld, String name) {
-       EntityPlayer player = (((World) iWorld.getInternal()).getPlayerEntityByName(name));
-       return (player == null) ? null : new MCPlayer(player);
+       return CraftTweakerMC.getIPlayer(CraftTweakerMC.getWorld(iWorld).getPlayerEntityByName(name));
     }
 
     @Nullable
     @ZenMethod
     public static IPlayer getPlayerByUUID(IWorld iWorld, CrTUUID uuid) {
-        EntityPlayer player = ((World) iWorld.getInternal()).getPlayerEntityByUUID((UUID) uuid.getInternal());
-        return (player == null) ? null : new MCPlayer(player);
+        return CraftTweakerMC.getIPlayer(CraftTweakerMC.getWorld(iWorld).getPlayerEntityByUUID((UUID) uuid.getInternal()));
     }
 
     @ZenMethod
     public static List<IPlayer> getAllPlayers(IWorld iWorld) {
         List<IPlayer> temp = Lists.newArrayList();
-        temp.addAll(((World) iWorld.getInternal()).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList()));
+        temp.addAll(CraftTweakerMC.getWorld(iWorld).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList()));
         return temp;
     }
 
@@ -51,7 +50,6 @@ public class ZenUtilsWorld {
 
     @ZenMethod
     public static IPlayer getClosestPlayer(IWorld iWorld, double posX, double posY, double posZ, double distance, boolean spectator) {
-        EntityPlayer player = ((World) iWorld.getInternal()).getClosestPlayer(posX, posY, posZ, distance, spectator);
-        return (player == null) ? null : new MCPlayer(player);
+        return CraftTweakerMC.getIPlayer(CraftTweakerMC.getWorld(iWorld).getClosestPlayer(posX, posY, posZ, distance, spectator));
     }
 }

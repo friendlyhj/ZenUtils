@@ -2,6 +2,7 @@ package youyihj.zenutils.entity;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.entity.IEntity;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.world.IVector3d;
 import net.minecraft.entity.Entity;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -39,6 +40,6 @@ public class ZenUtilsEntity {
 
     @ZenMethod
     public static CrTUUID getUUID(IEntity entity) {
-        return new CrTUUID(((Entity) entity.getInternal()).getUniqueID());
+        return new CrTUUID(CraftTweakerMC.getEntity(entity).getUniqueID());
     }
 }

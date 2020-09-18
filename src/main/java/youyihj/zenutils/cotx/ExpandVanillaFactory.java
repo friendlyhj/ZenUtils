@@ -1,10 +1,11 @@
-package youyihj.zenutils;
+package youyihj.zenutils.cotx;
 
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
-import youyihj.zenutils.item.EnergyItemRepresentation;
+import youyihj.zenutils.cotx.block.ExtendBlockRepresentation;
+import youyihj.zenutils.cotx.item.EnergyItemRepresentation;
 
 @ZenRegister
 @ModOnly("contenttweaker")
@@ -13,5 +14,10 @@ public class ExpandVanillaFactory {
     @ZenMethodStatic
     public static EnergyItemRepresentation createEnergyItem(String unlocalizedName, int capacity, int maxReceive, int maxExtract) {
         return new EnergyItemRepresentation(unlocalizedName, capacity, maxReceive, maxExtract);
+    }
+
+    @ZenMethodStatic
+    public static ExtendBlockRepresentation createExtendBlock(String unlocalizedName) {
+        return new ExtendBlockRepresentation(unlocalizedName);
     }
 }

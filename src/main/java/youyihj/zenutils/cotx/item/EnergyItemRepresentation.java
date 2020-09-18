@@ -1,4 +1,4 @@
-package youyihj.zenutils.item;
+package youyihj.zenutils.cotx.item;
 
 import com.teamacronymcoders.base.registrysystem.ItemRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
@@ -6,10 +6,11 @@ import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemRepresenta
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
+import youyihj.zenutils.cotx.item.EnergyItemContent;
 
 @ZenRegister
 @ModOnly("contenttweaker")
-@ZenClass("mods.zenutils.EnergyItem")
+@ZenClass("mods.zenutils.cotx.EnergyItem")
 public class EnergyItemRepresentation extends ItemRepresentation {
 
     int capacity;
