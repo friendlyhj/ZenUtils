@@ -6,6 +6,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
+import crafttweaker.api.entity.IEntityLivingBase;
 import crafttweaker.mc1120.data.NBTConverter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -53,5 +54,10 @@ public class ZenUtilsMutableItemStack {
         if (itemStack != null) {
             itemStack.setTagCompound(null);
         }
+    }
+
+    @ZenMethod
+    public static void heal(IMutableItemStack iMutableItemStack, int amount, IEntityLivingBase player) {
+        iMutableItemStack.damage(-amount, player);
     }
 }

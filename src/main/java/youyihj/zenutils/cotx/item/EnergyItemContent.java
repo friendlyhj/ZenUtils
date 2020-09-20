@@ -13,7 +13,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EnergyItemContent extends ItemContent implements IEnergyContainerItem {
+public class EnergyItemContent extends ExpandItemContent implements IEnergyContainerItem {
 
     private int capacity;
     private int maxReceive;
@@ -21,9 +21,10 @@ public class EnergyItemContent extends ItemContent implements IEnergyContainerIt
 
     public EnergyItemContent(EnergyItemRepresentation itemRepresentation) {
         super(itemRepresentation);
-        this.capacity = itemRepresentation.capacity;
-        this.maxReceive = itemRepresentation.maxReceive;
-        this.maxExtract = itemRepresentation.maxExtract;
+        capacity = itemRepresentation.capacity;
+        maxReceive = itemRepresentation.maxReceive;
+        maxExtract = itemRepresentation.maxExtract;
+        maxStackSize = 1;
     }
 
     @Nullable

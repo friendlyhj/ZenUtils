@@ -2,20 +2,23 @@ package youyihj.zenutils.cotx.block;
 
 import com.teamacronymcoders.base.registrysystem.BlockRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.blockmaterial.IBlockMaterialDefinition;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockRepresentation;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.cotx.function.IBlockActivated;
+import youyihj.zenutils.cotx.function.IEntityCollided;
 import youyihj.zenutils.cotx.function.IEntityWalk;
 
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.Block")
-public class ExtendBlockRepresentation extends BlockRepresentation {
-    public ExtendBlockRepresentation(String unlocalizedName) {
-        this.setUnlocalizedName(unlocalizedName);
+public class ExpendBlockRepresentation extends BlockRepresentation {
+    public ExpendBlockRepresentation(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {
+        setUnlocalizedName(unlocalizedName);
+        setBlockMaterial(blockMaterial);
     }
 
     @ZenProperty
@@ -25,10 +28,10 @@ public class ExtendBlockRepresentation extends BlockRepresentation {
     public IEntityWalk onEntityWalk = null;
 
     @ZenProperty
-    public boolean canSilkTouch = true;
+    public IEntityCollided onEntityCollidedWithBlock = null;
 
     @Override
     public void register() {
-        ContentTweaker.instance.getRegistry(BlockRegistry.class, "BLOCK").register(new ExtendBlockContent(this));
+        ContentTweaker.instance.getRegistry(BlockRegistry.class, "BLOCK").register(new ExpendBlockContent(this));
     }
 }

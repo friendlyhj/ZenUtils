@@ -15,6 +15,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @SuppressWarnings("unused")
 public class ZenUtilsBlock {
     @ZenMethod
+    @SuppressWarnings("deprecation")
     public static IItemStack getItem(IBlock block, IWorld world, IBlockPos pos, IBlockState state) {
         return CraftTweakerMC.getIItemStack(CraftTweakerMC.getBlock(block).getItem(
                 CraftTweakerMC.getWorld(world),
