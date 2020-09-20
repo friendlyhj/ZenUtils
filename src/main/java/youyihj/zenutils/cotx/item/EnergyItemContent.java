@@ -2,7 +2,6 @@ package youyihj.zenutils.cotx.item;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
 import cofh.redstoneflux.util.EnergyContainerItemWrapper;
-import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemContent;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;

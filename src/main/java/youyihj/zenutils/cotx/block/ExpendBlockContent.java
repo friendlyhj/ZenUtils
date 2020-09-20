@@ -49,9 +49,4 @@ public class ExpendBlockContent extends BlockContent {
             expendBlockRepresentation.onEntityCollidedWithBlock.call(CraftTweakerMC.getIWorld(worldIn), CraftTweakerMC.getIBlockPos(pos), CraftTweakerMC.getBlockState(state),CraftTweakerMC.getIEntity(entityIn));
         }
     }
-
-    @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
-        super.onBlockHarvested(worldIn, pos, state, player);
-    }
 }
