@@ -8,7 +8,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 
 @FunctionalInterface
 @ZenRegister
-@ZenClass("mods.zenutils.cotx.IEntityWalk")
+@ZenClass("mods.zenutils.cotx.IGetEntityLifeSpan")
 @ModOnly("contenttweaker")
 public interface IGetEntityLifeSpan {
     int get(IItemStack iItemStack, IWorld world);
