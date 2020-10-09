@@ -3,12 +3,14 @@ package youyihj.zenutils.world;
 import com.google.common.collect.Lists;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.entity.IEntity;
+import crafttweaker.api.entity.IEntityItem;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IWorld;
+import crafttweaker.mc1120.entity.MCEntity;
+import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+import net.minecraft.entity.item.EntityItem;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -51,5 +53,20 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static IPlayer getClosestPlayer(IWorld iWorld, double posX, double posY, double posZ, double distance, boolean spectator) {
         return CraftTweakerMC.getIPlayer(CraftTweakerMC.getWorld(iWorld).getClosestPlayer(posX, posY, posZ, distance, spectator));
+    }
+
+    @ZenMethod
+    public static List<IEntity> getEntities(IWorld iWorld) {
+        return CraftTweakerMC.getWorld(iWorld).loadedEntityList.stream().map(MCEntity::new).collect(Collectors.toList());
+    }
+
+    @ZenMethod
+    public static List<IEntityItem> getEntityItems(IWorld iWorld) {
+        return CraftTweakerMC.getWorld(iWorld).getEntities(EntityItem.class, (entity -> true)).stream().map(MCEntityItem::new).collect(Collectors.toList());
+    }
+
+    @ZenMethod
+    public static List<IPlayer> getPlayers(IWorld iWorld) {
+        return CraftTweakerMC.getWorld(iWorld).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList());
     }
 }
