@@ -57,7 +57,7 @@ public class ZenUtilsWorld {
 
     @ZenMethod
     public static List<IEntity> getEntities(IWorld iWorld) {
-        return CraftTweakerMC.getWorld(iWorld).loadedEntityList.stream().map(MCEntity::new).collect(Collectors.toList());
+        return CraftTweakerMC.getWorld(iWorld).loadedEntityList.stream().map(CraftTweakerMC::getIEntity).collect(Collectors.toList());
     }
 
     @ZenMethod

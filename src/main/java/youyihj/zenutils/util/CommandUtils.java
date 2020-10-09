@@ -4,6 +4,7 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.block.IBlockDefinition;
 import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.item.IItemDefinition;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.block.MCBlockDefinition;
 import crafttweaker.mc1120.entity.MCEntity;
 import crafttweaker.mc1120.item.MCItemDefinition;
@@ -45,13 +46,13 @@ public class CommandUtils {
 
     @ZenMethod
     public static IEntity getEntity(IServer server, ZenUtilsCommandSender sender, String target) throws CommandException {
-        return new MCEntity(CommandBase.getEntity((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target));
+        return CraftTweakerMC.getIEntity(CommandBase.getEntity((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target));
     }
 
     @ZenMethod
     public static List<IEntity> getEntityList(IServer server, ZenUtilsCommandSender sender, String target) throws CommandException {
         List<IEntity> list = new ArrayList<>();
-        list.addAll(CommandBase.getEntityList((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target).stream().map(MCEntity::new).collect(Collectors.toList()));
+        list.addAll(CommandBase.getEntityList((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target).stream().map(CraftTweakerMC::getIEntity).collect(Collectors.toList()));
         return list;
     }
 
