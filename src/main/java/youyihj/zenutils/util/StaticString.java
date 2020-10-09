@@ -34,6 +34,11 @@ public class StaticString {
     }
 
     @ZenMethod
+    public static String valueOf(Object obj) {
+        return String.valueOf(obj);
+    }
+
+    @ZenMethod
     public static String format(String format, String... args) {
         return String.format(format, args);
     }
