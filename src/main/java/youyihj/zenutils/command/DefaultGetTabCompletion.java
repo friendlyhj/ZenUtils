@@ -47,4 +47,9 @@ public class DefaultGetTabCompletion {
     public static IGetTabCompletion z() {
         return ((server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getZ())));
     }
+
+    @ZenMethodStatic
+    public static IGetTabCompletion empty() {
+        return (server, sender, targetPos) -> StringList.empty();
+    }
 }
