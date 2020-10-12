@@ -1,5 +1,6 @@
 package youyihj.zenutils.cotx.item;
 
+import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemContent;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.entity.item.EntityItem;
@@ -25,6 +26,6 @@ public class ExpandItemContent extends ItemContent {
     @Override
     public int getEntityLifespan(ItemStack itemStack, World world) {
         if (Objects.isNull(expandItemRepresentation.getEntityLifeSpan)) return super.getEntityLifespan(itemStack, world);
-        return expandItemRepresentation.getEntityLifeSpan.get(CraftTweakerMC.getIItemStack(itemStack), CraftTweakerMC.getIWorld(world));
+        return expandItemRepresentation.getEntityLifeSpan.get(CraftTweakerMC.getIItemStack(itemStack), new MCWorld(world));
     }
 }

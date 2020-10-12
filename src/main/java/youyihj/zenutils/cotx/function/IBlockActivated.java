@@ -1,13 +1,14 @@
 package youyihj.zenutils.cotx.function;
 
+import com.teamacronymcoders.contenttweaker.api.ctobjects.blockpos.IBlockPos;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.blockstate.ICTBlockState;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.entity.player.ICTPlayer;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Facing;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Hand;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.world.IWorld;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.block.IBlockState;
-import crafttweaker.api.player.IPlayer;
-import crafttweaker.api.world.IBlockPos;
-import crafttweaker.api.world.IWorld;
+import crafttweaker.api.util.Position3f;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @FunctionalInterface
@@ -15,5 +16,5 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.IBlockActivated")
 public interface IBlockActivated {
-    boolean activate(IWorld world, IBlockPos pos, IBlockState state, IPlayer player, Hand hand, Facing facing, float[] blockHit);
+    boolean activate(IWorld world, IBlockPos pos, ICTBlockState state, ICTPlayer player, Hand hand, Facing facing, Position3f blockHit);
 }
