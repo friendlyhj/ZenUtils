@@ -90,7 +90,7 @@ public class ZenCommand extends CommandBase implements IZenCommand {
                             new MCServer(server),
                             new ZenUtilsCommandSender(sender),
                             CraftTweakerMC.getIBlockPos(targetPos)
-                    ).getInner()
+                    ).getList()
             );
         } catch (CommandException e) {
             return Collections.emptyList();

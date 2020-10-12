@@ -99,7 +99,8 @@ public class StringList implements Iterable<String> {
         return sb.append("]").toString();
     }
 
-    public List<String> getInner() {
+    @ZenMethod
+    public List<String> getList() {
         return inner;
     }
 }
