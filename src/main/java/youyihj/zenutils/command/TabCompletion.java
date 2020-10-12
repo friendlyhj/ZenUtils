@@ -6,6 +6,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenRegister
 @ZenClass("mods.zenutils.command.TabCompletion")
+@Deprecated
 public class TabCompletion {
     private String[] info;
 

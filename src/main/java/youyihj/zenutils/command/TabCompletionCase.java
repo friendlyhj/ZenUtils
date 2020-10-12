@@ -7,9 +7,9 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import java.util.HashMap;
 import java.util.List;
 
-
 @ZenRegister
 @ZenClass("mods.zenutils.command.TabCompletionCase")
+@Deprecated
 public class TabCompletionCase {
 
     static HashMap<String, List<String>> cases = new HashMap<>();

@@ -3,9 +3,12 @@ package youyihj.zenutils.command;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.server.MCServer;
+import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.item.Item;
+import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -43,6 +46,10 @@ public class ZenCommand extends CommandBase implements IZenCommand {
     public IGetTabCompletion[] tabCompletionGetters = {};
 
     @ZenProperty
+    @Deprecated
+    public TabCompletion tabCompletion = null;
+
+    @ZenProperty
     public int requiredPermissionLevel = 4;
 
     @Override
@@ -71,7 +78,9 @@ public class ZenCommand extends CommandBase implements IZenCommand {
 
     @Override
     @Nonnull
+    @SuppressWarnings("deprecation")
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (this.tabCompletion != null) return getTabCompletionsDeprecated(server, sender, args, targetPos);
         int index = args.length - 1;
         if (this.tabCompletionGetters.length == 0 || index >= this.tabCompletionGetters.length || index < 0) return Collections.emptyList();
         try {
@@ -85,6 +94,33 @@ public class ZenCommand extends CommandBase implements IZenCommand {
             );
         } catch (CommandException e) {
             return Collections.emptyList();
+        }
+    }
+
+    @Deprecated
+    public List<String> getTabCompletionsDeprecated(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        int index = args.length - 1;
+        List<String> emptyList = Collections.emptyList();
+        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return emptyList;
+        switch (this.tabCompletion.getInfo()[index]) {
+            case "empty":
+                return emptyList;
+            case "item":
+                return getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys());
+            case "block":
+                return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
+            case "player":
+                return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+            case "potion":
+                return getListOfStringsMatchingLastWord(args, Potion.REGISTRY.getKeys());
+            case "x":
+                return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getX()));
+            case "y":
+                return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getY()));
+            case "z":
+                return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getZ()));
+            default:
+                return getListOfStringsMatchingLastWord(args, TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], emptyList));
         }
     }
 }
