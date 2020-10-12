@@ -100,7 +100,7 @@ public class StringList implements Iterable<String> {
     }
 
     @ZenMethod
-    public List<String> getList() {
+    public List<String> getInner() {
         return inner;
     }
 }
