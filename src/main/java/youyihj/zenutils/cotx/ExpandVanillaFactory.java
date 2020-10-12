@@ -5,7 +5,7 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
-import youyihj.zenutils.cotx.block.ExpendBlockRepresentation;
+import youyihj.zenutils.cotx.block.ExpandBlockRepresentation;
 import youyihj.zenutils.cotx.item.EnergyItemRepresentation;
 import youyihj.zenutils.cotx.item.ExpandItemRepresentation;
 
@@ -19,12 +19,12 @@ public class ExpandVanillaFactory {
     }
 
     @ZenMethodStatic
-    public static ExpendBlockRepresentation createExpendBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {
-        return new ExpendBlockRepresentation(unlocalizedName, blockMaterial);
+    public static ExpandBlockRepresentation createExpandBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {
+        return new ExpandBlockRepresentation(unlocalizedName, blockMaterial);
     }
 
     @ZenMethodStatic
-    public static ExpandItemRepresentation createExpendItem(String unlocalizedName) {
+    public static ExpandItemRepresentation createExpandItem(String unlocalizedName) {
         return new ExpandItemRepresentation(unlocalizedName);
     }
 }

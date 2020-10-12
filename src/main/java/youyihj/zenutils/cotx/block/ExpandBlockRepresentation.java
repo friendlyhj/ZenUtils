@@ -15,8 +15,8 @@ import youyihj.zenutils.cotx.function.IEntityWalk;
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.Block")
-public class ExpendBlockRepresentation extends BlockRepresentation {
-    public ExpendBlockRepresentation(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {
+public class ExpandBlockRepresentation extends BlockRepresentation {
+    public ExpandBlockRepresentation(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {
         setUnlocalizedName(unlocalizedName);
         setBlockMaterial(blockMaterial);
     }
@@ -32,6 +32,6 @@ public class ExpendBlockRepresentation extends BlockRepresentation {
 
     @Override
     public void register() {
-        ContentTweaker.instance.getRegistry(BlockRegistry.class, "BLOCK").register(new ExpendBlockContent(this));
+        ContentTweaker.instance.getRegistry(BlockRegistry.class, "BLOCK").register(new ExpandBlockContent(this));
     }
 }

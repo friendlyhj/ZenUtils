@@ -14,18 +14,18 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
-public class ExpendBlockContent extends BlockContent {
-    private ExpendBlockRepresentation expendBlockRepresentation;
+public class ExpandBlockContent extends BlockContent {
+    private ExpandBlockRepresentation expandBlockRepresentation;
 
-    public ExpendBlockContent(ExpendBlockRepresentation blockRepresentation) {
+    public ExpandBlockContent(ExpandBlockRepresentation blockRepresentation) {
         super(blockRepresentation);
-        this.expendBlockRepresentation = blockRepresentation;
+        this.expandBlockRepresentation = blockRepresentation;
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        return Objects.nonNull(expendBlockRepresentation.onBlockActivated) &&
-                expendBlockRepresentation.onBlockActivated.activate(
+        return Objects.nonNull(expandBlockRepresentation.onBlockActivated) &&
+                expandBlockRepresentation.onBlockActivated.activate(
                         CraftTweakerMC.getIWorld(worldIn),
                         CraftTweakerMC.getIBlockPos(pos),
                         CraftTweakerMC.getBlockState(state),
@@ -38,15 +38,15 @@ public class ExpendBlockContent extends BlockContent {
 
     @Override
     public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
-        if (Objects.nonNull(expendBlockRepresentation.onEntityWalk)) {
-            expendBlockRepresentation.onEntityWalk.call(CraftTweakerMC.getIWorld(worldIn), CraftTweakerMC.getIBlockPos(pos), CraftTweakerMC.getIEntity(entityIn));
+        if (Objects.nonNull(expandBlockRepresentation.onEntityWalk)) {
+            expandBlockRepresentation.onEntityWalk.call(CraftTweakerMC.getIWorld(worldIn), CraftTweakerMC.getIBlockPos(pos), CraftTweakerMC.getIEntity(entityIn));
         }
     }
 
     @Override
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
-        if (Objects.nonNull(expendBlockRepresentation.onEntityCollidedWithBlock)) {
-            expendBlockRepresentation.onEntityCollidedWithBlock.call(CraftTweakerMC.getIWorld(worldIn), CraftTweakerMC.getIBlockPos(pos), CraftTweakerMC.getBlockState(state),CraftTweakerMC.getIEntity(entityIn));
+        if (Objects.nonNull(expandBlockRepresentation.onEntityCollidedWithBlock)) {
+            expandBlockRepresentation.onEntityCollidedWithBlock.call(CraftTweakerMC.getIWorld(worldIn), CraftTweakerMC.getIBlockPos(pos), CraftTweakerMC.getBlockState(state),CraftTweakerMC.getIEntity(entityIn));
         }
     }
 }
