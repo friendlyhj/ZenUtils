@@ -12,6 +12,9 @@ import youyihj.zenutils.cotx.function.IBlockActivated;
 import youyihj.zenutils.cotx.function.IEntityCollided;
 import youyihj.zenutils.cotx.function.IEntityWalk;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.Block")

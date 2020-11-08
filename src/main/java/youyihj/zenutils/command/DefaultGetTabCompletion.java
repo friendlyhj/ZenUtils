@@ -9,6 +9,9 @@ import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.util.object.StringList;
 
+/**
+ * @author youyihj
+ */
 @ZenExpansion("mods.zenutils.command.IGetTabCompletion")
 @ZenRegister
 @SuppressWarnings("unused")

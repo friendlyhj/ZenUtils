@@ -10,6 +10,9 @@ import stanhebben.zenscript.annotations.ZenCaster;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenExpansion("mods.contenttweaker.Hand")
 @ModOnly("contenttweaker")
@@ -23,7 +26,8 @@ public class ExpandHand {
                 return new MCEntityEquipmentSlot(EntityEquipmentSlot.MAINHAND);
             case OFF_HAND:
                 return new MCEntityEquipmentSlot(EntityEquipmentSlot.OFFHAND);
+            default:
+                return null;
         }
-        return null;
     }
 }

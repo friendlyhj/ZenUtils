@@ -9,6 +9,9 @@ import youyihj.zenutils.cotx.block.ExpandBlockRepresentation;
 import youyihj.zenutils.cotx.item.EnergyItemRepresentation;
 import youyihj.zenutils.cotx.item.ExpandItemRepresentation;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenExpansion("mods.contenttweaker.VanillaFactory")

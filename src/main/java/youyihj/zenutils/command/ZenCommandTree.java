@@ -11,6 +11,9 @@ import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
 import javax.annotation.Nonnull;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.command.ZenCommandTree")
 @SuppressWarnings("unused")

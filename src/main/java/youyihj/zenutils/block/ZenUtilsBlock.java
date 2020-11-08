@@ -10,6 +10,9 @@ import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenExpansion("crafttweaker.block.IBlock")
 @SuppressWarnings("unused")

@@ -10,6 +10,9 @@ import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
 import javax.annotation.Nullable;
 
+/**
+ * @author youyihj
+ */
 @FunctionalInterface
 @ZenRegister
 @ZenClass("mods.zenutils.command.IGetTabCompletion")

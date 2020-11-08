@@ -7,6 +7,9 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.command.TabCompletionCase")
 @Deprecated

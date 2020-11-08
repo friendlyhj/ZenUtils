@@ -6,6 +6,9 @@ import net.minecraft.command.CommandException;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.command.ICommandExecute")
 public interface ICommandExecute {

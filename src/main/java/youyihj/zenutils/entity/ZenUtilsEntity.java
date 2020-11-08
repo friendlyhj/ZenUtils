@@ -10,6 +10,9 @@ import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.util.object.CrTUUID;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.ZenUtilsEntity")
 @ZenExpansion("crafttweaker.entity.IEntity")

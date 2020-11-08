@@ -9,6 +9,9 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.ZenUtilsEntityItem")
 @ZenExpansion("crafttweaker.entity.IEntityItem")

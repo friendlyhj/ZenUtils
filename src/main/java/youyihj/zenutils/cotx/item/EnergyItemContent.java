@@ -12,6 +12,9 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * @author youyihj
+ */
 public class EnergyItemContent extends ExpandItemContent implements IEnergyContainerItem {
 
     private int capacity;

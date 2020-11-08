@@ -5,6 +5,9 @@ import net.minecraft.client.resources.I18n;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.I18n")
 @SuppressWarnings("unused")

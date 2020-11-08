@@ -5,6 +5,9 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.entity.IEntityItem;
 import stanhebben.zenscript.annotations.ZenClass;
 
+/**
+ * @author youyihj
+ */
 @FunctionalInterface
 @ZenRegister
 @ZenClass("mods.zenutils.cotx.IEntityItemUpdate")

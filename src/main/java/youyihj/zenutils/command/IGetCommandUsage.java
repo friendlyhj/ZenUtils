@@ -4,6 +4,9 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.util.object.ZenUtilsCommandSender;
 
+/**
+ * @author youyihj
+ */
 @FunctionalInterface
 @ZenRegister
 @ZenClass("mods.zenutils.command.IGetCommandUsage")

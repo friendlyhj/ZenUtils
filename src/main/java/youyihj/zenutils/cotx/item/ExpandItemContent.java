@@ -9,6 +9,9 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
+/**
+ * @author youyihj
+ */
 public class ExpandItemContent extends ItemContent {
     private ExpandItemRepresentation expandItemRepresentation;
 

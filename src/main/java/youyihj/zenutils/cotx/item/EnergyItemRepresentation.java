@@ -6,6 +6,9 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.EnergyItem")

@@ -11,6 +11,9 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.util.Position3f;
 import stanhebben.zenscript.annotations.ZenClass;
 
+/**
+ * @author youyihj
+ */
 @FunctionalInterface
 @ZenRegister
 @ModOnly("contenttweaker")

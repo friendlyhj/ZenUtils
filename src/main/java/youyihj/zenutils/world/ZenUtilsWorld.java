@@ -7,7 +7,6 @@ import crafttweaker.api.entity.IEntityItem;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IWorld;
-import crafttweaker.mc1120.entity.MCEntity;
 import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
@@ -21,6 +20,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.ZenUtilsWorld")
 @ZenExpansion("crafttweaker.world.IWorld")

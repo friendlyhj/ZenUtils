@@ -10,6 +10,9 @@ import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.cotx.function.IEntityItemUpdate;
 import youyihj.zenutils.cotx.function.IGetEntityLifeSpan;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.Item")

@@ -6,6 +6,9 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 
+/**
+ * @author youyihj
+ */
 @FunctionalInterface
 @ZenRegister
 @ZenClass("mods.zenutils.cotx.IGetEntityLifeSpan")

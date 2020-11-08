@@ -4,6 +4,9 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+/**
+ * @author youyihj
+ */
 @ZenClass("mods.zenutils.ZenUtils")
 @ZenRegister
 @SuppressWarnings("unused")
@@ -22,7 +25,7 @@ public class ZenUtilsGlobal {
         return String.valueOf(object);
     }
 
-    // Actually, these below are not global
+    /** Actually, these below are not global */
     @ZenMethod
     public static String typeof(int unused) {
         return "int";

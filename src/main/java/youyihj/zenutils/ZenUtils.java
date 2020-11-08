@@ -7,6 +7,9 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import youyihj.zenutils.command.ZenCommandRegistrar;
 import youyihj.zenutils.util.ZenUtilsGlobal;
 
+/**
+ * @author youyihj
+ */
 @Mod(modid = ZenUtils.MODID, name = ZenUtils.NAME, version = ZenUtils.VERSION, dependencies = ZenUtils.DEPENDENCIES)
 public class ZenUtils {
     public static final String MODID = "zenutils";

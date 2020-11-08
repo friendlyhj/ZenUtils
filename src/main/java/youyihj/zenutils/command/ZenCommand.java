@@ -22,6 +22,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author youyihj
+ */
 @ZenRegister
 @ZenClass("mods.zenutils.command.ZenCommand")
 @SuppressWarnings("unused")

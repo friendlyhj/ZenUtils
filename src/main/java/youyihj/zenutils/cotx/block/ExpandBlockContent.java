@@ -19,6 +19,9 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
+/**
+ * @author youyihj
+ */
 public class ExpandBlockContent extends BlockContent {
     private ExpandBlockRepresentation expandBlockRepresentation;
 
