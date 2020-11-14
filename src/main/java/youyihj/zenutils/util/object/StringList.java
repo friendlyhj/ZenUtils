@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @IterableSimple("string")
 @ZenClass("mods.zenutils.StringList")
 public class StringList implements Iterable<String> {
-    private List<String> inner;
+    private final List<String> inner;
 
     private StringList(Collection<?> list) {
         this.inner = list.stream().map(Functions.toStringFunction()).collect(Collectors.toList());

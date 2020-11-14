@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class EnergyItemContent extends ExpandItemContent implements IEnergyContainerItem {
 
-    private int capacity;
-    private int maxReceive;
-    private int maxExtract;
+    private final int capacity;
+    private final int maxReceive;
+    private final int maxExtract;
 
     public EnergyItemContent(EnergyItemRepresentation itemRepresentation) {
         super(itemRepresentation);

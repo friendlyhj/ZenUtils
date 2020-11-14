@@ -11,6 +11,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.cotx.function.IBlockActivated;
 import youyihj.zenutils.cotx.function.IEntityCollided;
 import youyihj.zenutils.cotx.function.IEntityWalk;
+import youyihj.zenutils.cotx.tile.TileEntityRepresentation;
 
 /**
  * @author youyihj
@@ -23,6 +24,9 @@ public class ExpandBlockRepresentation extends BlockRepresentation {
         setUnlocalizedName(unlocalizedName);
         setBlockMaterial(blockMaterial);
     }
+
+    @ZenProperty
+    public TileEntityRepresentation tileEntity;
 
     @ZenProperty
     public IBlockActivated onBlockActivated = null;

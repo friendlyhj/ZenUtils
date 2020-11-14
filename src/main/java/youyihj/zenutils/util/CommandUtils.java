@@ -73,7 +73,7 @@ public class CommandUtils {
     }
 
     @ZenMethod
-    public static void notifyWrongUsage(String message, String... replacements) throws WrongUsageException {
+    public static void notifyWrongUsage(String message, Object... replacements) throws WrongUsageException {
         throw new WrongUsageException(message, replacements);
     }
 

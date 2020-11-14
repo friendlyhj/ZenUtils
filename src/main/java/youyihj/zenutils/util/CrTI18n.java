@@ -19,7 +19,7 @@ public class CrTI18n {
     }
 
     @ZenMethod
-    public static String format(String format, String... args) {
+    public static String format(String format, Object... args) {
         return I18n.format(format, args);
     }
 }

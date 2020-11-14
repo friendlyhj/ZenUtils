@@ -30,7 +30,7 @@ public class ZenCommandTree extends CommandTreeBase implements IZenCommand {
         return new ZenCommandTree(name, commands);
     }
 
-    private String name;
+    private final String name;
 
     @ZenProperty
     public int requiredPermissionLevel = 0;

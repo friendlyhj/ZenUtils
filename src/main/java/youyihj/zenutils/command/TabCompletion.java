@@ -11,7 +11,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("mods.zenutils.command.TabCompletion")
 @Deprecated
 public class TabCompletion {
-    private String[] info;
+    private final String[] info;
 
     private TabCompletion(String[] info) {
         this.info = info;

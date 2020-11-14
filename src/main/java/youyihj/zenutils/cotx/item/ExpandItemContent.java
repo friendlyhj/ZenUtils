@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author youyihj
  */
 public class ExpandItemContent extends ItemContent {
-    private ExpandItemRepresentation expandItemRepresentation;
+    private final ExpandItemRepresentation expandItemRepresentation;
 
     public ExpandItemContent(ExpandItemRepresentation itemRepresentation) {
         super(itemRepresentation);

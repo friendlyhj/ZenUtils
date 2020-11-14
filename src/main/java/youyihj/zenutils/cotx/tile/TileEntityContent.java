@@ -1,49 +1,76 @@
 package youyihj.zenutils.cotx.tile;
 
+import com.teamacronymcoders.contenttweaker.api.ctobjects.blockpos.MCBlockPos;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.mc1120.data.NBTConverter;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenGetter;
+import stanhebben.zenscript.annotations.ZenSetter;
 import youyihj.zenutils.cotx.INBTSerializable;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author youyihj
  */
-@ZenClass("mods.zenutils.cotx.TileEntity")
 @ZenRegister
 @ModOnly("contenttweaker")
-public class CoTTileEntity extends TileEntity implements INBTSerializable, ITickable {
-    private TileData customData;
+@ZenClass("mods.zenutils.cotx.TileEntityInGame")
+public class TileEntityContent extends TileEntity implements INBTSerializable, ITickable {
+    private final TileData customData = new TileData();
+    private static final String TAG_ID = "tile_id";
+    private static final String TAG_CUSTOM_DATA = "custom_data";
+    private int id;
+
+    public TileEntityContent() {}
+
+    public TileEntityContent(int id) {
+        this.id = id;
+    }
+
+    @ZenGetter("id")
+    public int getId() {
+        return id;
+    }
 
     @Override
+    @Nonnull
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        customData.writeToNBT(compound);
+        compound.setInteger(TAG_ID, id);
+        if (!compound.hasKey(TAG_CUSTOM_DATA)) {
+            compound.setTag(TAG_CUSTOM_DATA, new NBTTagCompound());
+        }
+        customData.writeToNBT(compound.getCompoundTag(TAG_CUSTOM_DATA));
         return super.writeToNBT(compound);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        customData.readFromNBT(compound);
+    public void readFromNBT(@Nonnull NBTTagCompound compound) {
+        customData.readFromNBT(compound.getCompoundTag(TAG_CUSTOM_DATA));
+        this.id = compound.getInteger(TAG_ID);
         super.readFromNBT(compound);
     }
 
-    @ZenMethod
-    public IData getData() {
-        return NBTConverter.from(this.writeToNBT(new NBTTagCompound()), true);
-    }
-
-    @ZenMethod
+    @ZenGetter("data")
     public IData getCustomData() {
         return customData.getData();
     }
 
-    @Override
-    public void tick() {
+    @ZenSetter("data")
+    public void setCustomData(IData data) {
+        customData.readFromNBT((NBTTagCompound) NBTConverter.from(data));
+        this.markDirty();
+    }
 
+    @Override
+    public void update() {
+        TileEntityManager.getTickFunction(id)
+                .tick(this, new MCWorld(world), new MCBlockPos(pos));
     }
 }

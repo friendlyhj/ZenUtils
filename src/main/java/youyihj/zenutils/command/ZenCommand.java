@@ -32,7 +32,7 @@ public class ZenCommand extends CommandBase implements IZenCommand {
     private ZenCommand(@Nonnull String name) {
         this.name = name;
     }
-    private String name;
+    private final String name;
 
     @ZenMethod
     public static ZenCommand create(@Nonnull String name) {

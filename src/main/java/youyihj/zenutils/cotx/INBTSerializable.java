@@ -1,5 +1,12 @@
-package youyihj.zenutils.cotx;/**
+package youyihj.zenutils.cotx;
+
+import net.minecraft.nbt.NBTTagCompound;
+
+/**
  * @author youyihj
  */
-public class INBTSerlizable {
+public interface INBTSerializable {
+    void readFromNBT(NBTTagCompound nbt);
+
+    NBTTagCompound writeToNBT(NBTTagCompound nbt);
 }

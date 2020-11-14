@@ -8,6 +8,7 @@ import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.cotx.block.ExpandBlockRepresentation;
 import youyihj.zenutils.cotx.item.EnergyItemRepresentation;
 import youyihj.zenutils.cotx.item.ExpandItemRepresentation;
+import youyihj.zenutils.cotx.tile.TileEntityRepresentation;
 
 /**
  * @author youyihj
@@ -29,5 +30,10 @@ public class ExpandVanillaFactory {
     @ZenMethodStatic
     public static ExpandItemRepresentation createExpandItem(String unlocalizedName) {
         return new ExpandItemRepresentation(unlocalizedName);
+    }
+
+    @ZenMethodStatic
+    public static TileEntityRepresentation createActualTileEntity(int id) {
+        return new TileEntityRepresentation(id);
     }
 }

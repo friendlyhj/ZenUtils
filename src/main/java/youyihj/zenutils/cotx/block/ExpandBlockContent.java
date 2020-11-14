@@ -12,18 +12,21 @@ import crafttweaker.mc1120.util.MCPosition3f;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import youyihj.zenutils.cotx.tile.TileEntityContent;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
  * @author youyihj
  */
 public class ExpandBlockContent extends BlockContent {
-    private ExpandBlockRepresentation expandBlockRepresentation;
+    private final ExpandBlockRepresentation expandBlockRepresentation;
 
     public ExpandBlockContent(ExpandBlockRepresentation blockRepresentation) {
         super(blockRepresentation);
@@ -56,5 +59,16 @@ public class ExpandBlockContent extends BlockContent {
         if (Objects.nonNull(expandBlockRepresentation.onEntityCollidedWithBlock)) {
             expandBlockRepresentation.onEntityCollidedWithBlock.call(new MCWorld(worldIn), new MCBlockPos(pos), new MCBlockState(state), EntityHelper.getIEntity(entityIn));
         }
+    }
+
+    @Override
+    public boolean hasTileEntity(IBlockState state) {
+        return expandBlockRepresentation.tileEntity != null;
+    }
+
+    @Override
+    @Nullable
+    public TileEntity createTileEntity(World world, IBlockState state) {
+        return this.hasTileEntity(state) ? new TileEntityContent(expandBlockRepresentation.tileEntity.getId()) : null;
     }
 }

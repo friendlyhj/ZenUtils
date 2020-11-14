@@ -10,7 +10,7 @@ import stanhebben.zenscript.value.IntRange;
 @ZenClass("mods.zenutils.IntRange")
 @SuppressWarnings("unused")
 public class CrTIntRange {
-    private IntRange intRange;
+    private final IntRange intRange;
 
     private CrTIntRange(IntRange range) {
         this.intRange = range;

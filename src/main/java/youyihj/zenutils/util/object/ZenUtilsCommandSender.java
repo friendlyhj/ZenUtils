@@ -14,7 +14,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenRegister
 @ZenClass("mods.zenutils.command.ZenUtilsCommandSender")
 public class ZenUtilsCommandSender implements crafttweaker.api.command.ICommandSender{
-    private ICommandSender commandSender;
+    private final ICommandSender commandSender;
 
     public ZenUtilsCommandSender(ICommandSender commandSender) {
         this.commandSender = commandSender;

@@ -42,7 +42,7 @@ public class StaticString {
     }
 
     @ZenMethod
-    public static String format(String format, String... args) {
+    public static String format(String format, Object... args) {
         return String.format(format, args);
     }
 }
