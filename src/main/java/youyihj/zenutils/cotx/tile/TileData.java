@@ -1,9 +1,7 @@
 package youyihj.zenutils.cotx.tile;
 
-import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.mc1120.data.NBTConverter;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +9,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenSetter;
 import youyihj.zenutils.cotx.INBTSerializable;
+import youyihj.zenutils.util.InternalUtils;
 
 /**
  * @author youyihj
@@ -39,9 +38,7 @@ public class TileData implements INBTSerializable {
 
     @ZenSetter("data")
     public void setData(IData data) {
-        if (!(data instanceof DataMap)) {
-            CraftTweakerAPI.logError("data argument must be DataMap", new IllegalArgumentException());
-        }
+        InternalUtils.checkDataMap(data);
         this.readFromNBT((NBTTagCompound) NBTConverter.from(data));
     }
 }

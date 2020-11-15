@@ -11,8 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
+import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenSetter;
 import youyihj.zenutils.cotx.INBTSerializable;
+import youyihj.zenutils.util.InternalUtils;
 
 import javax.annotation.Nonnull;
 
@@ -24,8 +26,8 @@ import javax.annotation.Nonnull;
 @ZenClass("mods.zenutils.cotx.TileEntityInGame")
 public class TileEntityContent extends TileEntity implements INBTSerializable, ITickable {
     private final TileData customData = new TileData();
-    private static final String TAG_ID = "tile_id";
-    private static final String TAG_CUSTOM_DATA = "custom_data";
+    private static final String TAG_ID = "TileID";
+    public static final String TAG_CUSTOM_DATA = "CustomData";
     private int id;
 
     public TileEntityContent() {}
@@ -66,6 +68,12 @@ public class TileEntityContent extends TileEntity implements INBTSerializable, I
     public void setCustomData(IData data) {
         customData.readFromNBT((NBTTagCompound) NBTConverter.from(data));
         this.markDirty();
+    }
+
+    @ZenMethod
+    public void updateCustomData(IData data) {
+        InternalUtils.checkDataMap(data);
+        setCustomData(getCustomData().add(data));
     }
 
     @Override

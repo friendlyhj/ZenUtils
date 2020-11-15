@@ -22,7 +22,7 @@ public class TileEntityRepresentation {
     }
 
     @ZenProperty
-    public ITileEntityTick onTick;
+    public ITileEntityTick onTick = ((tileEntity, world, pos) -> {});
 
     @ZenGetter("id")
     public int getId() {
