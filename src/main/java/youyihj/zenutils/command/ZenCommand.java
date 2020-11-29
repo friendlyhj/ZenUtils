@@ -1,5 +1,6 @@
 package youyihj.zenutils.command;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.server.MCServer;
@@ -21,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author youyihj
@@ -81,11 +83,12 @@ public class ZenCommand extends CommandBase implements IZenCommand {
 
     @Override
     @Nonnull
-    @SuppressWarnings("deprecation")
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
-        if (this.tabCompletion != null) return getTabCompletionsDeprecated(server, sender, args, targetPos);
+        if (this.tabCompletionGetters.length == 0 && this.tabCompletion != null) {
+            return getTabCompletionsDeprecated(server, sender, args, targetPos);
+        }
         int index = args.length - 1;
-        if (this.tabCompletionGetters.length == 0 || index >= this.tabCompletionGetters.length || index < 0) return Collections.emptyList();
+        if (index >= this.tabCompletionGetters.length || index < 0) return Collections.emptyList();
         try {
             return getListOfStringsMatchingLastWord(
                     args,
@@ -100,11 +103,12 @@ public class ZenCommand extends CommandBase implements IZenCommand {
         }
     }
 
-    @Deprecated
-    public List<String> getTabCompletionsDeprecated(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+    @Nonnull
+    private List<String> getTabCompletionsDeprecated(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        Objects.requireNonNull(this.tabCompletion);
         int index = args.length - 1;
         List<String> emptyList = Collections.emptyList();
-        if (this.tabCompletion == null || index >= this.tabCompletion.getInfo().length || index < 0) return emptyList;
+        if (index >= this.tabCompletion.getInfo().length || index < 0) return emptyList;
         switch (this.tabCompletion.getInfo()[index]) {
             case "empty":
                 return emptyList;
@@ -124,6 +128,14 @@ public class ZenCommand extends CommandBase implements IZenCommand {
                 return (targetPos == null) ? emptyList : Collections.singletonList(String.valueOf(targetPos.getZ()));
             default:
                 return getListOfStringsMatchingLastWord(args, TabCompletionCase.cases.getOrDefault(this.tabCompletion.getInfo()[index], emptyList));
+        }
+    }
+
+    @Override
+    public void register() {
+        IZenCommand.super.register();
+        if (this.tabCompletion != null) {
+            CraftTweakerAPI.logWarning("Found deprecated member tabCompletion is still used! You are supposed to use `IGetTabCompletion[] tabCompletionGetters`.");
         }
     }
 }
