@@ -3,6 +3,7 @@ package youyihj.zenutils.util.object;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.*;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @ZenRegister
@@ -42,11 +43,6 @@ public class CrTUUID {
         return new CrTUUID(UUID.fromString(name));
     }
 
-    @ZenOperator(OperatorType.EQUALS)
-    public boolean equals(CrTUUID other) {
-        return this.uuid.equals(other.uuid);
-    }
-
     @ZenOperator(OperatorType.COMPARE)
     public int compareTo(CrTUUID other) {
         return this.uuid.compareTo(other.uuid);
@@ -54,5 +50,19 @@ public class CrTUUID {
 
     public Object getInternal() {
         return this.uuid;
+    }
+
+    @Override
+    @ZenOperator(OperatorType.EQUALS)
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CrTUUID crTUUID = (CrTUUID) o;
+        return Objects.equals(uuid, crTUUID.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 }
