@@ -15,4 +15,14 @@ public final class InternalUtils {
             CraftTweakerAPI.logError("data argument must be DataMap", new IllegalArgumentException());
         }
     }
+
+    public static boolean isValidHashKey(Class<?> clazz) {
+        try {
+            clazz.getDeclaredMethod("hashCode");
+            clazz.getDeclaredMethod("equals", Object.class);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
 }
