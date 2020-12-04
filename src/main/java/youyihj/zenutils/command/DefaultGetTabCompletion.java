@@ -16,43 +16,53 @@ import youyihj.zenutils.util.object.StringList;
 @ZenRegister
 @SuppressWarnings("unused")
 public class DefaultGetTabCompletion {
+
+    private static final IGetTabCompletion ITEM = (server, sender, targetPos) -> StringList.create(Item.REGISTRY.getKeys());
+    private static final IGetTabCompletion BLOCK  = (server, sender, targetPos) -> StringList.create(Block.REGISTRY.getKeys());
+    private static final IGetTabCompletion PLAYER = (server, sender, targetPos) -> StringList.create(CraftTweakerMC.getMCServer(server).getOnlinePlayerNames());
+    private static final IGetTabCompletion POTION = (server, sender, targetPos) -> StringList.create(Potion.REGISTRY.getKeys());
+    private static final IGetTabCompletion X = (server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getX()));
+    private static final IGetTabCompletion Y = (server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getY()));
+    private static final IGetTabCompletion Z = (server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getZ()));
+    private static final IGetTabCompletion EMPTY = ((server, sender, targetPos) -> StringList.empty());
+
     @ZenMethodStatic
     public static IGetTabCompletion item() {
-        return (server, sender, targetPos) -> StringList.create(Item.REGISTRY.getKeys());
+        return ITEM;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion block() {
-        return (server, sender, targetPos) -> StringList.create(Block.REGISTRY.getKeys());
+        return BLOCK;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion player() {
-        return (server, sender, targetPos) -> StringList.create(CraftTweakerMC.getMCServer(server).getOnlinePlayerNames());
+        return PLAYER;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion potion() {
-        return (server, sender, targetPos) -> StringList.create(Potion.REGISTRY.getKeys());
+        return POTION;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion x() {
-        return ((server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getX())));
+        return X;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion y() {
-        return ((server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getY())));
+        return Y;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion z() {
-        return ((server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getZ())));
+        return Z;
     }
 
     @ZenMethodStatic
     public static IGetTabCompletion empty() {
-        return (server, sender, targetPos) -> StringList.empty();
+        return EMPTY;
     }
 }
