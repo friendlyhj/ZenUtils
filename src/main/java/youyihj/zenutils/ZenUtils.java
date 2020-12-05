@@ -52,7 +52,7 @@ public class ZenUtils {
             hashCheck();
         } catch (Exception e) {
             CraftTweakerAPI.logWarning("fail to hash check, see latest.log");
-            e.printStackTrace();
+            logger.error("fail to hash check", e);
         }
     }
 
