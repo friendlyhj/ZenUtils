@@ -5,8 +5,9 @@ import com.google.common.collect.Maps;
 import crafttweaker.CraftTweakerAPI;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import youyihj.zenutils.ZenUtils;
@@ -17,10 +18,15 @@ import java.util.Map;
 /**
  * @author youyihj
  */
-@Mod.EventBusSubscriber
 public final class TileEntityManager {
     private static final Map<Integer, ITileEntityTick> TICK_FUNCTIONS = Maps.newHashMap();
     private static boolean enable;
+
+    static {
+        if (Loader.isModLoaded("contenttweaker")) {
+            MinecraftForge.EVENT_BUS.register(TileEntityManager.class);
+        }
+    }
 
     public static void registerTileEntity(TileEntityRepresentation tileEntityRepresentation) {
         int id = tileEntityRepresentation.getId();
