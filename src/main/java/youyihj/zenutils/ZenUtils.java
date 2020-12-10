@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.command.ZenCommandRegistrar;
 import youyihj.zenutils.util.InternalUtils;
 import youyihj.zenutils.util.ZenUtilsGlobal;
@@ -16,7 +17,7 @@ import youyihj.zenutils.util.ZenUtilsGlobal;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.4.3";
+    public static final String VERSION = "1.4.4";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux";
 
     @Mod.EventHandler
@@ -27,8 +28,9 @@ public class ZenUtils {
     }
 
     @Mod.EventHandler
-    public static void onPreinit(FMLPreInitializationEvent event) {
+    public static void onPreInit(FMLPreInitializationEvent event) {
         InternalUtils.checkCrTVersion();
+        ZenWorldCapabilityHandler.register();
     }
 
     @Mod.EventHandler

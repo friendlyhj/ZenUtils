@@ -2,17 +2,22 @@ package youyihj.zenutils.world;
 
 import com.google.common.collect.Lists;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.IData;
 import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.entity.IEntityItem;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
+import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.world.chunk.Chunk;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.capability.IZenWorldCapability;
+import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.util.object.CrTUUID;
 
 import javax.annotation.Nullable;
@@ -70,5 +75,49 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static List<IPlayer> getPlayers(IWorld iWorld) {
         return CraftTweakerMC.getWorld(iWorld).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList());
+    }
+
+    @ZenMethod
+    public static IData getCustomWorldData(IWorld world) {
+        return getWorldCap(world).getData();
+    }
+
+    @ZenMethod
+    public static void setCustomWorldData(IWorld world, IData data) {
+        getWorldCap(world).setData(data);
+    }
+
+    @ZenMethod
+    public static void updateCustomWorldData(IWorld world, IData data) {
+        getWorldCap(world).updateData(data);
+    }
+
+    @ZenMethod
+    public static IData getCustomChunkData(IWorld world, IBlockPos posToGetChunk) {
+        return getChunkCap(world, posToGetChunk).getData();
+    }
+
+    @ZenMethod
+    public static void setCustomChunkData(IWorld world, IData data, IBlockPos posToGetChunk) {
+        getChunkCap(world, posToGetChunk).setData(data);
+        getChunk(world, posToGetChunk).markDirty();
+    }
+
+    @ZenMethod
+    public static void updateCustomChunkData(IWorld world, IData data, IBlockPos posToGetChunk) {
+        getChunkCap(world, posToGetChunk).updateData(data);
+        getChunk(world, posToGetChunk).markDirty();
+    }
+
+    private static IZenWorldCapability getWorldCap(IWorld world) {
+        return CraftTweakerMC.getWorld(world).getCapability(ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY, null);
+    }
+
+    private static IZenWorldCapability getChunkCap(IWorld world, IBlockPos posToGetChunk) {
+        return getChunk(world, posToGetChunk).getCapability(ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY, null);
+    }
+
+    private static Chunk getChunk(IWorld world, IBlockPos pos) {
+        return CraftTweakerMC.getWorld(world).getChunkFromBlockCoords(CraftTweakerMC.getBlockPos(pos));
     }
 }
