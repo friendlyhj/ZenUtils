@@ -31,7 +31,7 @@ public class ZenWorldCapabilityHandler {
 
     @SubscribeEvent
     public static void attachToChunk(AttachCapabilitiesEvent<Chunk> event) {
-        event.addCapability(new ResourceLocation(ZenUtils.MODID, "zen_world_cap"), new ZenWorldCapabilityProvider());
+        event.addCapability(new ResourceLocation(ZenUtils.MODID, "zen_chunk_cap"), new ZenWorldCapabilityProvider());
     }
 
     public static void register() {
