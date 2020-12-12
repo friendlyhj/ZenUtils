@@ -13,12 +13,10 @@ import javax.annotation.Nullable;
  * @author youyihj
  */
 public class ZenWorldCapabilityProvider implements ICapabilityProvider, INBTSerializable<NBTTagCompound> {
-    private IZenWorldCapability zenWorldCapability;
+    private final IZenWorldCapability zenWorldCapability;
 
-    private void lazyCreateCapability() {
-        if (this.zenWorldCapability == null) {
-            this.zenWorldCapability = new ZenWorldCapability();
-        }
+    public ZenWorldCapabilityProvider(IZenWorldCapability capability) {
+        this.zenWorldCapability = capability;
     }
 
     @Override
@@ -29,8 +27,7 @@ public class ZenWorldCapabilityProvider implements ICapabilityProvider, INBTSeri
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        if (this.hasCapability(ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY, null)) {
-            lazyCreateCapability();
+        if (capability == ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY) {
             return ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY.cast(this.zenWorldCapability);
         }
         return null;
@@ -38,13 +35,11 @@ public class ZenWorldCapabilityProvider implements ICapabilityProvider, INBTSeri
 
     @Override
     public NBTTagCompound serializeNBT() {
-        lazyCreateCapability();
         return this.zenWorldCapability.serializeNBT();
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        lazyCreateCapability();
         this.zenWorldCapability.deserializeNBT(nbt);
     }
 }

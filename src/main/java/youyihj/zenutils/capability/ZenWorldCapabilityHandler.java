@@ -21,17 +21,20 @@ import javax.annotation.Nullable;
  */
 @Mod.EventBusSubscriber
 public class ZenWorldCapabilityHandler {
+    private static final ResourceLocation ZEN_WORLD_CAP_RL = new ResourceLocation(ZenUtils.MODID, "zen_world_cap");
+    private static final ResourceLocation ZEN_CHUNK_CAP_RL = new ResourceLocation(ZenUtils.MODID, "zen_chunk_cap");
+
     @CapabilityInject(IZenWorldCapability.class)
     public static Capability<IZenWorldCapability> ZEN_WORLD_CAPABILITY = null;
 
     @SubscribeEvent
     public static void attachToWorld(AttachCapabilitiesEvent<World> event) {
-        event.addCapability(new ResourceLocation(ZenUtils.MODID, "zen_world_cap"), new ZenWorldCapabilityProvider());
+        event.addCapability(ZEN_WORLD_CAP_RL, new ZenWorldCapabilityProvider(new ZenWorldCapability()));
     }
 
     @SubscribeEvent
     public static void attachToChunk(AttachCapabilitiesEvent<Chunk> event) {
-        event.addCapability(new ResourceLocation(ZenUtils.MODID, "zen_chunk_cap"), new ZenWorldCapabilityProvider());
+        event.addCapability(ZEN_CHUNK_CAP_RL, new ZenWorldCapabilityProvider(new ZenWorldCapability()));
     }
 
     public static void register() {
