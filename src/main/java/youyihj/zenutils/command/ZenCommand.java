@@ -138,4 +138,12 @@ public class ZenCommand extends CommandBase implements IZenCommand {
             CraftTweakerAPI.logWarning("Found deprecated member tabCompletion is still used! You are supposed to use `IGetTabCompletion[] tabCompletionGetters`.");
         }
     }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        if (this.getRequiredPermissionLevel() == 0) {
+            return true;
+        }
+        return super.checkPermission(server, sender);
+    }
 }

@@ -2,6 +2,7 @@ package youyihj.zenutils.command;
 
 import crafttweaker.annotations.ZenRegister;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.server.command.CommandTreeBase;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
@@ -55,5 +56,13 @@ public class ZenCommandTree extends CommandTreeBase implements IZenCommand {
     @Override
     public int getRequiredPermissionLevel() {
         return this.requiredPermissionLevel;
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        if (this.getRequiredPermissionLevel() == 0) {
+            return true;
+        }
+        return super.checkPermission(server, sender);
     }
 }
