@@ -2,7 +2,7 @@
 {
   "modid": "zenutils",
   "name": "ZenUtils",
-  "description": "Expose more method to zenscript",
+  "description": "A CraftTweaker addon",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
