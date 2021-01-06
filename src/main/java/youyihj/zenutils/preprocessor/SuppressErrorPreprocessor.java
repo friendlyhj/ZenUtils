@@ -32,7 +32,7 @@ public class SuppressErrorPreprocessor extends PreprocessorActionBase {
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
         InternalUtils.doSuppressErrorSingleScriptMode();
-        InternalUtils.putSuppressErrorFlag(fileName, suppressLevel);
+        InternalUtils.putSuppressErrorFlag(scriptFile.getEffectiveName(), suppressLevel);
     }
 
     @Override
