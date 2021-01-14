@@ -24,11 +24,10 @@ import java.lang.reflect.Field;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.5.1";
+    public static final String VERSION = "1.5.2";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux";
 
     @Mod.EventHandler
-    @SuppressWarnings("unused")
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCrTVersion();
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
@@ -49,7 +48,6 @@ public class ZenUtils {
     }
 
     @Mod.EventHandler
-    @SuppressWarnings("unused")
     public static void onServerStarting(FMLServerStartingEvent event) {
         ZenCommandRegistrar.zenCommandMap.forEach((name, command) -> event.registerServerCommand(command));
     }

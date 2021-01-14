@@ -109,6 +109,11 @@ public class ZenUtilsWorld {
         getChunk(world, posToGetChunk).markDirty();
     }
 
+    @ZenMethod
+    public static void destroyBlock(IWorld world, IBlockPos pos, boolean dropBlock) {
+        CraftTweakerMC.getWorld(world).destroyBlock(CraftTweakerMC.getBlockPos(pos), dropBlock);
+    }
+
     private static IZenWorldCapability getWorldCap(IWorld world) {
         return CraftTweakerMC.getWorld(world).getCapability(ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY, null);
     }
