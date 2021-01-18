@@ -5,6 +5,9 @@ import com.feed_the_beast.ftbquests.quest.Quest;
 import com.feed_the_beast.ftbquests.quest.QuestObjectBase;
 import com.feed_the_beast.ftbquests.quest.reward.Reward;
 import com.feed_the_beast.ftbquests.quest.task.Task;
+import crafttweaker.annotations.ModOnly;
+import crafttweaker.annotations.ZenRegister;
+import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 
 import java.util.List;
@@ -13,6 +16,9 @@ import java.util.stream.Collectors;
 /**
  * @author youyihj
  */
+@ZenRegister
+@ZenClass("mods.zenutils.ftbq.Quest")
+@ModOnly("ftbquests")
 public class CTQuest extends CTQuestObjectBase{
     public CTQuest(Quest quest) {
         super(quest);

@@ -13,7 +13,7 @@ import stanhebben.zenscript.annotations.*;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.ftbq.CTQuestObjectBase")
+@ZenClass("mods.zenutils.ftbq.QuestObjectBase")
 @ModOnly("ftbquests")
 public class CTQuestObjectBase {
     public final QuestObjectBase object;

@@ -10,7 +10,7 @@ import youyihj.zenutils.cotx.tile.TileEntityContent;
 /**
  * @author youyihj
  */
-@ZenClass("mods.zenutils.ITileEntityTick")
+@ZenClass("mods.zenutils.cotx.ITileEntityTick")
 @ModOnly("contenttweaker")
 @ZenRegister
 @FunctionalInterface
