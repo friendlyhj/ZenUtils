@@ -65,7 +65,7 @@ public class FTBQEventManager {
         elCustomReward.clear();
     }
 
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = "ftbquests")
     public static final class Handler {
         @SubscribeEvent
         public static void onTaskCompleted(ObjectCompletedEvent.TaskEvent event) {
