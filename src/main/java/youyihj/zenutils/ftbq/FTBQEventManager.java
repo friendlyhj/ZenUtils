@@ -1,5 +1,6 @@
 package youyihj.zenutils.ftbq;
 
+import com.feed_the_beast.ftbquests.events.CustomRewardEvent;
 import com.feed_the_beast.ftbquests.events.ObjectCompletedEvent;
 import com.feed_the_beast.ftbquests.events.TaskStartedEvent;
 import crafttweaker.annotations.ModOnly;
@@ -12,10 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.ftbq.event.CTChapterCompletedEvent;
-import youyihj.zenutils.ftbq.event.CTQuestCompletedEvent;
-import youyihj.zenutils.ftbq.event.CTTaskCompletedEvent;
-import youyihj.zenutils.ftbq.event.CTTaskStartedEvent;
+import youyihj.zenutils.ftbq.event.*;
 
 /**
  * @author youyihj
@@ -29,6 +27,7 @@ public class FTBQEventManager {
     private static final EventList<CTQuestCompletedEvent> elQuestCompleted = new EventList<>();
     private static final EventList<CTChapterCompletedEvent> elChapterCompleted = new EventList<>();
     private static final EventList<CTTaskStartedEvent> elTaskStarted = new EventList<>();
+    private static final EventList<CTCustomRewardEvent> elCustomReward = new EventList<>();
 
     @ZenMethod
     public static IEventHandle onTaskCompleted(IEventManager manager, IEventHandler<CTTaskCompletedEvent> ev) {
@@ -51,11 +50,17 @@ public class FTBQEventManager {
     }
 
     @ZenMethod
+    public static IEventHandle onCustomReward(IEventManager manager, IEventHandler<CTCustomRewardEvent> ev) {
+        return elCustomReward.add(ev);
+    }
+
+    @ZenMethod
     public static void clearFTBQEvents(IEventManager manager) {
         elTaskStarted.clear();
         elChapterCompleted.clear();
         elQuestCompleted.clear();
         elTaskCompleted.clear();
+        elCustomReward.clear();
     }
 
     @Mod.EventBusSubscriber
@@ -85,6 +90,13 @@ public class FTBQEventManager {
         public static void onTaskStarted(TaskStartedEvent event) {
             if (elTaskStarted.hasHandlers()) {
                 elTaskStarted.publish(new CTTaskStartedEvent(event));
+            }
+        }
+
+        @SubscribeEvent
+        public static void onCustomReward(CustomRewardEvent event) {
+            if (elCustomReward.hasHandlers()) {
+                elCustomReward.publish(new CTCustomRewardEvent(event));
             }
         }
     }
