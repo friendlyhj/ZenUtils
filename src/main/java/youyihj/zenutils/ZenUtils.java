@@ -3,12 +3,15 @@ package youyihj.zenutils;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.zenscript.GlobalRegistry;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.command.ZenCommandRegistrar;
+import youyihj.zenutils.ftbq.FTBQEventManager;
 import youyihj.zenutils.logger.ZenUtilsLogger;
 import youyihj.zenutils.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.util.InternalUtils;
@@ -39,6 +42,9 @@ public class ZenUtils {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             CraftTweakerAPI.logInfo("Fail to set crafttweaker logger to zenutils one. #suppress preprocessor cannot work properly.");
             e.printStackTrace();
+        }
+        if (Loader.isModLoaded("ftbquests")) {
+            MinecraftForge.EVENT_BUS.register(FTBQEventManager.Handler.class);
         }
     }
 

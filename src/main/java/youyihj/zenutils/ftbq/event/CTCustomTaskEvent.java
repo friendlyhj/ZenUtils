@@ -50,12 +50,12 @@ public class CTCustomTaskEvent implements IEventCancelable {
     }
 
     @ZenGetter("maxProgress")
-    public long getMaxProgress() {
-        return event.getTask().maxProgress;
+    public int getMaxProgress() {
+        return Math.toIntExact(event.getTask().maxProgress);
     }
 
     @ZenSetter("maxProgress")
-    public void setMaxProgress(long max) {
+    public void setMaxProgress(int max) {
         if (max <= 0) {
             throw new IllegalArgumentException("max progress must be bigger than 0");
         }
@@ -87,7 +87,7 @@ public class CTCustomTaskEvent implements IEventCancelable {
     @FunctionalInterface
     @ModOnly("ftbquests")
     public interface ITaskChecker {
-        long check(IPlayer player, long currentProgress);
+        int check(IPlayer player, int currentProgress);
     }
 
     private static class TaskCheckWrapper implements CustomTask.Check {
@@ -100,7 +100,7 @@ public class CTCustomTaskEvent implements IEventCancelable {
 
         @Override
         public void check(@Nonnull CustomTask.Data taskData, @Nonnull EntityPlayerMP player) {
-            taskData.progress = this.checker.check(CraftTweakerMC.getIPlayer(player), taskData.progress);
+            taskData.setProgress(this.checker.check(CraftTweakerMC.getIPlayer(player), Math.toIntExact(taskData.progress)));
         }
     }
 }

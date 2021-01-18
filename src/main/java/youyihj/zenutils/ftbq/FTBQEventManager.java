@@ -10,7 +10,6 @@ import crafttweaker.api.event.IEventHandle;
 import crafttweaker.api.event.IEventManager;
 import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -70,7 +69,6 @@ public class FTBQEventManager {
         elCustomReward.clear();
     }
 
-    @Mod.EventBusSubscriber(modid = "ftbquests")
     public static final class Handler {
         @SubscribeEvent
         public static void onTaskCompleted(ObjectCompletedEvent.TaskEvent event) {
