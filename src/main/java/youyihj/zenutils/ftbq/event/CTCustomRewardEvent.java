@@ -3,6 +3,7 @@ package youyihj.zenutils.ftbq.event;
 import com.feed_the_beast.ftbquests.events.CustomRewardEvent;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.event.IEventCancelable;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -15,7 +16,7 @@ import youyihj.zenutils.ftbq.CTReward;
 @ZenRegister
 @ZenClass("mods.zenutils.ftbq.CustomRewardEvent")
 @ModOnly("ftbquests")
-public class CTCustomRewardEvent {
+public class CTCustomRewardEvent implements IEventCancelable {
     private final CustomRewardEvent event;
 
     public CTCustomRewardEvent(CustomRewardEvent event) {
@@ -35,5 +36,15 @@ public class CTCustomRewardEvent {
     @ZenGetter("reward")
     public CTReward getReward() {
         return new CTReward(event.getReward());
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return event.isCanceled();
+    }
+
+    @Override
+    public void setCanceled(boolean canceled) {
+        event.setCanceled(canceled);
     }
 }

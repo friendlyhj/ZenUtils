@@ -1,6 +1,7 @@
 package youyihj.zenutils.ftbq;
 
 import com.feed_the_beast.ftbquests.events.CustomRewardEvent;
+import com.feed_the_beast.ftbquests.events.CustomTaskEvent;
 import com.feed_the_beast.ftbquests.events.ObjectCompletedEvent;
 import com.feed_the_beast.ftbquests.events.TaskStartedEvent;
 import crafttweaker.annotations.ModOnly;
@@ -28,6 +29,7 @@ public class FTBQEventManager {
     private static final EventList<CTChapterCompletedEvent> elChapterCompleted = new EventList<>();
     private static final EventList<CTTaskStartedEvent> elTaskStarted = new EventList<>();
     private static final EventList<CTCustomRewardEvent> elCustomReward = new EventList<>();
+    private static final EventList<CTCustomTaskEvent> elCustomTask = new EventList<>();
 
     @ZenMethod
     public static IEventHandle onTaskCompleted(IEventManager manager, IEventHandler<CTTaskCompletedEvent> ev) {
@@ -97,6 +99,13 @@ public class FTBQEventManager {
         public static void onCustomReward(CustomRewardEvent event) {
             if (elCustomReward.hasHandlers()) {
                 elCustomReward.publish(new CTCustomRewardEvent(event));
+            }
+        }
+
+        @SubscribeEvent
+        public static void onCustomTask(CustomTaskEvent event) {
+            if (elCustomTask.hasHandlers()) {
+                elCustomTask.publish(new CTCustomTaskEvent(event));
             }
         }
     }
