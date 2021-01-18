@@ -57,6 +57,11 @@ public class FTBQEventManager {
     }
 
     @ZenMethod
+    public static IEventHandle onCustomTask(IEventManager manager, IEventHandler<CTCustomTaskEvent> ev) {
+        return elCustomTask.add(ev);
+    }
+
+    @ZenMethod
     public static void clearFTBQEvents(IEventManager manager) {
         elTaskStarted.clear();
         elChapterCompleted.clear();
