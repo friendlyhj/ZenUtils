@@ -8,20 +8,25 @@ import crafttweaker.api.entity.IEntityItem;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IBlockPos;
+import crafttweaker.api.world.IFacing;
 import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.capability.IZenWorldCapability;
 import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.item.CrTItemHandler;
 import youyihj.zenutils.util.object.CrTUUID;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -112,6 +117,16 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static void destroyBlock(IWorld world, IBlockPos pos, boolean dropBlock) {
         CraftTweakerMC.getWorld(world).destroyBlock(CraftTweakerMC.getBlockPos(pos), dropBlock);
+    }
+
+    @ZenMethod
+    public static CrTItemHandler getItemHandler(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional IFacing facing) {
+        return Optional.ofNullable(CraftTweakerMC.getWorld(world).getTileEntity(CraftTweakerMC.getBlockPos(pos)))
+                .map(tileEntity -> {
+                    IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, CraftTweakerMC.getFacing(facing));
+                    return CrTItemHandler.of(itemHandler);
+                })
+                .orElse(null);
     }
 
     private static IZenWorldCapability getWorldCap(IWorld world) {
