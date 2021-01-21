@@ -83,6 +83,11 @@ public class CTQuest extends CTQuestObjectBase{
     }
 
     @ZenGetter
+    public boolean canRepeat() {
+        return quest.canRepeat;
+    }
+
+    @ZenGetter
     public String disableJEI() {
         return quest.disableJEI.getName();
     }
