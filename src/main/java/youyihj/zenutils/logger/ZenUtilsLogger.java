@@ -86,7 +86,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
             getLoggers().forEach(logger -> logger.logWarning(message));
 
             SuppressErrorFlag errorFlag = InternalUtils.getCurrentSuppressErrorFlag();
-            if (errorFlag != null && errorFlag.isSuppressingWarnings())
+            if (errorFlag.isSuppressingWarnings())
                 return;
 
             String message2 = "\u00a7eWARNING: " + message;
@@ -111,7 +111,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
             getLoggers().forEach(logger -> logger.logError(message, exception));
 
             SuppressErrorFlag errorFlag = InternalUtils.getCurrentSuppressErrorFlag();
-            if (errorFlag != null && errorFlag.isSuppressingErrors())
+            if (errorFlag.isSuppressingErrors())
                 return;
 
             String message2 = "\u00a7cERROR: " + message;

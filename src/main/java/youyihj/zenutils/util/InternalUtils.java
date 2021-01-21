@@ -6,9 +6,10 @@ import crafttweaker.api.data.IData;
 import crafttweaker.util.SuppressErrorFlag;
 import net.minecraft.util.StringUtils;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author youyihj
@@ -57,9 +58,9 @@ public final class InternalUtils {
         return "";
     }
 
-    @Nullable
+    @Nonnull
     public static SuppressErrorFlag getCurrentSuppressErrorFlag() {
-        return suppressErrorScriptMap.get(getLastZenScriptStack());
+        return Optional.ofNullable(suppressErrorScriptMap.get(getLastZenScriptStack())).orElse(SuppressErrorFlag.DEFAULT);
     }
 
     public static void putSuppressErrorFlag(String zsName, SuppressErrorFlag errorFlag) {
