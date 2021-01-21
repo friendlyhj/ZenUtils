@@ -18,7 +18,7 @@ import java.util.Objects;
  * @author youyihj
  */
 @ZenClass("mods.zenutils.ItemHandler")
-@IterableSimple("craftweaker.item.IItemStack")
+@IterableSimple("crafttweaker.item.IItemStack")
 @ZenRegister
 public class CrTItemHandler implements Iterable<IItemStack> {
     private final IItemHandler itemHandler;
