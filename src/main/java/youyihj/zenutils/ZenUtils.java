@@ -13,6 +13,7 @@ import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.command.ZenCommandRegistrar;
 import youyihj.zenutils.ftbq.FTBQEventManager;
 import youyihj.zenutils.logger.ZenUtilsLogger;
+import youyihj.zenutils.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.util.InternalUtils;
 import youyihj.zenutils.util.ReflectUtils;
@@ -27,7 +28,7 @@ import java.lang.reflect.Field;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.6.3";
+    public static final String VERSION = "1.6.4";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests";
 
     @Mod.EventHandler
@@ -36,6 +37,7 @@ public class ZenUtils {
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
         GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
         CraftTweakerAPI.tweaker.getPreprocessorManager().registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
+        CraftTweakerAPI.tweaker.getPreprocessorManager().registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
         try {
             final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
             loggerField.set(null, new ZenUtilsLogger(CrafttweakerImplementationAPI.logger));
