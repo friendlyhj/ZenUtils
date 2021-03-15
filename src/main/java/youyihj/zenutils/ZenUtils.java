@@ -18,6 +18,7 @@ import youyihj.zenutils.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.util.InternalUtils;
 import youyihj.zenutils.util.ReflectUtils;
 import youyihj.zenutils.util.ZenUtilsGlobal;
+import youyihj.zenutils.util.delay.DelayHandler;
 
 import java.lang.reflect.Field;
 
@@ -58,5 +59,6 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarting(FMLServerStartingEvent event) {
         ZenCommandRegistrar.zenCommandMap.forEach((name, command) -> event.registerServerCommand(command));
+        DelayHandler.init();
     }
 }
