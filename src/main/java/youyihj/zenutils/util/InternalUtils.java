@@ -17,6 +17,8 @@ import java.util.Optional;
 public final class InternalUtils {
     private InternalUtils() {}
 
+    public static boolean hardFailMode = false;
+
     private static boolean suppressErrorSingleScriptMode = false;
     private static boolean isFirstSetMode = true;
     private static final Map<String, SuppressErrorFlag> suppressErrorScriptMap = new HashMap<>();
