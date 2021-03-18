@@ -2,6 +2,7 @@ package youyihj.zenutils;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
+import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -13,12 +14,12 @@ import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.command.ZenCommandRegistrar;
 import youyihj.zenutils.ftbq.FTBQEventManager;
 import youyihj.zenutils.logger.ZenUtilsLogger;
+import youyihj.zenutils.preprocessor.HardFailPreprocessor;
 import youyihj.zenutils.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.util.InternalUtils;
 import youyihj.zenutils.util.ReflectUtils;
 import youyihj.zenutils.util.ZenUtilsGlobal;
-import youyihj.zenutils.util.delay.DelayHandler;
 
 import java.lang.reflect.Field;
 
@@ -37,8 +38,10 @@ public class ZenUtils {
         InternalUtils.checkCrTVersion();
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
         GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
-        CraftTweakerAPI.tweaker.getPreprocessorManager().registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
-        CraftTweakerAPI.tweaker.getPreprocessorManager().registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
+        PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
+        preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
+        preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
+        preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
         try {
             final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
             loggerField.set(null, new ZenUtilsLogger(CrafttweakerImplementationAPI.logger));
@@ -59,6 +62,5 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarting(FMLServerStartingEvent event) {
         ZenCommandRegistrar.zenCommandMap.forEach((name, command) -> event.registerServerCommand(command));
-        DelayHandler.init();
     }
 }

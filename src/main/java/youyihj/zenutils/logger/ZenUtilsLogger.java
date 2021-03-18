@@ -6,6 +6,7 @@ import crafttweaker.runtime.ILogger;
 import crafttweaker.util.SuppressErrorFlag;
 import youyihj.zenutils.util.InternalUtils;
 import youyihj.zenutils.util.ReflectUtils;
+import youyihj.zenutils.util.object.ScriptRunException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -114,6 +115,13 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
             if (errorFlag.isSuppressingErrors())
                 return;
 
+            if (InternalUtils.hardFailMode) {
+                if (exception == null) {
+                    throw new ScriptRunException(message);
+                } else {
+                    throw new ScriptRunException(message, exception);
+                }
+            }
             String message2 = "\u00a7cERROR: " + message;
             if (playerList.isEmpty()) {
                 messagesToSendPlayer.add(message2);
