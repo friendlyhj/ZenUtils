@@ -11,7 +11,7 @@ public class DelayHandler {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         long time = CraftTweaker.server.getEntityWorld().getWorldTime();
-        DelayManager.DELAY_RUNNABLE_LIST.stream().filter(pair -> pair.getRight() >= time).map(Pair::getLeft).forEach(DelayRunnable::run);
-        DelayManager.DELAY_RUNNABLE_LIST.removeIf(pair -> pair.getRight() >= time);
+        DelayManager.DELAY_RUNNABLE_LIST.stream().filter(pair -> pair.getRight() <= time).map(Pair::getLeft).forEach(DelayRunnable::run);
+        DelayManager.DELAY_RUNNABLE_LIST.removeIf(pair -> pair.getRight() <= time);
     }
 }
