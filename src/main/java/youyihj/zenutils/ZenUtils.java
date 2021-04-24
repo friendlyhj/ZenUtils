@@ -27,10 +27,11 @@ import java.lang.reflect.Field;
  * @author youyihj
  */
 @Mod(modid = ZenUtils.MODID, name = ZenUtils.NAME, version = ZenUtils.VERSION, dependencies = ZenUtils.DEPENDENCIES)
+@Mod.EventBusSubscriber
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.6.7";
+    public static final String VERSION = "1.6.8";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests";
 
     @Mod.EventHandler

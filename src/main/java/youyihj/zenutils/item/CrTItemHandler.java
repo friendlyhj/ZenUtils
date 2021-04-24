@@ -3,11 +3,13 @@ package youyihj.zenutils.item;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.IterableSimple;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.util.object.TotallyImmutableItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
@@ -59,7 +61,8 @@ public class CrTItemHandler implements Iterable<IItemStack> {
 
     @ZenMethod
     public IItemStack getStackInSlot(int slot) {
-        return CraftTweakerMC.getIItemStack(itemHandler.getStackInSlot(slot));
+        ItemStack stack = itemHandler.getStackInSlot(slot);
+        return stack.isEmpty() ? new TotallyImmutableItemStack(stack) : null;
     }
 
     @ZenMethod

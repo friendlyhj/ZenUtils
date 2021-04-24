@@ -31,9 +31,9 @@ public final class InternalUtils {
 
     public static void checkCrTVersion() {
         try {
-            Class.forName("crafttweaker.util.SuppressErrorFlag");
+            Class.forName("crafttweaker.api.item.IMutableItemStack");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("crafttweaker version must be 4.1.20.608 or above!");
+            throw new RuntimeException("crafttweaker version must be 4.1.20.632 or above!");
         }
     }
 
