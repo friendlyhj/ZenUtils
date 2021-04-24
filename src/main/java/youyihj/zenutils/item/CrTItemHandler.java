@@ -62,7 +62,7 @@ public class CrTItemHandler implements Iterable<IItemStack> {
     @ZenMethod
     public IItemStack getStackInSlot(int slot) {
         ItemStack stack = itemHandler.getStackInSlot(slot);
-        return stack.isEmpty() ? new TotallyImmutableItemStack(stack) : null;
+        return stack.isEmpty() ? null : new TotallyImmutableItemStack(stack);
     }
 
     @ZenMethod
