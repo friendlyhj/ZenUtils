@@ -89,6 +89,7 @@ public final class InternalUtils {
         Field membersField = ReflectUtils.removePrivate(TypeExpansion.class, "members");
         Field methodsField = ReflectUtils.removePrivate(ZenExpandMember.class, "methods");
         TypeExpansion eventMangerExpansion = GlobalRegistry.getExpansions().get("crafttweaker.events.IEventManager");
+        if (eventMangerExpansion == null) return;
         try {
             Map<String, ZenExpandMember> expandMembers = (Map<String, ZenExpandMember>) membersField.get(eventMangerExpansion);
             for (ZenExpandMember expandMember : expandMembers.values()) {
