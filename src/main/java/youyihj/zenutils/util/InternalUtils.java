@@ -84,7 +84,7 @@ public final class InternalUtils {
         try {
             ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(MTEventManager.class, EventList.class, CraftTweakerAPI.events));
         } catch (IllegalAccessException e) {
-            ZenUtils.logger.error("Failed to get vanilla CraftTweaker Event List!", e);
+            ZenUtils.forgeLogger.error("Failed to get vanilla CraftTweaker Event List!", e);
         }
         Field membersField = ReflectUtils.removePrivate(TypeExpansion.class, "members");
         Field methodsField = ReflectUtils.removePrivate(ZenExpandMember.class, "methods");
@@ -100,7 +100,7 @@ public final class InternalUtils {
                 }
             }
         } catch (IllegalAccessException e) {
-            ZenUtils.logger.error("Failed to get event manager expansions.", e);
+            ZenUtils.forgeLogger.error("Failed to get event manager expansions.", e);
         }
     }
 

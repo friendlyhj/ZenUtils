@@ -38,7 +38,8 @@ public class ZenUtils {
     public static final String VERSION = "1.6.8";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests";
 
-    public static Logger logger;
+    public static Logger forgeLogger;
+    public static ZenUtilsLogger crafttweakerLogger;
     public static ZenUtilsTweaker tweaker;
 
     @Mod.EventHandler
@@ -46,13 +47,15 @@ public class ZenUtils {
         InternalUtils.checkCrTVersion();
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
         GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
+        GlobalRegistry.registerGlobal("addRegexLogFilter", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
         try {
+            crafttweakerLogger = new ZenUtilsLogger(CrafttweakerImplementationAPI.logger);
             final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
-            loggerField.set(null, new ZenUtilsLogger(CrafttweakerImplementationAPI.logger));
+            loggerField.set(null, crafttweakerLogger);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             CraftTweakerAPI.logInfo("Fail to set crafttweaker logger to zenutils one. #suppress preprocessor cannot work properly.");
             e.printStackTrace();
@@ -73,11 +76,11 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onPreInit(FMLPreInitializationEvent event) {
         ZenWorldCapabilityHandler.register();
-        logger = event.getModLog();
+        forgeLogger = event.getModLog();
         try {
             InternalUtils.scanAllEventLists();
         } catch (NoSuchFieldException e) {
-            logger.error("failed to scan all event lists", e);
+            forgeLogger.error("failed to scan all event lists", e);
         }
     }
 

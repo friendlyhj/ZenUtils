@@ -3,6 +3,7 @@ package youyihj.zenutils.util;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.ZenUtils;
 
 /**
  * @author youyihj
@@ -64,5 +65,10 @@ public class ZenUtilsGlobal {
     @ZenMethod
     public static String typeof(boolean unused) {
         return "boolean";
+    }
+
+    @ZenMethod
+    public static void addRegexLogFilter(String regex) {
+        ZenUtils.crafttweakerLogger.addRegexLogFilter(regex);
     }
 }

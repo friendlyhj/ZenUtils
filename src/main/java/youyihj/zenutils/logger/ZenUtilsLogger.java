@@ -9,9 +9,8 @@ import youyihj.zenutils.util.ReflectUtils;
 import youyihj.zenutils.util.object.ScriptRunException;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author youyihj
@@ -22,6 +21,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
 
     private final List<String> messagesToSendPlayer = new ArrayList<>();
     private final List<IPlayer> playerList = new ArrayList<>();
+    private final Set<Pattern> filterLogRegexes = new TreeSet<>(Comparator.comparing(Pattern::toString));
 
     static {
         try {
@@ -73,16 +73,19 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
 
     @Override
     public void logCommand(String message) {
+        if (shouldNotLog(message)) return;
         mtLogger.logCommand(message);
     }
 
     @Override
     public void logInfo(String message) {
+        if (shouldNotLog(message)) return;
         mtLogger.logInfo(message);
     }
 
     @Override
     public void logWarning(String message) {
+        if (shouldNotLog(message)) return;
         if (InternalUtils.onSuppressErrorSingleScriptMode()) {
             getLoggers().forEach(logger -> logger.logWarning(message));
 
@@ -108,6 +111,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
 
     @Override
     public void logError(String message, Throwable exception) {
+        if (shouldNotLog(message)) return;
         if (InternalUtils.onSuppressErrorSingleScriptMode()) {
             getLoggers().forEach(logger -> logger.logError(message, exception));
 
@@ -140,6 +144,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
 
     @Override
     public void logDefault(String message) {
+        if (shouldNotLog(message)) return;
         mtLogger.logDefault(message);
     }
 
@@ -161,5 +166,13 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    public void addRegexLogFilter(String regex) {
+        filterLogRegexes.add(Pattern.compile(regex));
+    }
+
+    private boolean shouldNotLog(String message) {
+        return filterLogRegexes.stream().anyMatch(pattern -> pattern.matcher(message).matches());
     }
 }
