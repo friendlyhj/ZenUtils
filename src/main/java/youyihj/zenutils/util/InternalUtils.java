@@ -1,15 +1,22 @@
 package youyihj.zenutils.util;
 
+import com.google.common.collect.ImmutableList;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
+import crafttweaker.api.event.MTEventManager;
+import crafttweaker.util.EventList;
 import crafttweaker.util.SuppressErrorFlag;
+import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.util.StringUtils;
+import stanhebben.zenscript.TypeExpansion;
+import stanhebben.zenscript.type.expand.ZenExpandMember;
+import stanhebben.zenscript.type.natives.JavaMethod;
+import youyihj.zenutils.ZenUtils;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * @author youyihj
@@ -22,6 +29,9 @@ public final class InternalUtils {
     private static boolean suppressErrorSingleScriptMode = false;
     private static boolean isFirstSetMode = true;
     private static final Map<String, SuppressErrorFlag> suppressErrorScriptMap = new HashMap<>();
+
+    @SuppressWarnings("rawtypes")
+    private static final List<EventList> ALL_EVENT_LISTS = new ArrayList<>();
 
     public static void checkDataMap(IData data) {
         if (!(data instanceof DataMap)) {
@@ -67,5 +77,35 @@ public final class InternalUtils {
 
     public static void putSuppressErrorFlag(String zsName, SuppressErrorFlag errorFlag) {
         suppressErrorScriptMap.put(zsName, errorFlag);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void scanAllEventLists() throws NoSuchFieldException {
+        try {
+            ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(MTEventManager.class, EventList.class, CraftTweakerAPI.events));
+        } catch (IllegalAccessException e) {
+            ZenUtils.logger.error("Failed to get vanilla CraftTweaker Event List!", e);
+        }
+        Field membersField = ReflectUtils.removePrivate(TypeExpansion.class, "members");
+        Field methodsField = ReflectUtils.removePrivate(ZenExpandMember.class, "methods");
+        TypeExpansion eventMangerExpansion = GlobalRegistry.getExpansions().get("crafttweaker.events.IEventManager");
+        try {
+            Map<String, ZenExpandMember> expandMembers = (Map<String, ZenExpandMember>) membersField.get(eventMangerExpansion);
+            for (ZenExpandMember expandMember : expandMembers.values()) {
+                List<?> list = (List<?>) methodsField.get(expandMember);
+                Object javaMethod = list.get(0);
+                Class<JavaMethod> javaMethodClass = JavaMethod.class;
+                if (javaMethodClass.isInstance(javaMethod)) {
+                    ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(javaMethodClass.cast(javaMethod).getOwner(), EventList.class, null));
+                }
+            }
+        } catch (IllegalAccessException e) {
+            ZenUtils.logger.error("Failed to get event manager expansions.", e);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static List<EventList> getAllEventLists() {
+        return ImmutableList.copyOf(ALL_EVENT_LISTS);
     }
 }
