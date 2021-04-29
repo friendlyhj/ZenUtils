@@ -92,15 +92,22 @@ public final class InternalUtils {
         if (eventMangerExpansion == null) return;
         try {
             Map<String, ZenExpandMember> expandMembers = (Map<String, ZenExpandMember>) membersField.get(eventMangerExpansion);
+            List<Class<?>> lookupClasses = new ArrayList<>();
             for (ZenExpandMember expandMember : expandMembers.values()) {
                 List<?> list = (List<?>) methodsField.get(expandMember);
+                if (list.isEmpty())
+                    continue;
                 Object javaMethod = list.get(0);
                 Class<JavaMethod> javaMethodClass = JavaMethod.class;
                 if (javaMethodClass.isInstance(javaMethod)) {
-                    ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(javaMethodClass.cast(javaMethod).getOwner(), EventList.class, null));
+                    Class<?> owner = javaMethodClass.cast(javaMethod).getOwner();
+                    if (!lookupClasses.contains(owner)) {
+                        lookupClasses.add(owner);
+                        ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(owner, EventList.class, null));
+                    }
                 }
             }
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NullPointerException e) {
             ZenUtils.forgeLogger.error("Failed to get event manager expansions.", e);
         }
     }
