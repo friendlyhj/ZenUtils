@@ -16,7 +16,8 @@ public class DelayManager {
 
     @ZenMethod
     public static void addDelayWork(DelayRunnable runnable, @Optional(valueLong = 1L) long delay) {
-        DELAY_RUNNABLES.putIfAbsent(CraftTweaker.server.getEntityWorld().getWorldTime() + delay, new DelayRunnableList());
-        DELAY_RUNNABLES.get(delay).add(runnable);
+        long delayTime = CraftTweaker.server.getEntityWorld().getWorldTime() + delay;
+        DELAY_RUNNABLES.putIfAbsent(delayTime, new DelayRunnableList());
+        DELAY_RUNNABLES.get(delayTime).add(runnable);
     }
 }

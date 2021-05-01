@@ -173,6 +173,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
     }
 
     private boolean shouldNotLog(String message) {
+        if (message == null) return false;
         return filterLogRegexes.stream().anyMatch(pattern -> pattern.matcher(message).matches());
     }
 }
