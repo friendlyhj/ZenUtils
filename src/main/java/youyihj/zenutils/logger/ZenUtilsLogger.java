@@ -126,7 +126,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
                     throw new ScriptRunException(message, exception);
                 }
             }
-            String message2 = "\u00a7cERROR: " + message;
+            String message2 = "\u00a7cERROR: " + super.getMessageToSendPlayer(message, exception);
             if (playerList.isEmpty()) {
                 messagesToSendPlayer.add(message2);
             } else {
