@@ -15,6 +15,8 @@ import static crafttweaker.mc1120.commands.SpecialMessagesChat.getClickableComma
 import static crafttweaker.mc1120.commands.SpecialMessagesChat.getNormalMessage;
 
 public class ReloadEventCommand extends CraftTweakerCommand {
+    private static final String SCRIPT_LOADER_NAME = "reloadableevents";
+
     public ReloadEventCommand() {
         super("reloadevents");
     }
@@ -34,8 +36,8 @@ public class ReloadEventCommand extends CraftTweakerCommand {
         // remove duplicate recipe name warning, since we don't register new recipes
         ZenUtilsGlobal.addRegexLogFilter("Recipe name \\[.*\\] has duplicate uses, defaulting to calculated hash!");
 
-        final ScriptLoader loader = CraftTweakerAPI.tweaker.getOrCreateLoader("crafttweaker", "recipeEvent");
-        loader.setMainName("crafttweaker");
+        final ScriptLoader loader = CraftTweakerAPI.tweaker.getOrCreateLoader(SCRIPT_LOADER_NAME);
+        loader.setMainName(SCRIPT_LOADER_NAME);
         loader.setLoaderStage(ScriptLoader.LoaderStage.NOT_LOADED);
         CraftTweakerAPI.tweaker.loadScript(false, loader);
         sender.sendMessage(getNormalMessage("Reload for events successfully"));

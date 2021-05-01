@@ -5,6 +5,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
+import crafttweaker.runtime.ScriptFile;
 import crafttweaker.util.EventList;
 import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -41,9 +42,9 @@ public final class InternalUtils {
 
     public static void checkCrTVersion() {
         try {
-            Class.forName("crafttweaker.api.item.IMutableItemStack");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("crafttweaker version must be 4.1.20.632 or above!");
+            ScriptFile.class.getMethod("loaderNamesConcatCapitalized");
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("crafttweaker version must be 4.1.20.646 or above!");
         }
     }
 
