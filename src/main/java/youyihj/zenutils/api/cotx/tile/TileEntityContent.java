@@ -13,7 +13,6 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenSetter;
-import youyihj.zenutils.api.cotx.INBTSerializable;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import javax.annotation.Nonnull;
@@ -24,7 +23,7 @@ import javax.annotation.Nonnull;
 @ZenRegister
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.TileEntityInGame")
-public class TileEntityContent extends TileEntity implements INBTSerializable, ITickable {
+public class TileEntityContent extends TileEntity implements ITickable {
     private final TileData customData = new TileData();
     private static final String TAG_ID = "TileID";
     public static final String TAG_CUSTOM_DATA = "CustomData";
