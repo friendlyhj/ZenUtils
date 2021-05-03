@@ -12,18 +12,18 @@ import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
-import youyihj.zenutils.capability.ZenWorldCapabilityHandler;
-import youyihj.zenutils.command.ZenCommandRegistrar;
-import youyihj.zenutils.command.internal.ReloadEventCommand;
-import youyihj.zenutils.ftbq.FTBQEventManager;
-import youyihj.zenutils.logger.ZenUtilsLogger;
-import youyihj.zenutils.preprocessor.HardFailPreprocessor;
-import youyihj.zenutils.preprocessor.NoFixRecipeBookPreprocessor;
-import youyihj.zenutils.preprocessor.SuppressErrorPreprocessor;
-import youyihj.zenutils.util.InternalUtils;
-import youyihj.zenutils.util.ReflectUtils;
-import youyihj.zenutils.util.ZenUtilsGlobal;
-import youyihj.zenutils.util.ZenUtilsTweaker;
+import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.api.command.ZenCommandRegistrar;
+import youyihj.zenutils.impl.command.ReloadEventCommand;
+import youyihj.zenutils.api.ftbq.FTBQEventManager;
+import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
+import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
+import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
+import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
+import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.api.util.ZenUtilsGlobal;
+import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 
 import java.lang.reflect.Field;
 
@@ -35,7 +35,7 @@ import java.lang.reflect.Field;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.7.4";
+    public static final String VERSION = "1.8.0";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests";
 
     public static Logger forgeLogger;
