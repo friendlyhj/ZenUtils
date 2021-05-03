@@ -71,4 +71,8 @@ public class ExpandBlockContent extends BlockContent {
     public TileEntity createTileEntity(World world, IBlockState state) {
         return this.hasTileEntity(state) ? new TileEntityContent(expandBlockRepresentation.tileEntity.getId()) : null;
     }
+
+    public ExpandBlockRepresentation getExpandBlockRepresentation() {
+        return expandBlockRepresentation;
+    }
 }

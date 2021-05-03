@@ -25,4 +25,8 @@ public final class TileEntityManager {
     public static ITileEntityTick getTickFunction(int id) {
         return TICK_FUNCTIONS.getOrDefault(id, ((tileEntity, world, pos) -> {}));
     }
+
+    public static void putTickFunction(int id, ITileEntityTick tileEntityTick) {
+        TICK_FUNCTIONS.put(id, tileEntityTick);
+    }
 }

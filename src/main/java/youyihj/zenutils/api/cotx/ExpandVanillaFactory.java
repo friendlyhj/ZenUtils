@@ -6,8 +6,10 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.api.cotx.block.ExpandBlockRepresentation;
+import youyihj.zenutils.api.cotx.function.ITileEntityTick;
 import youyihj.zenutils.api.cotx.item.EnergyItemRepresentation;
 import youyihj.zenutils.api.cotx.item.ExpandItemRepresentation;
+import youyihj.zenutils.api.cotx.tile.TileEntityManager;
 import youyihj.zenutils.api.cotx.tile.TileEntityRepresentation;
 
 /**
@@ -35,5 +37,10 @@ public class ExpandVanillaFactory {
     @ZenMethodStatic
     public static TileEntityRepresentation createActualTileEntity(int id) {
         return new TileEntityRepresentation(id);
+    }
+
+    @ZenMethodStatic
+    public static void putTileEntityTickFunction(int id, ITileEntityTick tileEntityTick) {
+        TileEntityManager.putTickFunction(id, tileEntityTick);
     }
 }

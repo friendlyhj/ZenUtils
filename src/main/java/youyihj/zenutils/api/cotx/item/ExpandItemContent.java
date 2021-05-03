@@ -31,4 +31,8 @@ public class ExpandItemContent extends ItemContent {
         if (Objects.isNull(expandItemRepresentation.getEntityLifeSpan)) return super.getEntityLifespan(itemStack, world);
         return expandItemRepresentation.getEntityLifeSpan.get(CraftTweakerMC.getIItemStack(itemStack), new MCWorld(world));
     }
+
+    public ExpandItemRepresentation getExpandItemRepresentation() {
+        return expandItemRepresentation;
+    }
 }
