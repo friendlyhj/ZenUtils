@@ -49,7 +49,7 @@ public class BracketHandlerCoTBlock implements IBracketHandler {
         return null;
     }
 
-    private static BlockRepresentation getCoTBlock(String name) {
+    public static BlockRepresentation getCoTBlock(String name) {
         Block block = getBlock(name);
         if (block instanceof BlockContent) {
             try {
@@ -61,7 +61,7 @@ public class BracketHandlerCoTBlock implements IBracketHandler {
         return null;
     }
 
-    private static ExpandBlockRepresentation getExpandBlock(String name) {
+    public static ExpandBlockRepresentation getExpandBlock(String name) {
         Block block = getBlock(name);
         if (block instanceof ExpandBlockContent) {
             return ((ExpandBlockContent) block).getExpandBlockRepresentation();

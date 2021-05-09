@@ -50,7 +50,7 @@ public class BracketHandlerCoTItem implements IBracketHandler {
         return null;
     }
 
-    private static ItemRepresentation getCoTItem(String name) {
+    public static ItemRepresentation getCoTItem(String name) {
         Item item = getItem(name);
         if (item instanceof ItemContent) {
             try {
@@ -62,7 +62,7 @@ public class BracketHandlerCoTItem implements IBracketHandler {
         return null;
     }
 
-    private static ExpandItemRepresentation getExpandItem(String name) {
+    public static ExpandItemRepresentation getExpandItem(String name) {
         Item item = getItem(name);
         if (item instanceof ExpandItemContent) {
             return ((ExpandItemContent) item).getExpandItemRepresentation();
