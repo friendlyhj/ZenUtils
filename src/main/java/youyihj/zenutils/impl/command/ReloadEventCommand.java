@@ -28,6 +28,10 @@ public class ReloadEventCommand extends CraftTweakerCommand {
 
     @Override
     public void executeCommand(MinecraftServer server, ICommandSender sender, String[] args) {
+        if (server.isDedicatedServer()) {
+            sender.sendMessage(getNormalMessage("\u00A7cThe command only can be run in integrated server (SinglePlayer)!"));
+            return;
+        }
         sender.sendMessage(getNormalMessage("\u00A7bBeginning reload for events"));
         InternalUtils.getAllEventLists().forEach(EventList::clear);
         ZenUtils.tweaker.freezeActionApplying();
