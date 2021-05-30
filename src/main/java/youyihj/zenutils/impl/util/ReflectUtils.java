@@ -27,9 +27,9 @@ public class ReflectUtils {
     public static <T> List<T> getAllFieldsWithClass(Class<?> target, Class<T> fieldClass, Object targetInstance) throws IllegalAccessException, IllegalArgumentException, NullPointerException {
         List<T> temp = new ArrayList<>();
         for (Field field : target.getDeclaredFields()) {
-            field.setAccessible(true);
-            Object o = field.get(targetInstance);
-            if (fieldClass.isInstance(o)) {
+            if (fieldClass.isAssignableFrom(field.getType())) {
+                field.setAccessible(true);
+                Object o = field.get(targetInstance);
                 temp.add(fieldClass.cast(o));
             }
         }
