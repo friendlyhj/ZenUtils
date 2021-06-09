@@ -11,6 +11,7 @@ import youyihj.zenutils.impl.util.ReflectUtils;
  */
 public class NoFixRecipeBookPreprocessor extends PreprocessorActionBase {
     public static final String NAME = "no_fix_recipe_book";
+    private static boolean called = false;
 
     public NoFixRecipeBookPreprocessor(String fileName, String preprocessorLine, int lineIndex) {
         super(fileName, preprocessorLine, lineIndex);
@@ -18,7 +19,13 @@ public class NoFixRecipeBookPreprocessor extends PreprocessorActionBase {
 
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
-        CraftTweakerAPI.logInfo("no fix recipe book preprocessor is found in " + scriptFile + ". Don't fix the recipe book");
+        if (!called) {
+            called = true;
+            CraftTweakerAPI.logInfo("no fix recipe book preprocessor is found in " + scriptFile + ". Don't fix the recipe book.");
+        } else {
+            CraftTweakerAPI.logWarning("Detected duplicated no fix recipe book preprocessor calling. You should call the preprocessor only once!");
+            return;
+        }
         try {
             ReflectUtils.removePrivateFinal(CraftTweaker.class, "alreadyChangedThePlayer").set(null, true);
         } catch (Exception e) {
