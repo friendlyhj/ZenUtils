@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegistrar;
@@ -88,5 +89,10 @@ public class ZenUtils {
     public static void onServerStarting(FMLServerStartingEvent event) {
         CTChatCommand.registerCommand(new ReloadEventCommand());
         ZenCommandRegistrar.zenCommandMap.forEach((name, command) -> event.registerServerCommand(command));
+    }
+
+    @Mod.EventHandler
+    public static void onServerStarted(FMLServerStartedEvent event) {
+        CraftTweakerAPI.tweaker.getActions().clear();
     }
 }
