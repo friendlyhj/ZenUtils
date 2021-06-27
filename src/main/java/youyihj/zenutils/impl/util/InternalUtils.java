@@ -10,6 +10,7 @@ import crafttweaker.util.EventList;
 import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
 import stanhebben.zenscript.type.natives.JavaMethod;
@@ -40,12 +41,16 @@ public final class InternalUtils {
         }
     }
 
-    public static void checkCrTVersion() {
+    public static void checkCraftTweakerVersion() {
         try {
             ScriptFile.class.getMethod("loaderNamesConcatCapitalized");
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("crafttweaker version must be 4.1.20.646 or above!");
         }
+    }
+
+    public static boolean isContentTweakerInstalled() {
+        return Loader.isModLoaded("contenttweaker");
     }
 
     public static boolean onSuppressErrorSingleScriptMode() {

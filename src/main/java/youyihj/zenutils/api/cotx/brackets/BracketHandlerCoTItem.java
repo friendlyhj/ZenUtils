@@ -71,8 +71,12 @@ public class BracketHandlerCoTItem implements IBracketHandler {
     }
 
     private static Item getItem(String name) {
-        return ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM")
+        Item item = ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM")
                 .get(new ResourceLocation(ContentTweaker.MOD_ID, name));
+        if (item instanceof ItemContent) {
+            LateGetContentLookup.addItem(((ItemContent) item));
+        }
+        return item;
     }
 
     private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens) {

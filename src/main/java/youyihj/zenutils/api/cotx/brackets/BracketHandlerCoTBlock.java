@@ -70,8 +70,12 @@ public class BracketHandlerCoTBlock implements IBracketHandler {
     }
 
     private static Block getBlock(String name) {
-        return ContentTweaker.instance.getRegistry(BlockRegistry.class, "BLOCK")
+        Block block = ContentTweaker.instance.getRegistry(BlockRegistry.class, "BLOCK")
                 .get(new ResourceLocation(ContentTweaker.MOD_ID, name));
+        if (block instanceof BlockContent) {
+            LateGetContentLookup.addBlock(((BlockContent) block));
+        }
+        return block;
     }
 
     private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens) {

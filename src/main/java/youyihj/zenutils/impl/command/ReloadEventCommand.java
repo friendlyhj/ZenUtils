@@ -13,6 +13,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
@@ -53,6 +54,10 @@ public class ReloadEventCommand extends CraftTweakerCommand {
         loader.setMainName(SCRIPT_LOADER_NAME);
         loader.setLoaderStage(ScriptLoader.LoaderStage.NOT_LOADED);
         CraftTweakerAPI.tweaker.loadScript(false, loader);
+        if (InternalUtils.isContentTweakerInstalled()) {
+            LateGetContentLookup.refreshFields();
+            LateGetContentLookup.clear();
+        }
         sender.sendMessage(getNormalMessage("Reload for events successfully"));
     }
 

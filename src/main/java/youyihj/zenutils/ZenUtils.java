@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegistrar;
+import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
 import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
@@ -45,7 +46,7 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
-        InternalUtils.checkCrTVersion();
+        InternalUtils.checkCraftTweakerVersion();
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
         GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
         GlobalRegistry.registerGlobal("addRegexLogFilter", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));
@@ -89,6 +90,10 @@ public class ZenUtils {
     public static void onServerStarting(FMLServerStartingEvent event) {
         CTChatCommand.registerCommand(new ReloadEventCommand());
         ZenCommandRegistrar.zenCommandMap.forEach((name, command) -> event.registerServerCommand(command));
+        if (InternalUtils.isContentTweakerInstalled()) {
+            LateGetContentLookup.refreshFields();
+            LateGetContentLookup.clear();
+        }
     }
 
     @Mod.EventHandler
