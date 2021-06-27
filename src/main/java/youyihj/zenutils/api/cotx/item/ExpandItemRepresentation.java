@@ -17,6 +17,7 @@ import youyihj.zenutils.api.cotx.function.IGetEntityLifeSpan;
 @ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.Item")
 public class ExpandItemRepresentation extends ItemRepresentation {
+
     public ExpandItemRepresentation(String unlocalizedName) {
         setUnlocalizedName(unlocalizedName);
     }
@@ -30,8 +31,11 @@ public class ExpandItemRepresentation extends ItemRepresentation {
     @ZenProperty
     public IGetEntityLifeSpan getEntityLifeSpan = null;
 
+    @ZenProperty
+    public int maxItemUseDuration = 0;
+
     @Override
     public void register() {
-        ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM").register(new ExpandItemContent(this ));
+        ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM").register(new ExpandItemContent(this));
     }
 }
