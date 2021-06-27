@@ -11,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.8.2"
+version = "1.8.3"
 group = "youyihj.zenutils" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "zenutils"
 
@@ -62,9 +62,9 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.646"
+    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.652"
     deobfCompile "com.teamacronymcoders.base:base:1.12.2-3.13.0-SNAPSHOT.+"
-    deobfCompile "com.teamacronymcoders:ContentTweaker:1.12.2-4.9.1"
+    deobfCompile "com.teamacronymcoders:ContentTweaker:1.12.2-4.10.0"
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.+:universal"
     deobfCompile "com.feed_the_beast.mods:FTBLib:5.+"
     deobfCompile "com.latmod.mods:ItemFilters:1.+"
