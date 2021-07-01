@@ -4,7 +4,6 @@ import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.world.IBlockPos;
-import crafttweaker.mc1120.item.MCItemStack;
 import crafttweaker.mc1120.world.MCBlockPos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
@@ -125,7 +124,7 @@ public class ZenUtilsByteBuf implements IByteBuf {
         String name = this.readString();
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
         if (item == null) {
-            return MCItemStack.EMPTY;
+            return null;
         }
         ItemStack mcStack = new ItemStack(item, this.readInt(), this.readInt());
         IItemStack itemStack = CraftTweakerMC.getIItemStack(mcStack);
