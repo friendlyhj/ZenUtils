@@ -3,7 +3,9 @@ package youyihj.zenutils.impl.network;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.api.world.IBlockPos;
 import crafttweaker.mc1120.item.MCItemStack;
+import crafttweaker.mc1120.world.MCBlockPos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -68,6 +70,13 @@ public class ZenUtilsByteBuf implements IByteBuf {
     }
 
     @Override
+    public void writeBlockPos(IBlockPos pos) {
+        buf.writeInt(pos.getX());
+        buf.writeInt(pos.getY());
+        buf.writeInt(pos.getZ());
+    }
+
+    @Override
     public void writeData(IData data) {
         ByteAndDataConverter.writeDataToBytes(this, data);
     }
@@ -101,6 +110,11 @@ public class ZenUtilsByteBuf implements IByteBuf {
     public String readString() {
         int length = buf.readInt();
         return buf.readCharSequence(length, StandardCharsets.UTF_8).toString();
+    }
+
+    @Override
+    public IBlockPos readBlockPos() {
+        return new MCBlockPos(buf.readInt(), buf.readInt(), buf.readInt());
     }
 
     @Override

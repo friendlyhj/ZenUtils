@@ -3,6 +3,7 @@ package youyihj.zenutils.api.network;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.world.IBlockPos;
 import io.netty.buffer.ByteBuf;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -32,6 +33,9 @@ public interface IByteBuf {
     void writeString(String string);
 
     @ZenMethod
+    void writeBlockPos(IBlockPos pos);
+
+    @ZenMethod
     void writeItemStack(IItemStack itemStack);
 
     @ZenMethod
@@ -54,6 +58,9 @@ public interface IByteBuf {
 
     @ZenMethod
     String readString();
+
+    @ZenMethod
+    IBlockPos readBlockPos();
 
     @ZenMethod
     IItemStack readItemStack();
