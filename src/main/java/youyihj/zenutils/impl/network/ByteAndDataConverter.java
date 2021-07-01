@@ -108,7 +108,7 @@ public class ByteAndDataConverter {
     }
 
     private static DataBool readBool(IByteBuf byteBuf) {
-        return new DataBool(byteBuf.readByte() != 1);
+        return new DataBool(byteBuf.readByte() == 1);
     }
 
     private static void writeByte(IByteBuf byteBuf, DataByte dataByte) {
