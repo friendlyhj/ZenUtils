@@ -8,9 +8,10 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import youyihj.zenutils.api.network.IByteBuf;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author youyihj
@@ -49,11 +50,16 @@ public class ZenUtilsByteBuf implements IByteBuf {
 
     @Override
     public void writeString(String string) {
-        ByteBufUtils.writeUTF8String(buf, string);
+        buf.writeInt(string.length());
+        buf.writeCharSequence(string, StandardCharsets.UTF_8);
     }
 
     @Override
     public void writeItemStack(IItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            buf.writeInt(-1);
+            return;
+        }
         ItemStack mcStack = CraftTweakerMC.getItemStack(itemStack);
         this.writeString(mcStack.getItem().getRegistryName().toString());
         this.writeInt(mcStack.getCount());
@@ -93,11 +99,15 @@ public class ZenUtilsByteBuf implements IByteBuf {
 
     @Override
     public String readString() {
-        return ByteBufUtils.readUTF8String(buf);
+        int length = buf.readInt();
+        return buf.readCharSequence(length, StandardCharsets.UTF_8).toString();
     }
 
     @Override
     public IItemStack readItemStack() {
+        if (this.readInt() == -1) {
+            return null;
+        }
         String name = this.readString();
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
         if (item == null) {

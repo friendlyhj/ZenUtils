@@ -22,8 +22,8 @@ public abstract class ZenUtilsMessage implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.byteBuf = new ZenUtilsByteBuf(buf);
         this.key = buf.readInt();
+        this.byteBuf = new ZenUtilsByteBuf(buf.copy());
     }
 
     @Override
@@ -53,7 +53,11 @@ public abstract class ZenUtilsMessage implements IMessage {
 
         @Override
         public IMessage onMessage(Server2Client message, MessageContext ctx) {
-            ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+            try {
+                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+            } catch (Exception e) {
+                CraftTweakerAPI.logError(null, e);
+            }
             return null;
         }
     }
@@ -72,7 +76,11 @@ public abstract class ZenUtilsMessage implements IMessage {
 
         @Override
         public IMessage onMessage(Client2Server message, MessageContext ctx) {
-            ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(key).handle(CraftTweakerAPI.server, message.getByteBuf());
+            try {
+                ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, message.getByteBuf());
+            } catch (Exception e) {
+                CraftTweakerAPI.logError(null, e);
+            }
             return null;
         }
     }
