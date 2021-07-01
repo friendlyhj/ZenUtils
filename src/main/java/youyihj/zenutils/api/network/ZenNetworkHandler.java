@@ -16,11 +16,6 @@ import youyihj.zenutils.impl.network.ZenUtilsNetworkHandler;
 @ZenClass("mods.zenutils.NetworkHandler")
 public class ZenNetworkHandler {
     @ZenMethod
-    public static void registerClient2ServerMessage(String key, IServerMessageHandler serverMessageHandler) {
-        ZenUtilsNetworkHandler.INSTANCE.registerClient2ServerMessage(key, serverMessageHandler);
-    }
-
-    @ZenMethod
     public static void registerServer2ClientMessage(String key, IClientMessageHandler clientMessageHandler) {
         ZenUtilsNetworkHandler.INSTANCE.registerServer2ClientMessage(key, clientMessageHandler);
     }
@@ -48,8 +43,13 @@ public class ZenNetworkHandler {
         }
     }
 
-    @ZenMethod
+    // not an exposed method. People can simply edit client scripts to send fake messages and cheat.
     public static void sendToServer(String key, IClientMessageHandler clientMessageHandler) {
         ZenUtilsNetworkHandler.INSTANCE.sendToServer(key, clientMessageHandler);
+    }
+
+    // same as above
+    public static void registerClient2ServerMessage(String key, IServerMessageHandler serverMessageHandler) {
+        ZenUtilsNetworkHandler.INSTANCE.registerClient2ServerMessage(key, serverMessageHandler);
     }
 }
