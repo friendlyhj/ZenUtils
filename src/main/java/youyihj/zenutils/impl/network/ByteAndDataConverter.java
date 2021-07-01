@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class ByteAndDataConverter {
     private static final Map<Class<? extends IData>, IDataWriter<?>> WRITERS = new HashMap<>();
     private static final Byte2ObjectArrayMap<IDataReader<?>> READERS = new Byte2ObjectArrayMap<>();
-    private static final Map<Class<? extends IData>, Byte> CLASS_BYTE_BI_MAP = new HashMap<>();
+    private static final Map<Class<? extends IData>, Byte> CLASS_BYTE_MAP = new HashMap<>();
     private static final byte NULL_DATA_ID = 15;
 
     @SuppressWarnings("unchecked")
@@ -27,7 +27,7 @@ public class ByteAndDataConverter {
             dataWriter = IDataWriter.EMPTY;
         } else {
             dataWriter = (IDataWriter<IData>) WRITERS.get(data.getClass());
-            byteBuf.writeByte(CLASS_BYTE_BI_MAP.get(data.getClass()));
+            byteBuf.writeByte(CLASS_BYTE_MAP.get(data.getClass()));
         }
         dataWriter.write(byteBuf, data);
     }
@@ -58,7 +58,7 @@ public class ByteAndDataConverter {
 
     private static <T extends IData> void addReader(int id, Class<T> type, IDataReader<T> reader) {
         READERS.put(((byte) id), reader);
-        CLASS_BYTE_BI_MAP.put(type, ((byte) id));
+        CLASS_BYTE_MAP.put(type, ((byte) id));
     }
 
     static {
