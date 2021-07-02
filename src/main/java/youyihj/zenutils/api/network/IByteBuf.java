@@ -7,6 +7,7 @@ import crafttweaker.api.world.IBlockPos;
 import io.netty.buffer.ByteBuf;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.util.CrTUUID;
 
 /**
  * @author youyihj
@@ -42,6 +43,9 @@ public interface IByteBuf {
     void writeData(IData data);
 
     @ZenMethod
+    void writeUUID(CrTUUID uuid);
+
+    @ZenMethod
     int readInt();
 
     @ZenMethod
@@ -67,6 +71,9 @@ public interface IByteBuf {
 
     @ZenMethod
     IData readData();
+
+    @ZenMethod
+    CrTUUID readUUID();
 
     ByteBuf getInternal();
 }

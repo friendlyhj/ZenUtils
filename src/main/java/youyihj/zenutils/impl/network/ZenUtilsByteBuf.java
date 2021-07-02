@@ -11,8 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import youyihj.zenutils.api.network.IByteBuf;
+import youyihj.zenutils.api.util.CrTUUID;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 /**
  * @author youyihj
@@ -81,6 +83,12 @@ public class ZenUtilsByteBuf implements IByteBuf {
     }
 
     @Override
+    public void writeUUID(CrTUUID uuid) {
+        buf.writeLong(uuid.getMostSignificantBits());
+        buf.writeLong(uuid.getLeastSignificantBits());
+    }
+
+    @Override
     public int readInt() {
         return buf.readInt();
     }
@@ -134,6 +142,11 @@ public class ZenUtilsByteBuf implements IByteBuf {
     @Override
     public IData readData() {
         return ByteAndDataConverter.readDataFromBytes(this);
+    }
+
+    @Override
+    public CrTUUID readUUID() {
+        return new CrTUUID(new UUID(buf.readLong(), buf.readLong()));
     }
 
     @Override
