@@ -60,8 +60,10 @@ public class ZenUtilsByteBuf implements IByteBuf {
     @Override
     public void writeItemStack(IItemStack itemStack) {
         if (itemStack.isEmpty()) {
-            buf.writeInt(-1);
+            buf.writeByte(-1);
             return;
+        } else {
+            buf.writeByte(0);
         }
         ItemStack mcStack = CraftTweakerMC.getItemStack(itemStack);
         this.writeString(mcStack.getItem().getRegistryName().toString());
@@ -126,7 +128,7 @@ public class ZenUtilsByteBuf implements IByteBuf {
 
     @Override
     public IItemStack readItemStack() {
-        if (this.readInt() == -1) {
+        if (this.readByte() == -1) {
             return null;
         }
         String name = this.readString();
