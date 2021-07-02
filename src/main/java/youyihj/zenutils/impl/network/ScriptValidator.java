@@ -13,10 +13,6 @@ import java.util.UUID;
 public class ScriptValidator {
     private static final Object2BooleanMap<UUID> validateResult = new Object2BooleanArrayMap<>();
 
-    static {
-        validateResult.defaultReturnValue(true);
-    }
-
     public static void validate(UUID playerUUID, String name, byte[] bytes) {
         validateResult.put(playerUUID, ZenModule.classes.containsKey(name) && Arrays.equals(ZenModule.classes.get(name), bytes));
     }
