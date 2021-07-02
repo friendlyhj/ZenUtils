@@ -48,7 +48,7 @@ public class CrTUUID {
         return this.uuid.compareTo(other.uuid);
     }
 
-    public Object getInternal() {
+    public UUID getInternal() {
         return this.uuid;
     }
 

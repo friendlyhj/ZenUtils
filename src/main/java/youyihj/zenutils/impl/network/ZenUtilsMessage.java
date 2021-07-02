@@ -1,13 +1,22 @@
 package youyihj.zenutils.impl.network;
 
 import crafttweaker.CraftTweakerAPI;
+import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.api.player.IPlayer;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import youyihj.zenutils.api.entity.ZenUtilsEntity;
 import youyihj.zenutils.api.network.IByteBuf;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
+import youyihj.zenutils.api.util.CrTUUID;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author youyihj
@@ -71,13 +80,28 @@ public abstract class ZenUtilsMessage implements IMessage {
 
         @Override
         protected void writeExtraBytes(IByteBuf buf) {
-            clientMessageHandler.handle(CraftTweakerAPI.client.getPlayer(), buf);
+            IPlayer player = CraftTweakerAPI.client.getPlayer();
+            CrTUUID uuid = ZenUtilsEntity.getUUIDObject(player);
+            buf.writeLong(uuid.getMostSignificantBits());
+            buf.writeLong(uuid.getLeastSignificantBits());
+            clientMessageHandler.handle(player, buf);
         }
 
         @Override
         public IMessage onMessage(Client2Server message, MessageContext ctx) {
+            IByteBuf byteBuf = message.getByteBuf();
+            UUID uuid = new UUID(byteBuf.readLong(), byteBuf.readLong());
+            if (!ScriptValidator.getValidateResult(uuid)) {
+                Optional.ofNullable(CraftTweakerAPI.server)
+                        .map(CraftTweakerMC::getMCServer)
+                        .map(MinecraftServer::getPlayerList)
+                        .map(playerList -> playerList.getPlayerByUUID(uuid))
+                        .ifPresent(player -> {
+                            player.sendMessage(new TextComponentTranslation("message.zenutils.validate"));
+                        });
+            }
             try {
-                ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, message.getByteBuf());
+                ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, byteBuf);
             } catch (Exception e) {
                 CraftTweakerAPI.logError(null, e);
             }

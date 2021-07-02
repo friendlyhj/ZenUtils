@@ -19,15 +19,14 @@ import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.impl.capability.IZenWorldCapability;
-import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.util.CrTUUID;
+import youyihj.zenutils.impl.capability.IZenWorldCapability;
+import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +46,7 @@ public class ZenUtilsWorld {
     @Nullable
     @ZenMethod
     public static IPlayer getPlayerByUUID(IWorld iWorld, CrTUUID uuid) {
-        return CraftTweakerMC.getIPlayer(CraftTweakerMC.getWorld(iWorld).getPlayerEntityByUUID((UUID) uuid.getInternal()));
+        return CraftTweakerMC.getIPlayer(CraftTweakerMC.getWorld(iWorld).getPlayerEntityByUUID(uuid.getInternal()));
     }
 
     @ZenMethod

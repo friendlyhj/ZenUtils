@@ -43,12 +43,12 @@ public class ZenNetworkHandler {
         }
     }
 
-    // not an exposed method. People can simply edit client scripts to send fake messages and cheat.
+    @ZenMethod
     public static void sendToServer(String key, IClientMessageHandler clientMessageHandler) {
         ZenUtilsNetworkHandler.INSTANCE.sendToServer(key, clientMessageHandler);
     }
 
-    // same as above
+    @ZenMethod
     public static void registerClient2ServerMessage(String key, IServerMessageHandler serverMessageHandler) {
         ZenUtilsNetworkHandler.INSTANCE.registerClient2ServerMessage(key, serverMessageHandler);
     }

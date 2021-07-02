@@ -1,10 +1,16 @@
 package youyihj.zenutils.impl.network;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
@@ -22,6 +28,7 @@ public enum ZenUtilsNetworkHandler {
     ZenUtilsNetworkHandler() {
         channel.registerMessage(ZenUtilsMessage.Server2Client.class, ZenUtilsMessage.Server2Client.class, 0, Side.CLIENT);
         channel.registerMessage(ZenUtilsMessage.Client2Server.class, ZenUtilsMessage.Client2Server.class, 1, Side.SERVER);
+        channel.registerMessage(ValidateScriptMessage.Handler.class, ValidateScriptMessage.class, 2, Side.SERVER);
     }
 
     public void registerServer2ClientMessage(String key, IClientMessageHandler clientMessageHandler) {
@@ -72,5 +79,18 @@ public enum ZenUtilsNetworkHandler {
         message.setKey(key);
         message.setClientMessageHandler(clientMessageHandler);
         return message;
+    }
+
+    @Mod.EventBusSubscriber
+    public static class EventHandler {
+        @SubscribeEvent
+        public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
+            Entity entity = event.getEntity();
+            if (entity instanceof EntityPlayer && entity.world.isRemote) {
+                ZenModule.classes.forEach((name, bytes) ->
+                        ZenUtilsNetworkHandler.INSTANCE.channel.sendToServer(new ValidateScriptMessage(bytes, name, entity.getUniqueID()))
+                );
+            }
+        }
     }
 }

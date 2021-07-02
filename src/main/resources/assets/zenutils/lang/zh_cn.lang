@@ -1,2 +1,3 @@
 commands.undefined.usage=未定义命令用法
 tooltip.zenutils.energy=能量： %s / %s RF
+message.zenutils.validate=你的脚本与服务端的不同。不执行数据包处理。询问服务器管理员以获取更多信息。
