@@ -14,6 +14,11 @@ public class DelayHandler {
         DelayManager.DELAY_RUNNABLES.headMap(time).values().forEach(DelayRunnableList::run);
         if (time % 400 == 0) {
             synchronized (DelayHandler.class) {
+                DelayManager.DELAY_RUNNABLES.forEach((k,v) -> {
+                    if(!v.isReady){
+                        DelayManager.DELAY_RUNNABLES.remove(k, v);
+                    }
+                });
                 DelayManager.DELAY_RUNNABLES.keySet().removeIf(it -> it <= time);
             }
         }
