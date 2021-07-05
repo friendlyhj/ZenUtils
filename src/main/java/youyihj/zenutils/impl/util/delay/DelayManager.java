@@ -18,7 +18,7 @@ public class DelayManager {
     public static void delDelayWork(String uid){
         DELAY_RUNNABLES.forEach((k,v) -> {
             if(v.uid.equals(uid)){
-                DELAY_RUNNABLES.remove(k,v);
+                v.isReady = false;
             }
         });
     }
