@@ -13,12 +13,7 @@ import youyihj.zenutils.impl.util.delay.DelayManager;
 @ZenClass("mods.zenutils.DelayManager")
 public class CTDelayManager {
     @ZenMethod
-    public static void addDelayWork(String uid, DelayRunnable runnable, @Optional(valueLong = 1L) long delay) {
-        DelayManager.addDelayWork(runnable, delay, uid);
-    }
-
-    @ZenMethod
-    public static void delDelayWork(String uid){
-        DelayManager.delDelayWork(uid);
+    public static void addDelayWork(DelayRunnable runnable, @Optional(valueLong = 1L) long delay) {
+        DelayManager.addDelayWork(runnable, delay);
     }
 }

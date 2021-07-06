@@ -8,12 +8,6 @@ import youyihj.zenutils.api.util.delay.DelayRunnable;
 public class DelayRunnableList {
     private Node first;
     private Node last;
-    public final String uid;
-    public boolean isReady = true;
-
-    public DelayRunnableList(String uid) {
-        this.uid = uid;
-    }
 
     public DelayRunnableList add(DelayRunnable runnable) {
         Node node = new Node(runnable);
@@ -40,7 +34,7 @@ public class DelayRunnableList {
         }
 
         while (current != null) {
-            current.runnable.run();
+                current.runnable.run();
             synchronized (this) {
                 current = current.next;
             }
