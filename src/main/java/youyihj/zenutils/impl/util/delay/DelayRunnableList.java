@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.util.delay;
 
 import youyihj.zenutils.api.util.delay.DelayRunnable;
+import youyihj.zenutils.api.util.delay.IsExecute;
 
 /**
  * @author youyihj
@@ -9,8 +10,8 @@ public class DelayRunnableList {
     private Node first;
     private Node last;
 
-    public DelayRunnableList add(DelayRunnable runnable) {
-        Node node = new Node(runnable);
+    public DelayRunnableList add(DelayRunnable runnable, IsExecute isExecute) {
+        Node node = new Node(runnable, isExecute);
 
         synchronized (this) {
             if (first == null)
@@ -34,7 +35,9 @@ public class DelayRunnableList {
         }
 
         while (current != null) {
+            if(current.isExecute.isExec())
                 current.runnable.run();
+
             synchronized (this) {
                 current = current.next;
             }
@@ -44,11 +47,13 @@ public class DelayRunnableList {
     }
 
     private static class Node {
-        final DelayRunnable runnable;
         Node next;
+        IsExecute isExecute;
+        final DelayRunnable runnable;
 
-        public Node(DelayRunnable runnable) {
+        public Node(DelayRunnable runnable, IsExecute isExecute) {
             this.runnable = runnable;
+            this.isExecute = isExecute;
         }
     }
 }
