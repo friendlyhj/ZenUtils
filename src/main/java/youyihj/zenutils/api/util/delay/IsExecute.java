@@ -12,7 +12,7 @@ public class IsExecute {
     @ZenProperty
     private boolean exec;
 
-    public IsExecute(boolean exec) {
+    private IsExecute(boolean exec) {
         this.exec = exec;
     }
 
@@ -27,7 +27,7 @@ public class IsExecute {
     }
 
     @ZenMethod
-    public static IsExecute New(boolean exec) {
+    public static IsExecute of(boolean exec) {
         return new IsExecute(exec);
     }
 }
