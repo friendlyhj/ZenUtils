@@ -6,7 +6,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenProperty;
 
 @ZenRegister
-@ZenClass("mods.zenutils.isExecute")
+@ZenClass("mods.zenutils.IsExecute")
 public class IsExecute {
 
     @ZenProperty
