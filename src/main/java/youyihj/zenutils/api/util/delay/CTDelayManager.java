@@ -12,6 +12,12 @@ import youyihj.zenutils.impl.util.delay.DelayManager;
 @ZenRegister
 @ZenClass("mods.zenutils.DelayManager")
 public class CTDelayManager {
+
+    @ZenMethod
+    public static void addDelayWork(DelayRunnable runnable, @Optional(valueLong = 1L) long delay) {
+        DelayManager.addDelayWork(runnable, IsExecute.of(true), delay);
+    }
+
     @ZenMethod
     public static void addDelayWork(DelayRunnable runnable, IsExecute isExecute, @Optional(valueLong = 1L) long delay) {
         DelayManager.addDelayWork(runnable, isExecute, delay);
