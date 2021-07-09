@@ -9,6 +9,8 @@ import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Hand;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockContent;
 import crafttweaker.mc1120.util.MCPosition3f;
+import java.util.Objects;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,9 +20,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import youyihj.zenutils.api.cotx.tile.TileEntityContent;
-
-import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
  * @author youyihj
@@ -72,7 +71,7 @@ public class ExpandBlockContent extends BlockContent {
         return this.hasTileEntity(state) ? new TileEntityContent(expandBlockRepresentation.tileEntity.getId()) : null;
     }
 
-    public ExpandBlockRepresentation getExpandBlockRepresentation() {
+    public ExpandBlockRepresentation getRepresentation() {
         return expandBlockRepresentation;
     }
 }
