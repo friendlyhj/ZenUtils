@@ -17,6 +17,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import youyihj.zenutils.api.annotation.ExpandCoTEntry;
 import youyihj.zenutils.api.cotx.tile.TileEntityContent;
 
 import javax.annotation.Nullable;
@@ -25,6 +26,7 @@ import java.util.Objects;
 /**
  * @author youyihj
  */
+@ExpandCoTEntry
 public class ExpandBlockContent extends BlockContent {
     private final ExpandBlockRepresentation expandBlockRepresentation;
 
@@ -72,6 +74,7 @@ public class ExpandBlockContent extends BlockContent {
         return this.hasTileEntity(state) ? new TileEntityContent(expandBlockRepresentation.tileEntity.getId()) : null;
     }
 
+    @ExpandCoTEntry.RepresentationGetter
     public ExpandBlockRepresentation getExpandBlockRepresentation() {
         return expandBlockRepresentation;
     }

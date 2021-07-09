@@ -12,16 +12,14 @@ import crafttweaker.zenscript.IBracketHandler;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.expression.ExpressionCallStatic;
-import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import youyihj.zenutils.api.cotx.item.ExpandItemContent;
-import youyihj.zenutils.api.cotx.item.ExpandItemRepresentation;
-import youyihj.zenutils.impl.util.InstanceOfResult;
+import youyihj.zenutils.api.annotation.ExpandCoTEntry;
 import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.impl.zenscript.ExpressionCallStaticThenCastWithStringArg;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -31,14 +29,7 @@ import java.util.List;
 @ModOnly("contenttweaker")
 @BracketHandler(priority = 100)
 public class BracketHandlerCoTItem implements IBracketHandler {
-
-    private final IJavaMethod methodToGetCoTItem;
-    private final IJavaMethod methodToGetExpandItem;
-
-    public BracketHandlerCoTItem() {
-        this.methodToGetCoTItem = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getCoTItem", String.class);
-        this.methodToGetExpandItem = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getExpandItem", String.class);
-    }
+    private static final IJavaMethod representationGetter = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getItemRepresentation", String.class);
 
     @Override
     public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
@@ -50,22 +41,22 @@ public class BracketHandlerCoTItem implements IBracketHandler {
         return null;
     }
 
-    public static ItemRepresentation getCoTItem(String name) {
+    public static ItemRepresentation getItemRepresentation(String name) {
         Item item = getItem(name);
         if (item instanceof ItemContent) {
             try {
-                return ((ItemRepresentation) ReflectUtils.removePrivate(ItemContent.class, "itemRepresentation").get(item));
-            } catch (IllegalAccessException | NoSuchFieldException e) {
+                if (item.getClass() == ItemContent.class) {
+                    return ((ItemRepresentation) ReflectUtils.removePrivate(ItemContent.class, "itemRepresentation").get(item));
+                } else if (item.getClass().isAnnotationPresent(ExpandCoTEntry.class)) {
+                    for (Method method : item.getClass().getMethods()) {
+                        if (method.isAnnotationPresent(ExpandCoTEntry.RepresentationGetter.class)) {
+                            return ((ItemRepresentation) method.invoke(item));
+                        }
+                    }
+                }
+            } catch (ReflectiveOperationException | ClassCastException e) {
                 CraftTweakerAPI.logError(null, e);
             }
-        }
-        return null;
-    }
-
-    public static ExpandItemRepresentation getExpandItem(String name) {
-        Item item = getItem(name);
-        if (item instanceof ExpandItemContent) {
-            return ((ExpandItemContent) item).getExpandItemRepresentation();
         }
         return null;
     }
@@ -81,18 +72,11 @@ public class BracketHandlerCoTItem implements IBracketHandler {
 
     private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens) {
         String name = tokens.get(2).getValue();
-        IJavaMethod method;
-        switch (InstanceOfResult.find(ExpandItemContent.class, ItemContent.class, getItem(name))) {
-            case A:
-                method = methodToGetExpandItem;
-                break;
-            case B:
-                method = methodToGetCoTItem;
-                break;
-            default:
-                return null;
+        ItemRepresentation itemRepresentation = getItemRepresentation(name);
+        if (itemRepresentation == null) {
+            return null;
         }
-        return position -> new ExpressionCallStatic(position, environment, method, new ExpressionString(position, name));
+        return position -> new ExpressionCallStaticThenCastWithStringArg(position, environment, representationGetter, itemRepresentation.getClass(), name);
     }
 
     @Override

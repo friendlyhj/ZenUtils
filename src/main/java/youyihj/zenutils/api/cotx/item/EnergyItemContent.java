@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import youyihj.zenutils.api.annotation.ExpandCoTEntry;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -15,18 +16,21 @@ import java.util.List;
 /**
  * @author youyihj
  */
+@ExpandCoTEntry
 public class EnergyItemContent extends ExpandItemContent implements IEnergyContainerItem {
 
     private final int capacity;
     private final int maxReceive;
     private final int maxExtract;
+    private final EnergyItemRepresentation energyItemRepresentation;
 
     public EnergyItemContent(EnergyItemRepresentation itemRepresentation) {
         super(itemRepresentation);
-        capacity = itemRepresentation.capacity;
-        maxReceive = itemRepresentation.maxReceive;
-        maxExtract = itemRepresentation.maxExtract;
-        maxStackSize = 1;
+        this.capacity = itemRepresentation.capacity;
+        this.maxReceive = itemRepresentation.maxReceive;
+        this.maxExtract = itemRepresentation.maxExtract;
+        this.maxStackSize = 1;
+        this.energyItemRepresentation = itemRepresentation;
     }
 
     @Nullable
@@ -105,5 +109,10 @@ public class EnergyItemContent extends ExpandItemContent implements IEnergyConta
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
         return this.getEnergyStored(stack) != this.getMaxEnergyStored(stack);
+    }
+
+    @ExpandCoTEntry.RepresentationGetter
+    public EnergyItemRepresentation getEnergyItemRepresentation() {
+        return energyItemRepresentation;
     }
 }

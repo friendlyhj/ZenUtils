@@ -10,6 +10,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import youyihj.zenutils.api.annotation.ExpandCoTEntry;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import java.util.Objects;
 /**
  * @author youyihj
  */
+@ExpandCoTEntry
 public class ExpandItemContent extends ItemContent {
     private static final int DEFAULT_MAX_ITEM_USE_DURATION = 32;
     private final ExpandItemRepresentation expandItemRepresentation;
@@ -54,6 +56,7 @@ public class ExpandItemContent extends ItemContent {
 
     }
 
+    @ExpandCoTEntry.RepresentationGetter
     public ExpandItemRepresentation getExpandItemRepresentation() {
         return expandItemRepresentation;
     }
