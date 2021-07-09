@@ -3,6 +3,8 @@ package youyihj.zenutils.api.cotx.item;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemContent;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -10,9 +12,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import java.util.Objects;
 
 /**
  * @author youyihj
@@ -54,7 +53,7 @@ public class ExpandItemContent extends ItemContent {
 
     }
 
-    public ExpandItemRepresentation getExpandItemRepresentation() {
+    public ExpandItemRepresentation getRepresentation() {
         return expandItemRepresentation;
     }
 }

@@ -8,7 +8,12 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.BracketHandler;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.zenscript.GlobalRegistry;
 import crafttweaker.zenscript.IBracketHandler;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
@@ -17,12 +22,10 @@ import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
+import stanhebben.zenscript.type.natives.JavaMethod;
 import youyihj.zenutils.api.cotx.item.ExpandItemContent;
 import youyihj.zenutils.api.cotx.item.ExpandItemRepresentation;
-import youyihj.zenutils.impl.util.InstanceOfResult;
 import youyihj.zenutils.impl.util.ReflectUtils;
-
-import java.util.List;
 
 /**
  * @author youyihj
@@ -33,19 +36,18 @@ import java.util.List;
 public class BracketHandlerCoTItem implements IBracketHandler {
 
     private final IJavaMethod methodToGetCoTItem;
-    private final IJavaMethod methodToGetExpandItem;
+    private static final Map<Class<? extends ItemContent>, IJavaMethod> methodToGetExpandItemList = new HashMap<>();
 
     public BracketHandlerCoTItem() {
         this.methodToGetCoTItem = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getCoTItem", String.class);
-        this.methodToGetExpandItem = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getExpandItem", String.class);
+        addMethodToGetExpandItem(ExpandItemContent.class, BracketHandlerCoTItem.class, "getExpandItem", String.class);
     }
 
-    @Override
-    public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
-        if(tokens.size() > 2) {
-            if(tokens.get(0).getValue().equals("cotItem") && tokens.get(1).getValue().equals(":")) {
-                return find(environment, tokens);
-            }
+    public static ExpandItemRepresentation getExpandItem(String name) {
+        try {
+            return getExpandItem(ExpandItemContent.class, name);
+        } catch (ReflectiveOperationException e) {
+            CraftTweakerAPI.logError(null, e);
         }
         return null;
     }
@@ -62,37 +64,50 @@ public class BracketHandlerCoTItem implements IBracketHandler {
         return null;
     }
 
-    public static ExpandItemRepresentation getExpandItem(String name) {
+    public static <T extends ItemRepresentation> T getExpandItem(Class<? extends ItemContent> tClass, String name) throws ReflectiveOperationException {
         Item item = getItem(name);
-        if (item instanceof ExpandItemContent) {
-            return ((ExpandItemContent) item).getExpandItemRepresentation();
+        if (tClass.isInstance(item)) {
+            //noinspection unchecked
+            return (T) item.getClass().getMethod("getRepresentation").invoke(item);
         }
         return null;
     }
 
-    private static Item getItem(String name) {
-        Item item = ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM")
-                .get(new ResourceLocation(ContentTweaker.MOD_ID, name));
+    public static void addMethodToGetExpandItem(Class<? extends ItemContent> c, Class<?> cls, String name, Class<?>... parameterTypes) {
+        methodToGetExpandItemList.put(c, JavaMethod.get(GlobalRegistry.getTypes(), cls, name, parameterTypes));
+    }
+
+    public static Item getItem(String name) {
+        Item item = ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM").get(new ResourceLocation(ContentTweaker.MOD_ID, name));
         if (item instanceof ItemContent) {
             LateGetContentLookup.addItem(((ItemContent) item));
         }
         return item;
     }
 
+    @Override
+    public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
+        if (tokens.size() > 2) {
+            if (tokens.get(0).getValue().equals("cotItem") && tokens.get(1).getValue().equals(":")) {
+                return find(environment, tokens);
+            }
+        }
+        return null;
+    }
+
     private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens) {
         String name = tokens.get(2).getValue();
-        IJavaMethod method;
-        switch (InstanceOfResult.find(ExpandItemContent.class, ItemContent.class, getItem(name))) {
-            case A:
-                method = methodToGetExpandItem;
-                break;
-            case B:
-                method = methodToGetCoTItem;
-                break;
-            default:
-                return null;
+        Item item = getItem(name);
+
+        for (Entry<Class<? extends ItemContent>, IJavaMethod> entry : methodToGetExpandItemList.entrySet()) {
+            if (entry.getKey().isInstance(item)) {
+                return position -> new ExpressionCallStatic(position, environment, entry.getValue(), new ExpressionString(position, name));
+            }
         }
-        return position -> new ExpressionCallStatic(position, environment, method, new ExpressionString(position, name));
+        if (item instanceof ItemContent) {
+            return position -> new ExpressionCallStatic(position, environment, methodToGetCoTItem, new ExpressionString(position, name));
+        }
+        return null;
     }
 
     @Override
