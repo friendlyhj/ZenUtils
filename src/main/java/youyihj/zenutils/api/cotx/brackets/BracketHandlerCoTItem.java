@@ -15,7 +15,7 @@ import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import youyihj.zenutils.api.annotation.ExpandCoTEntry;
+import youyihj.zenutils.api.annotation.ExpandContentTweakerEntry;
 import youyihj.zenutils.impl.util.ReflectUtils;
 import youyihj.zenutils.impl.zenscript.ExpressionCallStaticThenCastWithStringArg;
 
@@ -47,9 +47,9 @@ public class BracketHandlerCoTItem implements IBracketHandler {
             try {
                 if (item.getClass() == ItemContent.class) {
                     return ((ItemRepresentation) ReflectUtils.removePrivate(ItemContent.class, "itemRepresentation").get(item));
-                } else if (item.getClass().isAnnotationPresent(ExpandCoTEntry.class)) {
+                } else if (item.getClass().isAnnotationPresent(ExpandContentTweakerEntry.class)) {
                     for (Method method : item.getClass().getMethods()) {
-                        if (method.isAnnotationPresent(ExpandCoTEntry.RepresentationGetter.class)) {
+                        if (method.isAnnotationPresent(ExpandContentTweakerEntry.RepresentationGetter.class)) {
                             return ((ItemRepresentation) method.invoke(item));
                         }
                     }

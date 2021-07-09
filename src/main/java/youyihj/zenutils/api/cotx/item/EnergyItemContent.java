@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import youyihj.zenutils.api.annotation.ExpandCoTEntry;
+import youyihj.zenutils.api.annotation.ExpandContentTweakerEntry;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author youyihj
  */
-@ExpandCoTEntry
+@ExpandContentTweakerEntry
 public class EnergyItemContent extends ExpandItemContent implements IEnergyContainerItem {
 
     private final int capacity;
@@ -111,7 +111,7 @@ public class EnergyItemContent extends ExpandItemContent implements IEnergyConta
         return this.getEnergyStored(stack) != this.getMaxEnergyStored(stack);
     }
 
-    @ExpandCoTEntry.RepresentationGetter
+    @ExpandContentTweakerEntry.RepresentationGetter
     public EnergyItemRepresentation getEnergyItemRepresentation() {
         return energyItemRepresentation;
     }
