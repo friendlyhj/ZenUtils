@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
 
@@ -32,24 +33,24 @@ public enum ZenUtilsNetworkHandler {
         serverHandlers.put(key.hashCode(), serverMessageHandler);
     }
 
-    public void sendToDimension(String key, IServerMessageHandler serverMessageHandler, int dimensionID) {
-        channel.sendToDimension(getServer2ClientMessage(key, serverMessageHandler), dimensionID);
+    public void sendToDimension(String key, IByteBufWriter byteBufWriter, int dimensionID) {
+        channel.sendToDimension(getServer2ClientMessage(key, byteBufWriter), dimensionID);
     }
 
-    public void sendToAll(String key, IServerMessageHandler serverMessageHandler) {
-        channel.sendToAll(getServer2ClientMessage(key, serverMessageHandler));
+    public void sendToAll(String key, IByteBufWriter byteBufWriter) {
+        channel.sendToAll(getServer2ClientMessage(key, byteBufWriter));
     }
 
-    public void sendToAllAround(String key, IServerMessageHandler serverMessageHandler, double x, double y, double z, double range, int dimensionID) {
-        channel.sendToAllAround(getServer2ClientMessage(key, serverMessageHandler), new NetworkRegistry.TargetPoint(dimensionID, x, y, z, range));
+    public void sendToAllAround(String key, IByteBufWriter byteBufWriter, double x, double y, double z, double range, int dimensionID) {
+        channel.sendToAllAround(getServer2ClientMessage(key, byteBufWriter), new NetworkRegistry.TargetPoint(dimensionID, x, y, z, range));
     }
 
-    public void sendTo(String key, IServerMessageHandler serverMessageHandler, EntityPlayerMP player) {
-        channel.sendTo(getServer2ClientMessage(key, serverMessageHandler), player);
+    public void sendTo(String key, IByteBufWriter byteBufWriter, EntityPlayerMP player) {
+        channel.sendTo(getServer2ClientMessage(key, byteBufWriter), player);
     }
 
-    public void sendToServer(String key, IClientMessageHandler clientMessageHandler) {
-        channel.sendToServer(getClient2ServerMessage(key, clientMessageHandler));
+    public void sendToServer(String key, IByteBufWriter byteBufWriter) {
+        channel.sendToServer(getClient2ServerMessage(key, byteBufWriter));
     }
 
     IClientMessageHandler getClientMessageHandler(int key) {
@@ -60,17 +61,17 @@ public enum ZenUtilsNetworkHandler {
         return serverHandlers.getOrDefault(key, IServerMessageHandler.NONE);
     }
 
-    private ZenUtilsMessage.Server2Client getServer2ClientMessage(String key, IServerMessageHandler serverMessageHandler) {
+    private ZenUtilsMessage.Server2Client getServer2ClientMessage(String key, IByteBufWriter byteBufWriter) {
         ZenUtilsMessage.Server2Client message = new ZenUtilsMessage.Server2Client();
         message.setKey(key);
-        message.setServerMessageHandler(serverMessageHandler);
+        message.setByteBufWriter(byteBufWriter);
         return message;
     }
 
-    private ZenUtilsMessage.Client2Server getClient2ServerMessage(String key, IClientMessageHandler clientMessageHandler) {
+    private ZenUtilsMessage.Client2Server getClient2ServerMessage(String key, IByteBufWriter byteBufWriter) {
         ZenUtilsMessage.Client2Server message = new ZenUtilsMessage.Client2Server();
         message.setKey(key);
-        message.setClientMessageHandler(clientMessageHandler);
+        message.setByteBufWriter(byteBufWriter);
         return message;
     }
 }

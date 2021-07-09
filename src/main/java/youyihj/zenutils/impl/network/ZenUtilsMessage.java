@@ -14,8 +14,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.api.entity.ZenUtilsEntity;
 import youyihj.zenutils.api.network.IByteBuf;
-import youyihj.zenutils.api.network.IClientMessageHandler;
-import youyihj.zenutils.api.network.IServerMessageHandler;
+import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.util.CrTUUID;
 
 import java.util.Arrays;
@@ -29,6 +28,7 @@ import java.util.UUID;
 public abstract class ZenUtilsMessage implements IMessage {
     private IByteBuf byteBuf;
     protected int key = 0;
+    private IByteBufWriter byteBufWriter;
 
     public void setKey(String key) {
         this.key = key.hashCode();
@@ -48,6 +48,14 @@ public abstract class ZenUtilsMessage implements IMessage {
         this.writeExtraBytes(this.byteBuf);
     }
 
+    public IByteBufWriter getByteBufWriter() {
+        return byteBufWriter;
+    }
+
+    public void setByteBufWriter(IByteBufWriter byteBufWriter) {
+        this.byteBufWriter = byteBufWriter;
+    }
+
     protected abstract void writeExtraBytes(IByteBuf buf);
 
     protected abstract void readExtraBytes(IByteBuf buf);
@@ -57,15 +65,10 @@ public abstract class ZenUtilsMessage implements IMessage {
     }
 
     public static class Server2Client extends ZenUtilsMessage implements IMessageHandler<Server2Client, IMessage> {
-        private IServerMessageHandler serverMessageHandler;
-
-        public void setServerMessageHandler(IServerMessageHandler serverMessageHandler) {
-            this.serverMessageHandler = serverMessageHandler;
-        }
 
         @Override
         protected void writeExtraBytes(IByteBuf buf) {
-            serverMessageHandler.handle(CraftTweakerAPI.server, buf, null);
+            getByteBufWriter().write(buf);
         }
 
         @Override
@@ -85,18 +88,12 @@ public abstract class ZenUtilsMessage implements IMessage {
     }
 
     public static class Client2Server extends ZenUtilsMessage implements IMessageHandler<Client2Server, IMessage> {
-        private IClientMessageHandler clientMessageHandler;
         private boolean valid;
         private UUID playerUUID;
-
-        public void setClientMessageHandler(IClientMessageHandler clientMessageHandler) {
-            this.clientMessageHandler = clientMessageHandler;
-        }
 
         @Override
         protected void readExtraBytes(IByteBuf buf) {
             this.playerUUID = buf.readUUID().getInternal();
-            this.valid = true;
             this.valid = Arrays.equals(ZenModule.classes.get(buf.readString()), buf.readData().asByteArray());
         }
 
@@ -106,7 +103,7 @@ public abstract class ZenUtilsMessage implements IMessage {
             CrTUUID uuid = ZenUtilsEntity.getUUIDObject(player);
             buf.writeUUID(uuid);
             writeHandlerByteCode(buf);
-            clientMessageHandler.handle(player, buf);
+            getByteBufWriter().write(buf);
         }
 
         @Override
@@ -131,7 +128,7 @@ public abstract class ZenUtilsMessage implements IMessage {
         }
 
         private void writeHandlerByteCode(IByteBuf byteBuf) {
-            String className = clientMessageHandler.getClass().getName();
+            String className = getByteBufWriter().getClass().getName();
             byteBuf.writeString(className);
             byteBuf.writeData(new DataByteArray(Objects.requireNonNull(ZenModule.classes.get(className)), true));
         }

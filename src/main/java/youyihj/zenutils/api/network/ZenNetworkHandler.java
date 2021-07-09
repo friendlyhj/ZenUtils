@@ -21,31 +21,31 @@ public class ZenNetworkHandler {
     }
 
     @ZenMethod
-    public static void sendToDimension(String key, int dimensionID, IServerMessageHandler serverMessageHandler) {
-        ZenUtilsNetworkHandler.INSTANCE.sendToDimension(key, serverMessageHandler, dimensionID);
+    public static void sendToDimension(String key, int dimensionID, IByteBufWriter byteBufWriter) {
+        ZenUtilsNetworkHandler.INSTANCE.sendToDimension(key, byteBufWriter, dimensionID);
     }
 
     @ZenMethod
-    public static void sendToAll(String key, IServerMessageHandler serverMessageHandler) {
-        ZenUtilsNetworkHandler.INSTANCE.sendToAll(key, serverMessageHandler);
+    public static void sendToAll(String key, IByteBufWriter byteBufWriter) {
+        ZenUtilsNetworkHandler.INSTANCE.sendToAll(key, byteBufWriter);
     }
 
     @ZenMethod
-    public static void sendToAllAround(String key, double x, double y, double z, double range, int dimensionID, IServerMessageHandler serverMessageHandler) {
-        ZenUtilsNetworkHandler.INSTANCE.sendToAllAround(key, serverMessageHandler, x, y, z, range, dimensionID);
+    public static void sendToAllAround(String key, double x, double y, double z, double range, int dimensionID, IByteBufWriter byteBufWriter) {
+        ZenUtilsNetworkHandler.INSTANCE.sendToAllAround(key, byteBufWriter, x, y, z, range, dimensionID);
     }
 
     @ZenMethod
-    public static void sendTo(String key, IPlayer player, IServerMessageHandler serverMessageHandler) {
+    public static void sendTo(String key, IPlayer player, IByteBufWriter byteBufWriter) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         if (mcPlayer instanceof EntityPlayerMP) {
-            ZenUtilsNetworkHandler.INSTANCE.sendTo(key, serverMessageHandler, ((EntityPlayerMP) mcPlayer));
+            ZenUtilsNetworkHandler.INSTANCE.sendTo(key, byteBufWriter, ((EntityPlayerMP) mcPlayer));
         }
     }
 
     @ZenMethod
-    public static void sendToServer(String key, IClientMessageHandler clientMessageHandler) {
-        ZenUtilsNetworkHandler.INSTANCE.sendToServer(key, clientMessageHandler);
+    public static void sendToServer(String key, IByteBufWriter byteBufWriter) {
+        ZenUtilsNetworkHandler.INSTANCE.sendToServer(key, byteBufWriter);
     }
 
     @ZenMethod
