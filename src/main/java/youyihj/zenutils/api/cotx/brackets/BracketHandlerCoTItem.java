@@ -15,7 +15,7 @@ import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import youyihj.zenutils.api.annotation.ExpandContentTweakerEntry;
+import youyihj.zenutils.api.cotx.annotation.ExpandContentTweakerEntry;
 import youyihj.zenutils.impl.util.ReflectUtils;
 import youyihj.zenutils.impl.zenscript.ExpressionCallStaticThenCastWithStringArg;
 

@@ -1,4 +1,4 @@
-package youyihj.zenutils.api.annotation;
+package youyihj.zenutils.api.cotx.annotation;
 
 import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockContent;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockRepresentation;
