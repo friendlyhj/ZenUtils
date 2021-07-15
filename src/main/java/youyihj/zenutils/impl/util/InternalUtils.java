@@ -5,10 +5,13 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.runtime.ScriptFile;
 import crafttweaker.util.EventList;
 import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.GlobalRegistry;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.TypeExpansion;
@@ -42,10 +45,17 @@ public final class InternalUtils {
     }
 
     public static void checkCraftTweakerVersion() {
-        try {
-            ScriptFile.class.getMethod("loaderNamesConcatCapitalized");
-        } catch (NoSuchMethodException e) {
+        if (!hasMethod(ScriptFile.class, "loaderNamesConcatCapitalized")) {
             throw new RuntimeException("crafttweaker version must be 4.1.20.646 or above!");
+        }
+    }
+
+    public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        try {
+            clazz.getMethod(methodName, parameterTypes);
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
         }
     }
 
@@ -83,6 +93,13 @@ public final class InternalUtils {
 
     public static void putSuppressErrorFlag(String zsName, SuppressErrorFlag errorFlag) {
         suppressErrorScriptMap.put(zsName, errorFlag);
+    }
+
+    public static Optional<EntityPlayerMP> getPlayer(UUID uuid) {
+        return Optional.ofNullable(CraftTweakerAPI.server)
+                .map(CraftTweakerMC::getMCServer)
+                .map(MinecraftServer::getPlayerList)
+                .map(playerList -> playerList.getPlayerByUUID(uuid));
     }
 
     @SuppressWarnings("unchecked")

@@ -2,13 +2,20 @@ package youyihj.zenutils.impl.network;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
+import youyihj.zenutils.impl.util.InternalUtils;
+
+import java.util.Map;
 
 /**
  * @author youyihj
@@ -23,6 +30,8 @@ public enum ZenUtilsNetworkHandler {
     ZenUtilsNetworkHandler() {
         channel.registerMessage(ZenUtilsMessage.Server2Client.class, ZenUtilsMessage.Server2Client.class, 0, Side.CLIENT);
         channel.registerMessage(ZenUtilsMessage.Client2Server.class, ZenUtilsMessage.Client2Server.class, 1, Side.SERVER);
+        channel.registerMessage(ValidateScriptMessage.Handler.class, ValidateScriptMessage.class, 2, Side.SERVER);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void registerServer2ClientMessage(String key, IClientMessageHandler clientMessageHandler) {
@@ -61,6 +70,10 @@ public enum ZenUtilsNetworkHandler {
         return serverHandlers.getOrDefault(key, IServerMessageHandler.NONE);
     }
 
+    private void sendValidateScriptMessage(byte[] scriptBytes, String scriptClassName) {
+        channel.sendToServer(new ValidateScriptMessage(scriptBytes, scriptClassName));
+    }
+
     private ZenUtilsMessage.Server2Client getServer2ClientMessage(String key, IByteBufWriter byteBufWriter) {
         ZenUtilsMessage.Server2Client message = new ZenUtilsMessage.Server2Client();
         message.setKey(key);
@@ -73,5 +86,22 @@ public enum ZenUtilsNetworkHandler {
         message.setKey(key);
         message.setByteBufWriter(byteBufWriter);
         return message;
+    }
+
+    // Event Stuff
+    @SubscribeEvent
+    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        for (Map.Entry<String, byte[]> entry : ZenModule.classes.entrySet()) {
+            String name = entry.getKey();
+            byte[] bytecode = entry.getValue();
+            Class<?> clazz = ZenModule.loadedClasses.get(name);
+            if (clazz != null && !isPlainScript(clazz)) {
+                ZenUtilsNetworkHandler.INSTANCE.sendValidateScriptMessage(bytecode, name);
+            }
+        }
+    }
+
+    private boolean isPlainScript(Class<?> scriptClass) {
+        return Runnable.class.isAssignableFrom(scriptClass) && InternalUtils.hasMethod(scriptClass, "__script__");
     }
 }
