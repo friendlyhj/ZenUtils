@@ -1,10 +1,11 @@
 package youyihj.zenutils.impl.network;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,7 +32,6 @@ public enum ZenUtilsNetworkHandler {
         channel.registerMessage(ZenUtilsMessage.Server2Client.class, ZenUtilsMessage.Server2Client.class, 0, Side.CLIENT);
         channel.registerMessage(ZenUtilsMessage.Client2Server.class, ZenUtilsMessage.Client2Server.class, 1, Side.SERVER);
         channel.registerMessage(ValidateScriptMessage.Handler.class, ValidateScriptMessage.class, 2, Side.SERVER);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void registerServer2ClientMessage(String key, IClientMessageHandler clientMessageHandler) {
@@ -88,20 +88,28 @@ public enum ZenUtilsNetworkHandler {
         return message;
     }
 
-    // Event Stuff
-    @SubscribeEvent
-    public void onClientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        for (Map.Entry<String, byte[]> entry : ZenModule.classes.entrySet()) {
-            String name = entry.getKey();
-            byte[] bytecode = entry.getValue();
-            Class<?> clazz = ZenModule.loadedClasses.get(name);
-            if (clazz != null && !isPlainScript(clazz)) {
-                ZenUtilsNetworkHandler.INSTANCE.sendValidateScriptMessage(bytecode, name);
+    @Mod.EventBusSubscriber(Side.CLIENT)
+    public static final class ClientEventHandler {
+        @SubscribeEvent
+        public static void onEntityJoin(EntityJoinWorldEvent event) {
+            if (event.getWorld().isRemote && event.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID())) {
+                sendScriptsToServer();
             }
         }
-    }
 
-    private boolean isPlainScript(Class<?> scriptClass) {
-        return Runnable.class.isAssignableFrom(scriptClass) && InternalUtils.hasMethod(scriptClass, "__script__");
+        private static boolean isPlainScript(Class<?> scriptClass) {
+            return Runnable.class.isAssignableFrom(scriptClass) && InternalUtils.hasMethod(scriptClass, "__script__");
+        }
+
+        private static void sendScriptsToServer() {
+            for (Map.Entry<String, byte[]> entry : ZenModule.classes.entrySet()) {
+                String name = entry.getKey();
+                byte[] bytecode = entry.getValue();
+                Class<?> clazz = ZenModule.loadedClasses.get(name);
+                if (clazz != null && !isPlainScript(clazz)) {
+                    ZenUtilsNetworkHandler.INSTANCE.sendValidateScriptMessage(bytecode, name);
+                }
+            }
+        }
     }
 }
