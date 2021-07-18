@@ -1,13 +1,16 @@
 package youyihj.zenutils.impl.network;
 
 import crafttweaker.CraftTweakerAPI;
+import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.mc1120.player.MCPlayer;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import youyihj.zenutils.api.network.IByteBuf;
 import youyihj.zenutils.api.network.IByteBufWriter;
+import youyihj.zenutils.impl.util.LogMTErrorRunnableWrapper;
 
 /**
  * @author youyihj
@@ -24,8 +27,8 @@ public abstract class ZenUtilsMessage implements IMessage {
     @Override
     public final void fromBytes(ByteBuf buf) {
         this.key = buf.readInt();
-        readExtraBytes(byteBuf);
         this.byteBuf = new ZenUtilsByteBuf(buf.copy());
+        readExtraBytes(byteBuf);
     }
 
     @Override
@@ -35,11 +38,11 @@ public abstract class ZenUtilsMessage implements IMessage {
         this.writeExtraBytes(this.byteBuf);
     }
 
-    public IByteBufWriter getByteBufWriter() {
+    public final IByteBufWriter getByteBufWriter() {
         return byteBufWriter;
     }
 
-    public void setByteBufWriter(IByteBufWriter byteBufWriter) {
+    public final void setByteBufWriter(IByteBufWriter byteBufWriter) {
         this.byteBufWriter = byteBufWriter;
     }
 
@@ -65,11 +68,9 @@ public abstract class ZenUtilsMessage implements IMessage {
 
         @Override
         public IMessage onMessage(Server2Client message, MessageContext ctx) {
-            try {
-                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
-            } catch (Exception e) {
-                CraftTweakerAPI.logError(null, e);
-            }
+            Minecraft.getMinecraft().addScheduledTask(LogMTErrorRunnableWrapper.create(() ->
+                    ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf())
+            ));
             return null;
         }
     }
@@ -89,11 +90,9 @@ public abstract class ZenUtilsMessage implements IMessage {
         @Override
         public IMessage onMessage(Client2Server message, MessageContext ctx) {
             IByteBuf byteBuf = message.getByteBuf();
-            try {
-                ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, byteBuf, new MCPlayer(ctx.getServerHandler().player));
-            } catch (Exception e) {
-                CraftTweakerAPI.logError(null, e);
-            }
+            CraftTweaker.server.addScheduledTask(LogMTErrorRunnableWrapper.create(() ->
+                    ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, byteBuf, new MCPlayer(ctx.getServerHandler().player))
+            ));
             return null;
         }
     }

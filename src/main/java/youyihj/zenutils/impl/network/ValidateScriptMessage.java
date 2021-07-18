@@ -39,6 +39,8 @@ public class ValidateScriptMessage extends ZenUtilsMessage {
 
     public static class Handler implements IMessageHandler<ValidateScriptMessage, IMessage> {
 
+        public Handler() {}
+
         @Override
         public IMessage onMessage(ValidateScriptMessage message, MessageContext ctx) {
             if (!Arrays.equals(ZenModule.classes.get(message.scriptClassName), message.scriptBytes)) {

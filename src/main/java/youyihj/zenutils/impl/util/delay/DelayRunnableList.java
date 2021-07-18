@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.util.delay;
 
 import youyihj.zenutils.api.util.delay.DelayRunnable;
 import youyihj.zenutils.api.util.delay.IsExecute;
+import youyihj.zenutils.impl.util.LogMTErrorRunnableWrapper;
 
 /**
  * @author youyihj
@@ -35,8 +36,7 @@ public class DelayRunnableList {
         }
 
         while (current != null) {
-            if(current.isExecute.isExec())
-                current.runnable.run();
+            current.run();
 
             synchronized (this) {
                 current = current.next;
@@ -46,14 +46,20 @@ public class DelayRunnableList {
         this.clear();
     }
 
-    private static class Node {
+    private static class Node implements Runnable {
         Node next;
         IsExecute isExecute;
-        final DelayRunnable runnable;
+        final Runnable runnable;
 
         public Node(DelayRunnable runnable, IsExecute isExecute) {
-            this.runnable = runnable;
+            this.runnable = LogMTErrorRunnableWrapper.create(runnable);
             this.isExecute = isExecute;
+        }
+
+        @Override
+        public void run() {
+            if(this.isExecute.isExec())
+                this.runnable.run();
         }
     }
 }
