@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class ZenUtilsLogger extends MTLogger implements ILogger {
     private final MTLogger mtLogger;
     private static Field mtLoggersField;
+    private boolean hasError = false;
 
     private final List<String> messagesToSendPlayer = new ArrayList<>();
     private final List<IPlayer> playerList = new ArrayList<>();
@@ -127,6 +128,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
                 }
             }
             String message2 = "\u00a7cERROR: " + super.getMessageToSendPlayer(message, exception);
+            this.hasError = true;
             if (playerList.isEmpty()) {
                 messagesToSendPlayer.add(message2);
             } else {
@@ -175,5 +177,9 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
     private boolean shouldNotLog(String message) {
         if (message == null) return false;
         return filterLogRegexes.stream().anyMatch(pattern -> pattern.matcher(message).matches());
+    }
+
+    public boolean hasError() {
+        return hasError;
     }
 }

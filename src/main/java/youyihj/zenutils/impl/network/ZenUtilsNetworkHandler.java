@@ -92,6 +92,8 @@ public enum ZenUtilsNetworkHandler {
     public static final class ClientEventHandler {
         @SubscribeEvent
         public static void onEntityJoin(EntityJoinWorldEvent event) {
+            if (ZenUtils.crafttweakerLogger.hasError())
+                return;
             if (event.getWorld().isRemote && event.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID())) {
                 sendScriptsToServer();
             }
