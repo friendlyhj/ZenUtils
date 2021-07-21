@@ -6,7 +6,7 @@ import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import crafttweaker.runtime.ScriptFile;
+import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.util.EventList;
 import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -21,6 +21,7 @@ import youyihj.zenutils.ZenUtils;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -45,9 +46,15 @@ public final class InternalUtils {
     }
 
     public static void checkCraftTweakerVersion() {
-        if (!hasMethod(ScriptFile.class, "loaderNamesConcatCapitalized")) {
-            throw new RuntimeException("crafttweaker version must be 4.1.20.646 or above!");
+        try {
+            Field field = CraftTweaker.class.getField("alreadyChangedThePlayer");
+            if (!Modifier.isPublic(field.getModifiers())) {
+                throw new RuntimeException("crafttweaker version must be 4.1.20.651 or above!");
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
+
     }
 
     public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
