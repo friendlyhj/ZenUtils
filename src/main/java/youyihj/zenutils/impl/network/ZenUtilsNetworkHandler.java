@@ -14,7 +14,7 @@ import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
-import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.api.util.delay.DelayRunnable;
 
 import java.util.Map;
 
@@ -92,7 +92,7 @@ public enum ZenUtilsNetworkHandler {
     public static final class ClientEventHandler {
         @SubscribeEvent
         public static void onEntityJoin(EntityJoinWorldEvent event) {
-            if (ZenUtils.crafttweakerLogger.hasError())
+            if (ZenUtils.crafttweakerLogger.hasError() || ZenUtilsNetworkHandler.INSTANCE.serverHandlers.isEmpty())
                 return;
             if (event.getWorld().isRemote && event.getEntity().getUniqueID().equals(Minecraft.getMinecraft().player.getUniqueID())) {
                 sendScriptsToServer();
@@ -100,7 +100,7 @@ public enum ZenUtilsNetworkHandler {
         }
 
         private static boolean isPlainScript(Class<?> scriptClass) {
-            return Runnable.class.isAssignableFrom(scriptClass) && InternalUtils.hasMethod(scriptClass, "__script__");
+            return Runnable.class.isAssignableFrom(scriptClass) && !DelayRunnable.class.isAssignableFrom(scriptClass);
         }
 
         private static void sendScriptsToServer() {
