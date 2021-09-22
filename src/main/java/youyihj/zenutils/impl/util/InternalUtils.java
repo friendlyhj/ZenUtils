@@ -13,6 +13,9 @@ import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
@@ -45,16 +48,21 @@ public final class InternalUtils {
         }
     }
 
-    public static void checkCraftTweakerVersion() {
+    public static boolean checkCraftTweakerVersion() {
+        if (FMLCommonHandler.instance().getSide().isServer())
+            return true;
         try {
-            Field field = CraftTweaker.class.getField("alreadyChangedThePlayer");
+            Field field = CraftTweaker.class.getDeclaredField("alreadyChangedThePlayer");
             if (!Modifier.isPublic(field.getModifiers())) {
-                throw new RuntimeException("crafttweaker version must be 4.1.20.651 or above!");
+                Field errorToDisplayField = ReflectUtils.removePrivate(FMLClientHandler.class, "errorToDisplay");
+                errorToDisplayField.set(FMLClientHandler.instance(), new InvalidCraftTweakerVersionException("4.1.20.651"));
+                MinecraftForge.EVENT_BUS.shutdown();
+                return false;
             }
-        } catch (NoSuchFieldException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return true;
     }
 
     public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {

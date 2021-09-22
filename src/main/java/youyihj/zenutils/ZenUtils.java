@@ -46,7 +46,8 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
-        InternalUtils.checkCraftTweakerVersion();
+        if (!InternalUtils.checkCraftTweakerVersion())
+            return;
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
         GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
         GlobalRegistry.registerGlobal("addRegexLogFilter", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));
