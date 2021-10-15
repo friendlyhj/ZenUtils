@@ -2,6 +2,7 @@ package youyihj.zenutils;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
+import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -28,6 +29,7 @@ import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * @author youyihj
@@ -46,8 +48,7 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
-        if (!InternalUtils.checkCraftTweakerVersion())
-            return;
+        InternalUtils.checkCraftTweakerVersion("4.1.20.651", () -> Modifier.isPublic(CraftTweaker.class.getField("alreadyChangedThePlayer").getModifiers()));
         GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
         GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
         GlobalRegistry.registerGlobal("addRegexLogFilter", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));

@@ -11,16 +11,24 @@ import youyihj.zenutils.ZenUtils;
  * @author youyihj
  */
 public class InvalidCraftTweakerVersionException extends MissingModsException {
-    public InvalidCraftTweakerVersionException(String requiredCraftTweakerVersion) {
+    private final String requiredVersion;
+
+    public InvalidCraftTweakerVersionException(String requiredVersion) {
         super(ZenUtils.MODID, ZenUtils.NAME);
+        this.requiredVersion = requiredVersion;
         try {
             this.addMissingMod(
-                    new DefaultArtifactVersion(CraftTweaker.MODID, VersionRange.createFromVersionSpec("[" + requiredCraftTweakerVersion + ",)")),
+                    new DefaultArtifactVersion(CraftTweaker.MODID, VersionRange.createFromVersionSpec("[" + requiredVersion + ",)")),
                     null,
                     true
             );
         } catch (InvalidVersionSpecificationException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public String getMessage() {
+        return String.format("crafttweaker version must be %s or above!", requiredVersion);
     }
 }

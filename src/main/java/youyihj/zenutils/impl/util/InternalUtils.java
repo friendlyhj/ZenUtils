@@ -6,7 +6,6 @@ import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.util.EventList;
 import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -24,23 +23,21 @@ import youyihj.zenutils.ZenUtils;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
  * @author youyihj
  */
 public final class InternalUtils {
-    private InternalUtils() {}
-
-    public static boolean hardFailMode = false;
-
-    private static boolean suppressErrorSingleScriptMode = false;
-    private static boolean isFirstSetMode = true;
     private static final Map<String, SuppressErrorFlag> suppressErrorScriptMap = new HashMap<>();
-
     @SuppressWarnings("rawtypes")
     private static final List<EventList> ALL_EVENT_LISTS = new ArrayList<>();
+    public static boolean hardFailMode = false;
+    private static boolean suppressErrorSingleScriptMode = false;
+    private static boolean isFirstSetMode = true;
+
+    private InternalUtils() {
+    }
 
     public static void checkDataMap(IData data) {
         if (!(data instanceof DataMap)) {
@@ -48,21 +45,22 @@ public final class InternalUtils {
         }
     }
 
-    public static boolean checkCraftTweakerVersion() {
-        if (FMLCommonHandler.instance().getSide().isServer())
-            return true;
-        try {
-            Field field = CraftTweaker.class.getDeclaredField("alreadyChangedThePlayer");
-            if (!Modifier.isPublic(field.getModifiers())) {
-                Field errorToDisplayField = ReflectUtils.removePrivate(FMLClientHandler.class, "errorToDisplay");
-                errorToDisplayField.set(FMLClientHandler.instance(), new InvalidCraftTweakerVersionException("4.1.20.651"));
-                MinecraftForge.EVENT_BUS.shutdown();
-                return false;
+    public static void checkCraftTweakerVersion(String requiredVersion, IVersionChecker versionChecker) {
+        boolean result = versionChecker.getResult();
+        if (!result) {
+            InvalidCraftTweakerVersionException exception = new InvalidCraftTweakerVersionException(requiredVersion);
+            if (FMLCommonHandler.instance().getSide().isServer()) {
+                throw exception;
+            } else {
+                try {
+                    Field errorToDisplayField = ReflectUtils.removePrivate(FMLClientHandler.class, "errorToDisplay");
+                    errorToDisplayField.set(FMLClientHandler.instance(), exception);
+                    MinecraftForge.EVENT_BUS.shutdown();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return true;
     }
 
     public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
