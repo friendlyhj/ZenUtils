@@ -20,8 +20,7 @@ import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.lang.reflect.Field;
 
-import static crafttweaker.mc1120.commands.SpecialMessagesChat.getClickableCommandText;
-import static crafttweaker.mc1120.commands.SpecialMessagesChat.getNormalMessage;
+import static crafttweaker.mc1120.commands.SpecialMessagesChat.*;
 
 public class ReloadEventCommand extends CraftTweakerCommand {
     private static final String SCRIPT_LOADER_NAME = "reloadableevents";
@@ -46,6 +45,7 @@ public class ReloadEventCommand extends CraftTweakerCommand {
         reRegisterInternalEvents();
         ZenUtils.tweaker.freezeActionApplying();
         ZenModule.loadedClasses.clear();
+        ZenUtils.crafttweakerLogger.clear();
 
         // remove duplicate recipe name warning, since we don't register new recipes
         ZenUtilsGlobal.addRegexLogFilter("Recipe name \\[.*\\] has duplicate uses, defaulting to calculated hash!");
@@ -58,7 +58,11 @@ public class ReloadEventCommand extends CraftTweakerCommand {
             LateGetContentLookup.refreshFields();
             LateGetContentLookup.clear();
         }
-        sender.sendMessage(getNormalMessage("Reload for events successfully"));
+        if (loader.getLoaderStage() == ScriptLoader.LoaderStage.ERROR) {
+            sender.sendMessage(getNormalMessage("\u00a74 Failed to reload for events"));
+        } else {
+            sender.sendMessage(getNormalMessage("Reload for events successfully"));
+        }
     }
 
     @SuppressWarnings("unchecked")
