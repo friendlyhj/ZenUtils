@@ -11,7 +11,7 @@ import stanhebben.zenscript.annotations.ZenClass;
  */
 @FunctionalInterface
 @ZenRegister
-@ZenClass("mods.zenutils.cotx.IEntityCollided")
+@ZenClass("mods.zenutils.cotx.IPlacementChecker")
 @ModOnly("contenttweaker")
 public interface IPlacementChecker {
     boolean canPlaceAt(IWorld world, IBlockPos pos);
