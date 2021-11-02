@@ -11,6 +11,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.api.cotx.function.IBlockActivated;
 import youyihj.zenutils.api.cotx.function.IEntityCollided;
 import youyihj.zenutils.api.cotx.function.IEntityWalk;
+import youyihj.zenutils.api.cotx.function.IPlacementChecker;
 import youyihj.zenutils.api.cotx.tile.TileEntityRepresentation;
 
 /**
@@ -36,6 +37,9 @@ public class ExpandBlockRepresentation extends BlockRepresentation {
 
     @ZenProperty
     public IEntityCollided onEntityCollidedWithBlock = null;
+
+    @ZenProperty
+    public IPlacementChecker placementChecker = null;
 
     @Override
     public void register() {

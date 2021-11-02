@@ -74,6 +74,15 @@ public class ExpandBlockContent extends BlockContent {
         return this.hasTileEntity(state) ? new TileEntityContent(expandBlockRepresentation.tileEntity.getId()) : null;
     }
 
+    @Override
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
+        if (expandBlockRepresentation.placementChecker != null) {
+            return expandBlockRepresentation.placementChecker.canPlaceAt(new MCWorld(worldIn), new MCBlockPos(pos));
+        } else {
+            return super.canPlaceBlockAt(worldIn, pos);
+        }
+    }
+
     @ExpandContentTweakerEntry.RepresentationGetter
     public ExpandBlockRepresentation getExpandBlockRepresentation() {
         return expandBlockRepresentation;
