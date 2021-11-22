@@ -10,5 +10,13 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenClass("mods.zenutils.IByteBufWriter")
 @FunctionalInterface
 public interface IByteBufWriter {
+    IByteBufWriter NONE = (byteBuf -> {});
+
     void write(IByteBuf byteBuf);
+
+    @SuppressWarnings("unused")
+    // used for the default byte buffer writer of ZenNetworkHandler
+    static IByteBufWriter getNone(String s) {
+        return NONE;
+    }
 }

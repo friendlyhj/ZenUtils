@@ -10,13 +10,15 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import stanhebben.zenscript.ZenModule;
+import stanhebben.zenscript.value.IAny;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
-import youyihj.zenutils.api.util.delay.DelayRunnable;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author youyihj
@@ -77,14 +79,14 @@ public enum ZenUtilsNetworkHandler {
     private ZenUtilsMessage.Server2Client getServer2ClientMessage(String key, IByteBufWriter byteBufWriter) {
         ZenUtilsMessage.Server2Client message = new ZenUtilsMessage.Server2Client();
         message.setKey(key);
-        message.setByteBufWriter(byteBufWriter);
+        message.setByteBufWriter(Objects.requireNonNull(byteBufWriter));
         return message;
     }
 
     private ZenUtilsMessage.Client2Server getClient2ServerMessage(String key, IByteBufWriter byteBufWriter) {
         ZenUtilsMessage.Client2Server message = new ZenUtilsMessage.Client2Server();
         message.setKey(key);
-        message.setByteBufWriter(byteBufWriter);
+        message.setByteBufWriter(Objects.requireNonNull(byteBufWriter));
         return message;
     }
 
@@ -99,8 +101,14 @@ public enum ZenUtilsNetworkHandler {
             }
         }
 
-        private static boolean isPlainScript(Class<?> scriptClass) {
-            return Runnable.class.isAssignableFrom(scriptClass) && !DelayRunnable.class.isAssignableFrom(scriptClass);
+        private static boolean isZenScriptAnonymousFunction(Class<?> scriptClass) {
+            return scriptClass.getInterfaces().length == 1 && // anonymous functions only implement one interface
+                    !(
+                            InternalUtils.hasMethod(scriptClass, "__script__") || // plain script
+                            scriptClass.isSynthetic() || // synthetic class
+                            IAny.class.isAssignableFrom(scriptClass) || // IAny class
+                            "__ZenMain__".equals(scriptClass.getCanonicalName()) // main class
+                    );
         }
 
         private static void sendScriptsToServer() {
@@ -108,7 +116,7 @@ public enum ZenUtilsNetworkHandler {
                 String name = entry.getKey();
                 byte[] bytecode = entry.getValue();
                 Class<?> clazz = ZenModule.loadedClasses.get(name);
-                if (clazz != null && !isPlainScript(clazz)) {
+                if (bytecode.length != 0 && clazz != null && isZenScriptAnonymousFunction(clazz)) {
                     ZenUtilsNetworkHandler.INSTANCE.sendValidateScriptMessage(bytecode, name);
                 }
             }

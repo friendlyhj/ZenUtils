@@ -5,6 +5,7 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.impl.network.ZenUtilsNetworkHandler;
@@ -21,22 +22,22 @@ public class ZenNetworkHandler {
     }
 
     @ZenMethod
-    public static void sendToDimension(String key, int dimensionID, IByteBufWriter byteBufWriter) {
+    public static void sendToDimension(String key, int dimensionID, @Optional(methodClass = IByteBufWriter.class, methodName = "getNone") IByteBufWriter byteBufWriter) {
         ZenUtilsNetworkHandler.INSTANCE.sendToDimension(key, byteBufWriter, dimensionID);
     }
 
     @ZenMethod
-    public static void sendToAll(String key, IByteBufWriter byteBufWriter) {
+    public static void sendToAll(String key, @Optional(methodClass = IByteBufWriter.class, methodName = "getNone") IByteBufWriter byteBufWriter) {
         ZenUtilsNetworkHandler.INSTANCE.sendToAll(key, byteBufWriter);
     }
 
     @ZenMethod
-    public static void sendToAllAround(String key, double x, double y, double z, double range, int dimensionID, IByteBufWriter byteBufWriter) {
+    public static void sendToAllAround(String key, double x, double y, double z, double range, int dimensionID, @Optional(methodClass = IByteBufWriter.class, methodName = "getNone") IByteBufWriter byteBufWriter) {
         ZenUtilsNetworkHandler.INSTANCE.sendToAllAround(key, byteBufWriter, x, y, z, range, dimensionID);
     }
 
     @ZenMethod
-    public static void sendTo(String key, IPlayer player, IByteBufWriter byteBufWriter) {
+    public static void sendTo(String key, IPlayer player, @Optional(methodClass = IByteBufWriter.class, methodName = "getNone") IByteBufWriter byteBufWriter) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         if (mcPlayer instanceof EntityPlayerMP) {
             ZenUtilsNetworkHandler.INSTANCE.sendTo(key, byteBufWriter, ((EntityPlayerMP) mcPlayer));
@@ -44,7 +45,7 @@ public class ZenNetworkHandler {
     }
 
     @ZenMethod
-    public static void sendToServer(String key, IByteBufWriter byteBufWriter) {
+    public static void sendToServer(String key, @Optional(methodClass = IByteBufWriter.class, methodName = "getNone") IByteBufWriter byteBufWriter) {
         ZenUtilsNetworkHandler.INSTANCE.sendToServer(key, byteBufWriter);
     }
 
