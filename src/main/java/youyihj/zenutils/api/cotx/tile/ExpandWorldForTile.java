@@ -27,4 +27,12 @@ public class ExpandWorldForTile {
         }
         return null;
     }
+
+    @ZenMethod
+    @Nullable
+    public static TileEntity getTileEntity(IWorld world, IBlockPos pos) {
+        TileEntity tileEntity = CraftTweakerMC.getWorld(world).getTileEntity(CraftTweakerMC.getBlockPos(pos));
+
+        return tileEntity;
+    }
 }

@@ -14,11 +14,14 @@ import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.item.CrTFluidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.util.CrTUUID;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
@@ -124,6 +127,16 @@ public class ZenUtilsWorld {
                 .map(tileEntity -> {
                     IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, CraftTweakerMC.getFacing(facing));
                     return CrTItemHandler.of(itemHandler);
+                })
+                .orElse(null);
+    }
+
+    @ZenMethod
+    public static CrTFluidHandler getFluidHandler(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional IFacing facing) {
+        return Optional.ofNullable(CraftTweakerMC.getWorld(world).getTileEntity(CraftTweakerMC.getBlockPos(pos)))
+                .map(tileEntity -> {
+                    IFluidHandler fluidHandler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, CraftTweakerMC.getFacing(facing));
+                    return CrTFluidHandler.of(fluidHandler);
                 })
                 .orElse(null);
     }
