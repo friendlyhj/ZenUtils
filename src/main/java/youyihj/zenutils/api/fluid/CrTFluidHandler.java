@@ -4,10 +4,15 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 
+import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author various.authors
@@ -24,6 +29,15 @@ public class CrTFluidHandler {
 
     public static CrTFluidHandler of(IFluidHandler fluidHandler) {
         return fluidHandler == null ? null : new CrTFluidHandler(fluidHandler);
+    }
+
+    @ZenGetter
+    public List<ILiquidTankProperties> tankProperties() {
+        return this.getLiquidTankProperties(fluidHandler.getTankProperties());
+    }
+
+    private List<ILiquidTankProperties> getLiquidTankProperties(IFluidTankProperties[] fluidTankProperties) {
+        return Arrays.stream(fluidTankProperties).map(MCLiquidTankProperties::new).collect(Collectors.toList());
     }
 
     @ZenMethod
