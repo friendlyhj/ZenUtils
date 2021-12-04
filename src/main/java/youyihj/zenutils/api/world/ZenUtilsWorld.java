@@ -21,7 +21,7 @@ import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.api.item.CrTFluidHandler;
+import youyihj.zenutils.api.fluid.CrTFluidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.util.CrTUUID;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;

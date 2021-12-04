@@ -1,11 +1,9 @@
-package youyihj.zenutils.api.item;
+package youyihj.zenutils.api.fluid;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import stanhebben.zenscript.annotations.IterableSimple;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -34,12 +32,12 @@ public class CrTFluidHandler {
     }
 
     @ZenMethod
-    public ILiquidStack drain(FluidStack resource, boolean doDrain) {
-        return CraftTweakerMC.getILiquidStack(fluidHandler.drain(resource, doDrain));
+    public ILiquidStack drain(ILiquidStack resource, boolean doDrain) {
+        return CraftTweakerMC.getILiquidStack(fluidHandler.drain(CraftTweakerMC.getLiquidStack(resource), doDrain));
     }
 
     @ZenMethod
-    public int fill(FluidStack resource, boolean doFill) {
-        return fluidHandler.fill(resource, doFill);
+    public int fill(ILiquidStack resource, boolean doFill) {
+        return fluidHandler.fill(CraftTweakerMC.getLiquidStack(resource), doFill);
     }
 }
