@@ -9,8 +9,6 @@ import stanhebben.zenscript.annotations.ZenClass;
 /**
  * @author various.authors
  */
-@ZenClass("mods.zenutils.LiquidTankProperties")
-@ZenRegister
 public class MCLiquidTankProperties implements ILiquidTankProperties {
     private IFluidTankProperties properties;
 
