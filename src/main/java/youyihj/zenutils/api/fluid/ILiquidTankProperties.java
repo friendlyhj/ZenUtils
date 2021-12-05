@@ -7,10 +7,10 @@ import stanhebben.zenscript.annotations.ZenClass;
 import javax.annotation.Nullable;
 
 /**
- * @author youyihj
+ * @author various.authors
  */
 @ZenRegister
-@ZenClass("mods.zenutils.command.ICommandExecute")
+@ZenClass("mods.zenutils.ILiquidTankProperties")
 public interface ILiquidTankProperties {
     @Nullable
     ILiquidStack getContents();
