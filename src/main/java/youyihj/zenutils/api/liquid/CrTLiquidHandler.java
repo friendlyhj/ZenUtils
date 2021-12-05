@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.impl.fluid.MCLiquidTankProperties;
 
 import java.util.List;
 import java.util.Arrays;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @author various.authors
  */
-@ZenClass("mods.zenutils.LiquidHandler")
+@ZenClass("mods.zenutils.liquid.LiquidHandler")
 @ZenRegister
 public class CrTLiquidHandler {
     private final IFluidHandler fluidHandler;

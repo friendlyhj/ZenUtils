@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  * @author various.authors
  */
 @ZenRegister
-@ZenClass("mods.zenutils.ILiquidTankProperties")
+@ZenClass("mods.zenutils.liquid.ILiquidTankProperties")
 public interface ILiquidTankProperties {
 
     /**
