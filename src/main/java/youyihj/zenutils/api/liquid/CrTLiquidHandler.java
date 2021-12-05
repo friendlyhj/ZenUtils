@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @author various.authors
  */
-@ZenClass("mods.zenutils.liquid.LiquidHandler")
+@ZenClass("mods.zenutils.LiquidHandler")
 @ZenRegister
 public class CrTLiquidHandler {
     private final IFluidHandler fluidHandler;
