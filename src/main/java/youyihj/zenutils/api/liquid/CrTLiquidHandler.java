@@ -1,4 +1,4 @@
-package youyihj.zenutils.api.fluid;
+package youyihj.zenutils.api.liquid;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.liquid.ILiquidStack;
@@ -17,18 +17,18 @@ import java.util.stream.Collectors;
 /**
  * @author various.authors
  */
-@ZenClass("mods.zenutils.FluidHandler")
+@ZenClass("mods.zenutils.LiquidHandler")
 @ZenRegister
-public class CrTFluidHandler {
+public class CrTLiquidHandler {
     private final IFluidHandler fluidHandler;
 
-    private CrTFluidHandler(IFluidHandler itemHandler) {
+    private CrTLiquidHandler(IFluidHandler itemHandler) {
         Objects.requireNonNull(itemHandler);
         this.fluidHandler = itemHandler;
     }
 
-    public static CrTFluidHandler of(IFluidHandler fluidHandler) {
-        return fluidHandler == null ? null : new CrTFluidHandler(fluidHandler);
+    public static CrTLiquidHandler of(IFluidHandler fluidHandler) {
+        return fluidHandler == null ? null : new CrTLiquidHandler(fluidHandler);
     }
 
     @ZenGetter

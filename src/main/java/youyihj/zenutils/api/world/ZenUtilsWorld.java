@@ -21,7 +21,7 @@ import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.api.fluid.CrTFluidHandler;
+import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.util.CrTUUID;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
@@ -132,11 +132,11 @@ public class ZenUtilsWorld {
     }
 
     @ZenMethod
-    public static CrTFluidHandler getFluidHandler(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional IFacing facing) {
+    public static CrTLiquidHandler getLiquidHandler(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional IFacing facing) {
         return Optional.ofNullable(CraftTweakerMC.getWorld(world).getTileEntity(CraftTweakerMC.getBlockPos(pos)))
                 .map(tileEntity -> {
                     IFluidHandler fluidHandler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, CraftTweakerMC.getFacing(facing));
-                    return CrTFluidHandler.of(fluidHandler);
+                    return CrTLiquidHandler.of(fluidHandler);
                 })
                 .orElse(null);
     }
