@@ -121,7 +121,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
                 return;
 
             if (InternalUtils.hardFailMode) {
-                if (exception == null) {
+                if (exception == null || exception instanceof ScriptRunException) {
                     throw new ScriptRunException(message);
                 } else {
                     throw new ScriptRunException(message, exception);
