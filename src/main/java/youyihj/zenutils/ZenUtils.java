@@ -5,7 +5,6 @@ import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.preprocessor.PreprocessorManager;
-import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -49,9 +48,9 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.673", () -> InternalUtils.hasMethod(CraftTweakerMC.class, "getIItemStackForMatching", ItemStack.class));
-        GlobalRegistry.registerGlobal("typeof", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "typeof", Object.class));
-        GlobalRegistry.registerGlobal("toString", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "toString", Object.class));
-        GlobalRegistry.registerGlobal("addRegexLogFilter", GlobalRegistry.getStaticFunction(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));
+        CraftTweakerAPI.registerGlobalSymbol("typeof", CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, "typeof", Object.class));
+        CraftTweakerAPI.registerGlobalSymbol("toString", CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, "toString", Object.class));
+        CraftTweakerAPI.registerGlobalSymbol("addRegexLogFilter", CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
