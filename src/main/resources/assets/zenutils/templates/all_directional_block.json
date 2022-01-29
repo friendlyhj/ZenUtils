@@ -1,0 +1,48 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "texture": "##TEXTURE##",
+      "particle": "##TEXTURE##"
+    },
+    "model": "base:storage",
+    "uvlock": true,
+    "transform": "forge:default-block"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ],
+    "facing=up": [
+      {
+        "x": 270
+      }
+    ],
+    "facing=down": [
+      {
+        "x": 90
+      }
+    ],
+    "facing=north": [
+      {}
+    ],
+    "facing=south": [
+      {
+        "y": 180
+      }
+    ],
+    "facing=west": [
+      {
+        "y": 270
+      }
+    ],
+    "facing=east": [
+      {
+        "y": 90
+      }
+    ]
+  }
+}

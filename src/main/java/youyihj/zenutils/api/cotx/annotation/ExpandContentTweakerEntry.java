@@ -5,10 +5,7 @@ import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockRepresen
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemContent;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemRepresentation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Mark a class as an expand ContentTweaker entry. The class should extend {@link BlockContent} or {@link ItemContent}.
@@ -17,6 +14,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Inherited
 public @interface ExpandContentTweakerEntry {
 
     /**

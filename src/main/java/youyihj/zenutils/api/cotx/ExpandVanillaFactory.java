@@ -5,6 +5,7 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
+import youyihj.zenutils.api.cotx.block.DirectionalBlockRepresentation;
 import youyihj.zenutils.api.cotx.block.ExpandBlockRepresentation;
 import youyihj.zenutils.api.cotx.function.ITileEntityTick;
 import youyihj.zenutils.api.cotx.item.EnergyItemRepresentation;
@@ -27,6 +28,11 @@ public class ExpandVanillaFactory {
     @ZenMethodStatic
     public static ExpandBlockRepresentation createExpandBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {
         return new ExpandBlockRepresentation(unlocalizedName, blockMaterial);
+    }
+
+    @ZenMethodStatic
+    public static DirectionalBlockRepresentation createDirectionalBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial, String directions) {
+        return new DirectionalBlockRepresentation(unlocalizedName, blockMaterial, DirectionalBlockRepresentation.Directions.valueOf(directions));
     }
 
     @ZenMethodStatic
