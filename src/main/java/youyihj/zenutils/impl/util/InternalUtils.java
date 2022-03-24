@@ -12,7 +12,6 @@ import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
@@ -55,7 +54,6 @@ public final class InternalUtils {
                 try {
                     Field errorToDisplayField = ReflectUtils.removePrivate(FMLClientHandler.class, "errorToDisplay");
                     errorToDisplayField.set(FMLClientHandler.instance(), exception);
-                    MinecraftForge.EVENT_BUS.shutdown();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
