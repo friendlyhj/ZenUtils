@@ -66,9 +66,9 @@ dependencies {
     deobfCompile "com.teamacronymcoders.base:base:1.12.2-3.13.0-SNAPSHOT.+"
     deobfCompile "com.teamacronymcoders:ContentTweaker:1.12.2-4.10.0"
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.+:universal"
-    deobfCompile "com.feed_the_beast.mods:FTBLib:5.+"
-    deobfCompile "com.latmod.mods:ItemFilters:1.+"
-    deobfCompile "com.feed_the_beast.mods:FTBQuests:1202.+"
+    deobfCompile "curse.maven:ftb-library-legacy-forge-237167:2985811"
+    deobfCompile "curse.maven:item-filters-309674:3003364"
+    deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
 }
 
 repositories {
@@ -80,9 +80,10 @@ repositories {
         name = "cofh"
         url = "https://maven.covers1624.net"
     }
+
     maven {
-        name = "ftb"
-        url = "https://maven.latmod.com/"
+        name = "curseforge"
+        url "https://cfa2.cursemaven.com"
     }
 
     maven {
