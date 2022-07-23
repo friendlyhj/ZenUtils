@@ -26,7 +26,7 @@ public class ZenUtilsTweaker implements ITweaker {
         if (!freeze) {
             tweaker.apply(action);
         } else {
-            CraftTweakerAPI.logWarning("Action application is freezing! Recipe modification is not reloadable.");
+            CraftTweakerAPI.logWarning("Action application is frozen! Recipe modification is not reloadable.");
         }
     }
 

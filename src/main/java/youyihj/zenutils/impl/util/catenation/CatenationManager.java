@@ -21,7 +21,7 @@ public class CatenationManager {
 
     @SubscribeEvent
     public static void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.START) {
             CatenationManager.catenations.get(event.world).removeIf(it -> it.tick(new MCWorld(event.world)));
         }
     }
