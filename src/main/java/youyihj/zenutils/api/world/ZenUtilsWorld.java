@@ -24,8 +24,10 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.util.CrTUUID;
+import youyihj.zenutils.api.util.catenation.ICatenationBuilder;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.impl.util.catenation.CatenationBuilder;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -139,6 +141,11 @@ public class ZenUtilsWorld {
                     return CrTLiquidHandler.of(fluidHandler);
                 })
                 .orElse(null);
+    }
+
+    @ZenMethod
+    public static ICatenationBuilder catenation(IWorld world) {
+        return new CatenationBuilder(world);
     }
 
     private static IZenWorldCapability getWorldCap(IWorld world) {

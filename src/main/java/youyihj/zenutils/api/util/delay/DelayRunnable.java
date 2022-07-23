@@ -7,6 +7,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @FunctionalInterface
 @ZenRegister
 @ZenClass("mods.zenutils.DelayRunnable")
+@Deprecated
 public interface DelayRunnable extends Runnable {
 
     @Override

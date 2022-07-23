@@ -7,6 +7,7 @@ import stanhebben.zenscript.annotations.ZenProperty;
 
 @ZenRegister
 @ZenClass("mods.zenutils.IsExecute")
+@Deprecated
 public class IsExecute {
 
     @ZenProperty
