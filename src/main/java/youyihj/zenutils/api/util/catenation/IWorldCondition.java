@@ -9,7 +9,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.IWorldConditionWithContext")
+@ZenClass("mods.zenutils.IWorldCondition")
 @FunctionalInterface
 public interface IWorldCondition {
     @ZenMethod
