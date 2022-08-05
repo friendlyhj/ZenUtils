@@ -17,12 +17,23 @@ import java.util.HashMap;
  */
 @Mod.EventBusSubscriber
 public class CatenationManager {
-    static final Multimap<World, Catenation> catenations = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
+    private static final Multimap<World, Catenation> catenations = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
+    private static final Multimap<World, Catenation> cantenationsToAdd = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
+
+    public static void addCatenation(World world, Catenation catenation) {
+        cantenationsToAdd.put(world, catenation);
+    }
 
     @SubscribeEvent
     public static void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            CatenationManager.catenations.get(event.world).removeIf(it -> it.tick(new MCWorld(event.world)));
+        switch (event.phase) {
+            case START:
+                CatenationManager.catenations.get(event.world).removeIf(it -> it.tick(new MCWorld(event.world)));
+                break;
+            case END:
+                catenations.putAll(cantenationsToAdd);
+                cantenationsToAdd.clear();
+                break;
         }
     }
 }

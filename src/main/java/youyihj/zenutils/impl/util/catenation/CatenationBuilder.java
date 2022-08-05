@@ -49,7 +49,7 @@ public class CatenationBuilder implements ICatenationBuilder {
     @Override
     public Catenation start() {
         Catenation catenation = new Catenation(tasks, stopWhen);
-        CatenationManager.catenations.put(CraftTweakerMC.getWorld(world), catenation);
+        CatenationManager.addCatenation(CraftTweakerMC.getWorld(world), catenation);
         return catenation;
     }
 }
