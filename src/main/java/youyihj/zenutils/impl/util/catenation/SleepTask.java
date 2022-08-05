@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.util.catenation;
 
 import crafttweaker.api.world.IWorld;
+import youyihj.zenutils.api.util.catenation.CatenationContext;
 import youyihj.zenutils.api.util.catenation.ICatenationTask;
 
 /**
@@ -15,7 +16,7 @@ public class SleepTask implements ICatenationTask {
     }
 
     @Override
-    public void run(IWorld world) {
+    public void run(IWorld world, CatenationContext context) {
         timer++;
     }
 

@@ -6,7 +6,7 @@ import crafttweaker.api.world.IWorld;
  * @author youyihj
  */
 public interface ICatenationTask {
-    void run(IWorld world);
+    void run(IWorld world, CatenationContext context);
 
     boolean isComplete();
 }

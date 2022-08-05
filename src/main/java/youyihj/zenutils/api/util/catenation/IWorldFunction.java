@@ -9,9 +9,9 @@ import stanhebben.zenscript.annotations.ZenMethod;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.IWorldFunction")
+@ZenClass("mods.zenutils.IWorldFunctionWithContext")
 @FunctionalInterface
 public interface IWorldFunction {
     @ZenMethod
-    void apply(IWorld world);
+    void apply(IWorld world, CatenationContext context);
 }

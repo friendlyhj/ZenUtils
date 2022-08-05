@@ -19,6 +19,7 @@ public class Catenation {
     private boolean stopped;
     @Nullable
     private final IWorldCondition stopWhen;
+    private final CatenationContext context = new CatenationContext(this);
 
     public Catenation(Queue<ICatenationTask> tasks, @Nullable IWorldCondition stopWhen) {
         this.tasks = tasks;
@@ -27,7 +28,7 @@ public class Catenation {
 
     @ZenMethod
     public boolean tick(IWorld world) {
-        if (stopWhen != null && stopWhen.apply(world)) {
+        if (stopWhen != null && stopWhen.apply(world, context)) {
             stopped = true;
         }
         if (stopped) {
@@ -35,7 +36,7 @@ public class Catenation {
         }
         ICatenationTask task = tasks.peek();
         if (task == null) return true;
-        task.run(world);
+        task.run(world, context);
         if (task.isComplete()) {
             tasks.poll();
         }
@@ -51,5 +52,11 @@ public class Catenation {
     @ZenMethod
     public boolean isStopped() {
         return stopped;
+    }
+
+    @ZenGetter("context")
+    @ZenMethod
+    public CatenationContext getContext() {
+        return context;
     }
 }

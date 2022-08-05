@@ -3,13 +3,15 @@ package youyihj.zenutils.api.util.catenation;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.IWorldCondition")
+@ZenClass("mods.zenutils.IWorldConditionWithContext")
 @FunctionalInterface
 public interface IWorldCondition {
-    boolean apply(IWorld world);
+    @ZenMethod
+    boolean apply(IWorld world, CatenationContext context);
 }

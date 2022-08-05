@@ -27,8 +27,8 @@ public class CTDelayManager {
         CraftTweakerAPI.logWarning("DelayManager is deprecated, use Catenation instead.");
         ZenUtilsWorld.catenation(CraftTweakerMC.getIWorld(CraftTweaker.server.getEntityWorld()))
                 .sleep(delay)
-                .then(world -> runnable.run())
-                .stopWhen(world -> !isExecute.isExec())
+                .then((world, context) -> runnable.run())
+                .stopWhen((world, context) -> !isExecute.isExec())
                 .start();
     }
 }
