@@ -67,6 +67,16 @@ public class StringList implements Iterable<String> {
     }
 
     @ZenMethod
+    public void clear() {
+        inner.clear();
+    }
+
+    @ZenMethod
+    public boolean removeIf(StringPredicate predicate) {
+        return inner.removeIf(predicate);
+    }
+
+    @ZenMethod
     @ZenOperator(OperatorType.CONTAINS)
     public boolean contains(Object obj) {
         return inner.contains(String.valueOf(obj));
