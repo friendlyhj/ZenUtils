@@ -13,8 +13,8 @@ import youyihj.zenutils.impl.util.TotallyImmutableItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * @author youyihj
@@ -42,21 +42,7 @@ public class CrTItemHandler implements Iterable<IItemStack> {
     @Override
     @Nonnull
     public Iterator<IItemStack> iterator() {
-        return new Iterator<IItemStack>() {
-            private int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < CrTItemHandler.this.size();
-            }
-
-            @Override
-            public IItemStack next() {
-                if (index >= size())
-                    throw new NoSuchElementException();
-                return CrTItemHandler.this.getStackInSlot(index++);
-            }
-        };
+        return IntStream.range(0, size()).mapToObj(this::getStackInSlot).iterator();
     }
 
     @ZenMethod
