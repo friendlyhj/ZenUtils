@@ -1,5 +1,6 @@
 package youyihj.zenutils.api.util.catenation;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -28,15 +29,27 @@ public class Catenation {
 
     @ZenMethod
     public boolean tick(IWorld world) {
-        if (stopWhen != null && stopWhen.apply(world, context)) {
-            stopped = true;
+        if (stopWhen != null) {
+            try {
+                if (stopWhen.apply(world, context)) {
+                    stopped = true;
+                }
+            } catch (Exception exception) {
+                CraftTweakerAPI.logError("Exception occurred in stopWhen function, stopping the catenation...", exception);
+                stopped = true;
+            }
         }
         if (stopped) {
             return true;
         }
         ICatenationTask task = tasks.peek();
         if (task == null) return true;
-        task.run(world, context);
+        try {
+            task.run(world, context);
+        } catch (Exception exception) {
+            CraftTweakerAPI.logError("Exception occurred in a catenation task, stopping the catenation...", exception);
+            return true;
+        }
         if (task.isComplete()) {
             tasks.poll();
         }
