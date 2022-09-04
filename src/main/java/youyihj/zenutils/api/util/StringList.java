@@ -98,6 +98,37 @@ public class StringList implements Iterable<String> {
         return inner.contains(s);
     }
 
+    @ZenGetter
+    @ZenMethod
+    public int size() {
+        return inner.size();
+    }
+
+    @ZenMethod
+    public int indexOf(String s) {
+        return inner.indexOf(s);
+    }
+
+    @ZenMethod
+    public int lastIndexOf(String s) {
+        return inner.lastIndexOf(s);
+    }
+
+    @ZenMethod
+    public StringList subList(int fromIndex, int toIndex) {
+        return StringList.create(inner.subList(fromIndex, toIndex));
+    }
+
+    @ZenMethod
+    public void shuffle() {
+        Collections.shuffle(inner);
+    }
+
+    @ZenMethod
+    public String[] toArray() {
+        return inner.toArray(new String[0]);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
