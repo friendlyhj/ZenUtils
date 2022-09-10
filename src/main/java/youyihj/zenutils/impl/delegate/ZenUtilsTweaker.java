@@ -1,6 +1,5 @@
 package youyihj.zenutils.impl.delegate;
 
-import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.api.network.NetworkSide;
 import crafttweaker.preprocessor.PreprocessorManager;
@@ -25,8 +24,6 @@ public class ZenUtilsTweaker implements ITweaker {
     public void apply(IAction action) {
         if (!freeze) {
             tweaker.apply(action);
-        } else {
-            CraftTweakerAPI.logWarning("Action application is frozen! Recipe modification is not reloadable.");
         }
     }
 
