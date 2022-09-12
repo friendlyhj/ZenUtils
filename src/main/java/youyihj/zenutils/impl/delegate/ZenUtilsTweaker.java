@@ -9,12 +9,22 @@ import crafttweaker.runtime.ScriptLoader;
 import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.util.IEventHandler;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.reload.Reloadable;
 
-import java.util.List;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.*;
 
 public class ZenUtilsTweaker implements ITweaker {
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.publicLookup();
+
     private final ITweaker tweaker;
     private boolean freeze = false;
+    private final Queue<IAction> reloadableActions = new LinkedList<>();
+    private final Map<Class<?>, Boolean> actionReloadableCheck = new HashMap<>();
+    private final Map<Class<?>, Optional<MethodHandle>> undoMethods = new HashMap<>();
 
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
@@ -22,8 +32,12 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public void apply(IAction action) {
-        if (!freeze) {
+        boolean reloadable = isReloadable(action);
+        if (!freeze || reloadable) {
             tweaker.apply(action);
+        }
+        if (reloadable && getUndoMethod(action).isPresent()) {
+            reloadableActions.add(action);
         }
     }
 
@@ -113,5 +127,32 @@ public class ZenUtilsTweaker implements ITweaker {
 
     public ITweaker getITweaker() {
         return tweaker;
+    }
+
+    public void onReload() {
+        while (!reloadableActions.isEmpty()) {
+            IAction action = reloadableActions.poll();
+            getUndoMethod(action).ifPresent(methodHandle -> {
+                try {
+                    methodHandle.invoke(action);
+                } catch (Throwable e) {
+                    ZenUtils.forgeLogger.error("Failed to invoke undo method", e);
+                }
+            });
+        }
+    }
+
+    private boolean isReloadable(IAction action) {
+        return actionReloadableCheck.computeIfAbsent(action.getClass(), clazz -> clazz.isAnnotationPresent(Reloadable.class));
+    }
+
+    private Optional<MethodHandle> getUndoMethod(IAction action) {
+        return undoMethods.computeIfAbsent(action.getClass(), clazz -> {
+            try {
+                return Optional.of(LOOKUP.findVirtual(clazz, "undo", MethodType.methodType(Void.TYPE)));
+            } catch (Throwable e) {
+                return Optional.empty();
+            }
+        });
     }
 }
