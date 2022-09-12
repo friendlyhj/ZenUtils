@@ -47,11 +47,11 @@ public class ReloadCommand extends CraftTweakerCommand {
         }
         sender.sendMessage(getNormalMessage(TextFormatting.AQUA + "Beginning reload scripts"));
         sender.sendMessage(getNormalMessage("Only scripts that marked " + TextFormatting.GRAY + "#loader reloadable " + TextFormatting.RESET + "can be reloaded."));
-        sender.sendMessage(getNormalMessage(TextFormatting.YELLOW + "Recipe modifications are not reloadable, they will be ignored."));
+        sender.sendMessage(getNormalMessage(TextFormatting.YELLOW + "Most recipe modifications are not reloadable, they will be ignored."));
         ZenUtils.tweaker.freezeActionApplying();
         ZenModule.loadedClasses.clear();
         ZenUtils.crafttweakerLogger.clear();
-        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Pre());
+        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Pre(sender));
         ScriptLoader loader = RELOADABLE_LOADER.get();
         loader.setLoaderStage(ScriptLoader.LoaderStage.NOT_LOADED);
         CraftTweakerAPI.tweaker.loadScript(false, loader);
@@ -60,6 +60,6 @@ public class ReloadCommand extends CraftTweakerCommand {
         } else {
             sender.sendMessage(getNormalMessage("Reloaded successfully"));
         }
-        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Post());
+        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Post(sender));
     }
 }

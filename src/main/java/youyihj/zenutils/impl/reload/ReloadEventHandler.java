@@ -6,6 +6,7 @@ import crafttweaker.api.event.PlayerLoggedInEvent;
 import crafttweaker.api.event.PlayerLoggedOutEvent;
 import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import youyihj.zenutils.ZenUtils;
@@ -37,6 +38,13 @@ public class ReloadEventHandler {
         ZenUtils.tweaker.onReload();
     }
 
+    @SubscribeEvent
+    public static void onReloadPost(ScriptReloadEvent.Post event) {
+        int reloadActionCount = ZenUtils.tweaker.getReloadableActions().size();
+        if (reloadActionCount != 0) {
+            event.getRequester().sendMessage(new TextComponentString(reloadActionCount + " actions reloaded."));
+        }
+    }
 
     @SuppressWarnings("unchecked")
     private static void reRegisterInternalEvents() {

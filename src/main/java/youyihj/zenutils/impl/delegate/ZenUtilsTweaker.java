@@ -142,6 +142,10 @@ public class ZenUtilsTweaker implements ITweaker {
         }
     }
 
+    public Queue<IAction> getReloadableActions() {
+        return reloadableActions;
+    }
+
     private boolean isReloadable(IAction action) {
         return actionReloadableCheck.computeIfAbsent(action.getClass(), clazz -> clazz.isAnnotationPresent(Reloadable.class));
     }
