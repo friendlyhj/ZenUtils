@@ -26,6 +26,7 @@ import java.lang.annotation.*;
  *         CONTENTS.add(content);
  *     }
  *
+ *     @ReflectionInvoked
  *     public void undo() {
  *         CONTENTS.remove(content);
  *     }
@@ -35,7 +36,7 @@ import java.lang.annotation.*;
  *         return "Adding " + content + " to content list";
  *     }
  * }
- * }</pre></blockquote
+ * }</pre></blockquote>
  *
  * @author youyihj
  */

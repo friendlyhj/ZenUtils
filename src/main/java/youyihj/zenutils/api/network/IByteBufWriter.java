@@ -2,6 +2,7 @@ package youyihj.zenutils.api.network;
 
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 
 /**
  * @author youyihj
@@ -14,8 +15,8 @@ public interface IByteBufWriter {
 
     void write(IByteBuf byteBuf);
 
-    @SuppressWarnings("unused")
     // used for the default byte buffer writer of ZenNetworkHandler
+    @ReflectionInvoked
     static IByteBufWriter getNone(String s) {
         return NONE;
     }
