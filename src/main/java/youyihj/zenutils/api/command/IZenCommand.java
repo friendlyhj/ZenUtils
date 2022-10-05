@@ -10,6 +10,6 @@ import stanhebben.zenscript.annotations.ZenMethod;
 public interface IZenCommand extends ICommand {
     @ZenMethod
     default void register() {
-        ZenCommandRegistrar.zenCommandMap.put(this.getName(), this);
+        ZenCommandRegisterAction.ApplyLogic.INSTANCE.apply(new ZenCommandRegisterAction(this));
     }
 }

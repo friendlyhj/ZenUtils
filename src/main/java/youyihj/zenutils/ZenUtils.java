@@ -5,16 +5,13 @@ import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.preprocessor.PreprocessorManager;
+import net.minecraft.command.CommandHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLConstructionEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
-import youyihj.zenutils.api.command.ZenCommandRegistrar;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
@@ -22,6 +19,7 @@ import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
 import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.reload.ReloadCommand;
@@ -90,11 +88,16 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarting(FMLServerStartingEvent event) {
         CTChatCommand.registerCommand(new ReloadCommand());
-        ZenCommandRegistrar.zenCommandMap.forEach((name, command) -> event.registerServerCommand(command));
+        ZenCommandRegisterAction.ApplyLogic.INSTANCE.init((CommandHandler) event.getServer().commandManager);
         if (InternalUtils.isContentTweakerInstalled()) {
             LateGetContentLookup.refreshFields();
             LateGetContentLookup.clear();
         }
+    }
+
+    @Mod.EventHandler
+    public static void onServerStop(FMLServerStoppedEvent event) {
+        ZenCommandRegisterAction.ApplyLogic.INSTANCE.clean();
     }
 
     @Mod.EventHandler
