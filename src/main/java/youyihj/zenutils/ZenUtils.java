@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
+import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
@@ -19,7 +20,6 @@ import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
-import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
 import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.reload.ReloadCommand;
@@ -36,7 +36,7 @@ import java.lang.reflect.Field;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.12.1";
+    public static final String VERSION = "1.12.2";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests";
 
     public static Logger forgeLogger;
