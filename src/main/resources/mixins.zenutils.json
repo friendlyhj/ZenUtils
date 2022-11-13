@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "youyihj.zenutils.impl.zenscript.mixins",
+  "minVersion": "0.7.11",
+  "setSourceFile": true,
+  "priority": 0,
+  "refmap": "mixins.zenutils.refmap.json",
+  "mixins": [
+    "MixinZenParsedFile",
+    "MixinZenTokener",
+    "MixinZenType"
+  ],
+  "client": [
+  ]
+}

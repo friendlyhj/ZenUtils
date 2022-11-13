@@ -18,6 +18,7 @@ import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
 import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
@@ -25,8 +26,11 @@ import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.reload.ReloadCommand;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
+import zone.rong.mixinbooter.ILateMixinLoader;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author youyihj
@@ -103,5 +107,14 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarted(FMLServerStartedEvent event) {
         CraftTweakerAPI.tweaker.getActions().clear();
+    }
+
+    @ReflectionInvoked
+    public static class MixinStarter implements ILateMixinLoader {
+
+        @Override
+        public List<String> getMixinConfigs() {
+            return Collections.singletonList("mixins.zenutils.json");
+        }
     }
 }

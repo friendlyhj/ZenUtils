@@ -1,12 +1,18 @@
 buildscript {
     repositories {
         maven { url = "https://maven.minecraftforge.net" }
+        maven {
+            name = "sponge"
+            url = "https://repo.spongepowered.org/maven"
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
@@ -37,6 +43,19 @@ minecraft {
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "snapshot_20171003"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+
+    def args = [
+            "-Dmixin.debug.export=true",
+            '-Dmixin.hotSwap=true',
+            '-Dmixin.checks.interfaces=true'
+    ]
+
+    clientJvmArgs.addAll(args)
+    serverJvmArgs.addAll(args)
+}
+
+mixin {
+    add sourceSets.main, "mixins.zenutils.refmap.json"
 }
 
 dependencies {
@@ -68,6 +87,13 @@ dependencies {
     deobfCompile "curse.maven:ftb-library-legacy-forge-237167:2985811"
     deobfCompile "curse.maven:item-filters-309674:3003364"
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
+
+    deobfCompile "zone.rong:mixinbooter:4.2"
+    compile('org.spongepowered:mixin:0.8-SNAPSHOT') {
+        exclude module: 'guava'
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+    }
 }
 
 repositories {
@@ -88,6 +114,16 @@ repositories {
     maven {
         name = 'jei'
         url = 'http://dvs1.progwml6.com/files/maven'
+    }
+
+    maven {
+        name = 'cleanroom'
+        url = 'https://maven.cleanroommc.com'
+    }
+
+    maven {
+        name = "sponge"
+        url = "https://repo.spongepowered.org/maven"
     }
 }
 
