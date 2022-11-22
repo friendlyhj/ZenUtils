@@ -4,7 +4,10 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.items.CapabilityItemHandler;
+import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -26,5 +29,26 @@ public class ZenUtilsPlayer {
     @ZenMethod
     public static CrTItemHandler getPlayerInventoryItemHandler(IPlayer player) {
         return CrTItemHandler.of(CraftTweakerMC.getPlayer(player).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+    }
+
+    @ZenMethod
+    public static int readStat(IPlayer player, PlayerStat stat) {
+        EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
+        if (mcPlayer instanceof EntityPlayerMP) {
+            return ((EntityPlayerMP) mcPlayer).getStatFile().readStat(stat.getInternal());
+        }
+        return 0;
+    }
+
+    @ZenMethod
+    public static void addStat(IPlayer player, PlayerStat stat, @Optional(valueLong = 1) int amount) {
+        EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
+        mcPlayer.addStat(stat.getInternal(), amount);
+    }
+
+    @ZenMethod
+    public static void takeStat(IPlayer player, PlayerStat stat) {
+        EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
+        mcPlayer.takeStat(stat.getInternal());
     }
 }

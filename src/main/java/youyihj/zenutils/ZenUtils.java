@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
@@ -20,9 +21,11 @@ import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
 import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.reload.ReloadCommand;
+import youyihj.zenutils.impl.util.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
@@ -42,6 +45,9 @@ public class ZenUtils {
     public static Logger forgeLogger;
     public static ZenUtilsLogger crafttweakerLogger;
     public static ZenUtilsTweaker tweaker;
+
+    @SidedProxy(clientSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Client", serverSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Server")
+    public static IStatFormatterAdapter statFormatterAdapter;
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
@@ -88,6 +94,7 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarting(FMLServerStartingEvent event) {
         CTChatCommand.registerCommand(new ReloadCommand());
+        CTChatCommand.registerCommand(new StatCommand());
         ZenCommandRegisterAction.ApplyLogic.INSTANCE.init((CommandHandler) event.getServer().commandManager);
         if (InternalUtils.isContentTweakerInstalled()) {
             LateGetContentLookup.refreshFields();
