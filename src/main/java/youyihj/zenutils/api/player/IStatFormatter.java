@@ -5,6 +5,7 @@ import net.minecraft.stats.IStatType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  * @author youyihj
@@ -12,6 +13,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 @ZenRegister
 @ZenClass("mods.zenutils.IStatFormatter")
 public interface IStatFormatter {
+    @ZenMethod
     String format(int number);
 
     default IStatType toType() {

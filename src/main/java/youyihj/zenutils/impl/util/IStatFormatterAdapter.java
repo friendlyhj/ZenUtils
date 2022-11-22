@@ -14,7 +14,7 @@ public interface IStatFormatterAdapter {
 
         @Override
         public IStatFormatter adapt(IStatType type) {
-            return type::format;
+            return new PresentTypeFormatter(type::format, type);
         }
     }
 
@@ -22,7 +22,27 @@ public interface IStatFormatterAdapter {
 
         @Override
         public IStatFormatter adapt(IStatType type) {
-            return DefaultStatFormatters.simple();
+            return new PresentTypeFormatter(DefaultStatFormatters.simple(), type);
+        }
+    }
+
+    class PresentTypeFormatter implements IStatFormatter {
+        private final IStatFormatter parent;
+        private final IStatType type;
+
+        public PresentTypeFormatter(IStatFormatter parent, IStatType type) {
+            this.parent = parent;
+            this.type = type;
+        }
+
+        @Override
+        public String format(int number) {
+            return parent.format(number);
+        }
+
+        @Override
+        public IStatType toType() {
+            return type;
         }
     }
 }
