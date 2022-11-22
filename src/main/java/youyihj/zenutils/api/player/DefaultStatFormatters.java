@@ -5,7 +5,7 @@ import crafttweaker.annotations.ZenRegister;
 import net.minecraft.stats.IStatType;
 import net.minecraft.stats.StatBase;
 import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 
@@ -32,32 +32,32 @@ public class DefaultStatFormatters {
         return Suppliers.memoize(() -> ZenUtils.statFormatterAdapter.adapt(type));
     }
 
-    @ZenMethod
+    @ZenMethodStatic
     public static String numberFormat(int amount) {
         return NUMBER_FORMAT.format(amount);
     }
 
-    @ZenMethod
+    @ZenMethodStatic
     public static String decimalFormat(double amount) {
         return DECIMAL_FORMAT.format(amount);
     }
 
-    @ZenMethod
+    @ZenMethodStatic
     public static IStatFormatter simple() {
         return SIMPLE.get();
     }
 
-    @ZenMethod
+    @ZenMethodStatic
     public static IStatFormatter time() {
         return TIME.get();
     }
 
-    @ZenMethod
+    @ZenMethodStatic
     public static IStatFormatter distance() {
         return DISTANCE.get();
     }
 
-    @ZenMethod
+    @ZenMethodStatic
     public static IStatFormatter divideByTen() {
         return DIVIDE_BY_TEN.get();
     }
