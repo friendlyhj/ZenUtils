@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import crafttweaker.mc1120.world.MCWorld;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -47,15 +48,21 @@ public class CatenationManager {
     }
 
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.ClientTickEvent event) {
-        switch (event.phase) {
-            case START:
-                CatenationManager.clientCatenations.removeIf(it -> it.tick(new MCWorld(Minecraft.getMinecraft().world)));
-                break;
-            case END:
-                clientCatenations.addAll(clientCatenationsToAdd);
-                clientCatenationsToAdd.clear();
-                break;
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        WorldClient world = Minecraft.getMinecraft().world;
+        if (world != null) {
+            switch (event.phase) {
+                case START:
+                    CatenationManager.clientCatenations.removeIf(it -> it.tick(new MCWorld(world)));
+                    break;
+                case END:
+                    clientCatenations.addAll(clientCatenationsToAdd);
+                    clientCatenationsToAdd.clear();
+                    break;
+            }
+        } else if (!clientCatenations.isEmpty()) {
+            clientCatenations.clear();
+            clientCatenationsToAdd.clear();
         }
     }
 }
