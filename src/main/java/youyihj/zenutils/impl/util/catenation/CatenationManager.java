@@ -6,6 +6,7 @@ import crafttweaker.mc1120.world.MCWorld;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.world.World;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -45,6 +46,12 @@ public class CatenationManager {
                 cantenationsToAdd.clear();
                 break;
         }
+    }
+
+    @SubscribeEvent
+    public static void onWorldUnload(WorldEvent.Unload event) {
+        catenations.get(event.getWorld()).clear();
+        cantenationsToAdd.get(event.getWorld()).clear();
     }
 
     @SubscribeEvent
