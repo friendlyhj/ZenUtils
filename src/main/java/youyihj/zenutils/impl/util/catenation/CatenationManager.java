@@ -32,7 +32,7 @@ public class CatenationManager {
     }
 
     public static void addClientCatenation(Catenation catenation) {
-        clientCatenations.add(catenation);
+        clientCatenationsToAdd.add(catenation);
     }
 
     @SubscribeEvent
