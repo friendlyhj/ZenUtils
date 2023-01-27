@@ -50,8 +50,8 @@ public class CatenationManager {
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
-        catenations.get(event.getWorld()).clear();
-        cantenationsToAdd.get(event.getWorld()).clear();
+        catenations.removeAll(event.getWorld());
+        cantenationsToAdd.removeAll(event.getWorld());
     }
 
     @SubscribeEvent
