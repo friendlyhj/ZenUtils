@@ -10,6 +10,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import youyihj.zenutils.api.util.catenation.Catenation;
 
 import java.util.ArrayList;
@@ -54,22 +55,26 @@ public class CatenationManager {
         cantenationsToAdd.removeAll(event.getWorld());
     }
 
-    @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        WorldClient world = Minecraft.getMinecraft().world;
-        if (world != null) {
-            switch (event.phase) {
-                case START:
-                    CatenationManager.clientCatenations.removeIf(it -> it.tick(new MCWorld(world)));
-                    break;
-                case END:
-                    clientCatenations.addAll(clientCatenationsToAdd);
-                    clientCatenationsToAdd.clear();
-                    break;
+    @Mod.EventBusSubscriber(Side.CLIENT)
+    public static class ClientEventHandler {
+
+        @SubscribeEvent
+        public static void onClientTick(TickEvent.ClientTickEvent event) {
+            WorldClient world = Minecraft.getMinecraft().world;
+            if (world != null) {
+                switch (event.phase) {
+                    case START:
+                        CatenationManager.clientCatenations.removeIf(it -> it.tick(new MCWorld(world)));
+                        break;
+                    case END:
+                        clientCatenations.addAll(clientCatenationsToAdd);
+                        clientCatenationsToAdd.clear();
+                        break;
+                }
+            } else if (!clientCatenations.isEmpty()) {
+                clientCatenations.clear();
+                clientCatenationsToAdd.clear();
             }
-        } else if (!clientCatenations.isEmpty()) {
-            clientCatenations.clear();
-            clientCatenationsToAdd.clear();
         }
     }
 }
