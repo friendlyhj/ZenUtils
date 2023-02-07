@@ -25,6 +25,9 @@ public interface ICatenationBuilder {
     ICatenationBuilder stopWhen(IWorldCondition condition);
 
     @ZenMethod
+    ICatenationBuilder onStop(IWorldFunction function);
+
+    @ZenMethod
     default ICatenationBuilder then(IWorldFunction function) {
         return run(function);
     }

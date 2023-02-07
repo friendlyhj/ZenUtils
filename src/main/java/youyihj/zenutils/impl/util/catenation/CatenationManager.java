@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import youyihj.zenutils.api.util.catenation.Catenation;
+import youyihj.zenutils.api.util.catenation.CatenationStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ public class CatenationManager {
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
+        catenations.entries().forEach(it -> it.getValue().getContext().setStatus(CatenationStatus.UNLOAD, new MCWorld(it.getKey())));
         catenations.removeAll(event.getWorld());
         cantenationsToAdd.removeAll(event.getWorld());
     }
@@ -72,6 +74,7 @@ public class CatenationManager {
                         break;
                 }
             } else if (!clientCatenations.isEmpty()) {
+                clientCatenations.forEach(it -> it.getContext().setStatus(CatenationStatus.UNLOAD, it.getWorld()));
                 clientCatenations.clear();
                 clientCatenationsToAdd.clear();
             }

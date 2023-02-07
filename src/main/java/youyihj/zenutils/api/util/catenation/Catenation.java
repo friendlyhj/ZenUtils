@@ -17,59 +17,86 @@ import java.util.Queue;
 @ZenClass("mods.zenutils.Catenation")
 public class Catenation {
     private final Queue<ICatenationTask> tasks;
-    private boolean stopped;
     @Nullable
     private final IWorldCondition stopWhen;
-    private final CatenationContext context = new CatenationContext(this);
+    private final CatenationContext context;
 
-    public Catenation(Queue<ICatenationTask> tasks, @Nullable IWorldCondition stopWhen) {
+    private IWorld world;
+
+    public Catenation(Queue<ICatenationTask> tasks, @Nullable IWorldCondition stopWhen, @Nullable IWorldFunction onStop) {
         this.tasks = tasks;
         this.stopWhen = stopWhen;
+        this.context = new CatenationContext(this, onStop);
     }
 
     @ZenMethod
     public boolean tick(IWorld world) {
-        if (stopWhen != null) {
-            try {
-                if (stopWhen.apply(world, context)) {
-                    stopped = true;
+        this.world = world;
+        if (context.getStatus() == CatenationStatus.WORKING) {
+            if (stopWhen != null) {
+                try {
+                    if (stopWhen.apply(world, context)) {
+                        context.setStatus(CatenationStatus.STOP_INTERNAL, world);
+                    }
+                } catch (Exception exception) {
+                    CraftTweakerAPI.logError("Exception occurred in stopWhen function, stopping the catenation...", exception);
+                    context.setStatus(CatenationStatus.ERROR, world);
                 }
-            } catch (Exception exception) {
-                CraftTweakerAPI.logError("Exception occurred in stopWhen function, stopping the catenation...", exception);
-                stopped = true;
             }
-        }
-        if (stopped) {
-            return true;
-        }
-        ICatenationTask task = tasks.peek();
-        if (task == null) return true;
-        try {
-            task.run(world, context);
-        } catch (Exception exception) {
-            CraftTweakerAPI.logError("Exception occurred in a catenation task, stopping the catenation...", exception);
-            return true;
-        }
-        if (task.isComplete()) {
-            tasks.poll();
+            if (context.getStatus().isStop()) {
+                return true;
+            }
+            ICatenationTask task = tasks.peek();
+            if (task == null) {
+                context.setStatus(CatenationStatus.FINISH, world);
+                return true;
+            }
+            try {
+                task.run(world, context);
+            } catch (Exception exception) {
+                CraftTweakerAPI.logError("Exception occurred in a catenation task, stopping the catenation...", exception);
+                context.setStatus(CatenationStatus.ERROR, world);
+                return true;
+            }
+            if (task.isComplete()) {
+                tasks.poll();
+            }
+
         }
         return false;
     }
 
     @ZenMethod
     public void stop() {
-        stopped = true;
+        context.setStatus(CatenationStatus.STOP_MANUAL, world);
+    }
+
+    @ZenMethod
+    public void pause() {
+        context.setStatus(CatenationStatus.PAUSE, world);
+    }
+
+    @ZenMethod
+    public void play() {
+        if (!context.getStatus().isStop()) {
+            context.setStatus(CatenationStatus.WORKING, world);
+        }
     }
 
     @ZenGetter("stopped")
     @ZenMethod
     public boolean isStopped() {
-        return stopped;
+        return context.getStatus().isStop();
     }
 
     @ZenGetter("context")
     @ZenMethod
     public CatenationContext getContext() {
         return context;
+    }
+
+    // not exposed
+    public IWorld getWorld() {
+        return world;
     }
 }
