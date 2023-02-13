@@ -30,16 +30,15 @@ public class ReloadEventHandler {
         // remove duplicate recipe name warning, since we don't register new recipes
         ZenUtilsGlobal.addRegexLogFilter("Recipe name \\[.*\\] has duplicate uses, defaulting to calculated hash!");
 
-        if (InternalUtils.isContentTweakerInstalled()) {
-            LateGetContentLookup.refreshFields();
-            LateGetContentLookup.clear();
-        }
-
         ZenUtils.tweaker.onReload();
     }
 
     @SubscribeEvent
     public static void onReloadPost(ScriptReloadEvent.Post event) {
+        if (InternalUtils.isContentTweakerInstalled()) {
+            LateGetContentLookup.refreshFields();
+            LateGetContentLookup.clear();
+        }
         int reloadActionCount = ZenUtils.tweaker.getReloadableActions().size();
         if (reloadActionCount != 0) {
             event.getRequester().sendMessage(new TextComponentString(reloadActionCount + " actions reloaded."));
