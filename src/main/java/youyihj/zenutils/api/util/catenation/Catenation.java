@@ -43,7 +43,7 @@ public class Catenation {
                     context.setStatus(CatenationStatus.ERROR, world);
                 }
             }
-            if (context.getStatus().isStop()) {
+            if (isStopped()) {
                 return true;
             }
             ICatenationTask task = tasks.peek();
@@ -78,9 +78,7 @@ public class Catenation {
 
     @ZenMethod
     public void play() {
-        if (!context.getStatus().isStop()) {
-            context.setStatus(CatenationStatus.WORKING, world);
-        }
+        context.setStatus(CatenationStatus.WORKING, world);
     }
 
     @ZenGetter("stopped")

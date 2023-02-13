@@ -51,9 +51,9 @@ public class CatenationContext {
 
     // not exposed
     public void setStatus(CatenationStatus status, IWorld world) {
-        if (!this.status.isStop() && status.isStop()) {
+        if (!this.getStatus().isStop()) {
             this.status = status;
-            if (this.onStop != null && world != null) {
+            if (this.getStatus().isStop() && this.onStop != null && world != null) {
                 try {
                     this.onStop.apply(world, this);
                 } catch (Exception e) {
