@@ -1,5 +1,7 @@
 package youyihj.zenutils.impl.util.catenation;
 
+import crafttweaker.api.data.DataBool;
+import crafttweaker.api.data.IData;
 import crafttweaker.api.world.IWorld;
 import youyihj.zenutils.api.util.catenation.CatenationContext;
 import youyihj.zenutils.api.util.catenation.ICatenationTask;
@@ -26,5 +28,15 @@ public class SleepUntilTask implements ICatenationTask {
     @Override
     public boolean isComplete() {
         return !sleep;
+    }
+
+    @Override
+    public IData serializeToData() {
+        return new DataBool(sleep);
+    }
+
+    @Override
+    public void deserializeFromData(IData data) {
+        sleep = data.asBool();
     }
 }

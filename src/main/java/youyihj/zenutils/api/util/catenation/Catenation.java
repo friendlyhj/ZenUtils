@@ -23,6 +23,8 @@ public class Catenation {
     private final CatenationContext context;
 
     private WeakReference<IWorld> world = new WeakReference<>(null);
+    @Nullable
+    private String persistenceKey;
 
     public Catenation(Queue<ICatenationTask> tasks, @Nullable IWorldCondition stopWhen, @Nullable IWorldFunction onStop) {
         this.tasks = tasks;
@@ -97,5 +99,18 @@ public class Catenation {
     // not exposed
     public IWorld getWorld() {
         return world.get();
+    }
+
+    public Queue<ICatenationTask> getTasks() {
+        return tasks;
+    }
+
+    public void setPersistenceKey(@Nullable String persistenceKey) {
+        this.persistenceKey = persistenceKey;
+    }
+
+    @Nullable
+    public String getPersistenceKey() {
+        return persistenceKey;
     }
 }

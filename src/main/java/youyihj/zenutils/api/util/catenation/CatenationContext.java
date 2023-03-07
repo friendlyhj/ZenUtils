@@ -8,8 +8,11 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenSetter;
+import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author youyihj
@@ -22,6 +25,8 @@ public class CatenationContext {
     @Nullable
     private final IWorldFunction onStop;
     private CatenationStatus status = CatenationStatus.WORKING;
+
+    private final Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = new HashMap<>();
 
     public CatenationContext(Catenation catenation, @Nullable IWorldFunction onStop) {
         this.catenation = catenation;
@@ -61,6 +66,10 @@ public class CatenationContext {
                 }
             }
         }
+    }
+
+    public Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> getObjectHolders() {
+        return objectHolders;
     }
 
     @ZenMethod
