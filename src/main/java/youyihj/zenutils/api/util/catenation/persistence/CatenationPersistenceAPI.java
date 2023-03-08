@@ -13,8 +13,8 @@ import youyihj.zenutils.impl.util.catenation.persistence.CatenationPersistenceIm
 @ZenClass("mods.zenutils.CatenationPersistence")
 public class CatenationPersistenceAPI {
     @ZenMethod
-    public static CatenationPersistenceEntryBuilder registerPersistedCatenation(String key, ICatenationFactory catenationSupplier) {
-        return new CatenationPersistenceEntryBuilder(key, catenationSupplier);
+    public static CatenationPersistenceEntryBuilder registerPersistedCatenation(String key) {
+        return new CatenationPersistenceEntryBuilder(key);
     }
 
     @ZenMethod

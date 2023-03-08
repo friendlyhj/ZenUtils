@@ -1,7 +1,9 @@
 package youyihj.zenutils.api.util.catenation.persistence;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IWorld;
+import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.util.catenation.Catenation;
@@ -32,5 +34,10 @@ public class PersistedCatenationStarter {
     @ZenMethod
     public Catenation start() {
         return CatenationPersistenceImpl.startCatenation(world, key, objects);
+    }
+
+    @ZenMethod
+    public PersistedCatenationStarter withPlayer(IPlayer player, @Optional("player") String key) {
+        return with(key, BuiltinObjectHolderTypes.PLAYER, player);
     }
 }

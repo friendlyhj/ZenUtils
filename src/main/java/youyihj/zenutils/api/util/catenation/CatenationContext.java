@@ -3,11 +3,10 @@ package youyihj.zenutils.api.util.catenation;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
+import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IWorld;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenSetter;
+import stanhebben.zenscript.annotations.*;
+import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
 import javax.annotation.Nullable;
@@ -72,8 +71,18 @@ public class CatenationContext {
         return objectHolders;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T getObject(String key, ICatenationObjectHolder.Type<T> type) {
+        return (T) objectHolders.get(ICatenationObjectHolder.Key.of(key, type)).getValue();
+    }
+
     @ZenMethod
     public void stop() {
         catenation.stop();
+    }
+
+    @ZenMethod
+    public IPlayer getPlayer(@Optional("player") String key) {
+        return getObject(key, BuiltinObjectHolderTypes.PLAYER);
     }
 }
