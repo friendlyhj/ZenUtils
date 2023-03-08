@@ -22,14 +22,18 @@ public class EventHandler {
     public static void onWorldLoad(WorldEvent.Load event) {
         World world = event.getWorld();
         world.addEventListener(new FireEntityRemoveEventListener(world));
-        CatenationPersistenceImpl.onWorldLoad(CraftTweakerMC.getIWorld(world));
+        if (!world.isRemote) {
+            CatenationPersistenceImpl.onWorldLoad(CraftTweakerMC.getIWorld(world));
+        }
     }
 
     @SubscribeEvent
     public static void onEntityJoiningWorld(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityPlayer) {
-            CatenationPersistenceAPI.receiveObject(BuiltinObjectHolderTypes.PLAYER, CraftTweakerMC.getIPlayer((EntityPlayer) entity));
+        if (!entity.world.isRemote) {
+            if (entity instanceof EntityPlayer) {
+                CatenationPersistenceAPI.receiveObject(BuiltinObjectHolderTypes.PLAYER, CraftTweakerMC.getIPlayer((EntityPlayer) entity));
+            }
         }
     }
 }

@@ -47,6 +47,12 @@ public class CatenationContext {
         this.data = data;
     }
 
+    @ZenMethod
+    @ZenGetter
+    public boolean hasData() {
+        return this.data != null;
+    }
+
     @ZenGetter("status")
     @ZenMethod
     public CatenationStatus getStatus() {

@@ -7,5 +7,5 @@ import youyihj.zenutils.impl.util.catenation.persistence.PlayerObjectHolder;
  * @author youyihj
  */
 public class BuiltinObjectHolderTypes {
-    public static final ICatenationObjectHolder.Type<IPlayer> PLAYER = ICatenationObjectHolder.Type.of(PlayerObjectHolder::new);
+    public static final ICatenationObjectHolder.Type<IPlayer> PLAYER = ICatenationObjectHolder.Type.of(PlayerObjectHolder::new, IPlayer.class);
 }

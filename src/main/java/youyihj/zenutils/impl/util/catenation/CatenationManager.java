@@ -57,10 +57,17 @@ public class CatenationManager {
     public static void onWorldUnload(WorldEvent.Unload event) {
         World world = event.getWorld();
         catenations.entries().forEach(it -> it.getValue().getContext().setStatus(CatenationStatus.UNLOAD, new MCWorld(it.getKey())));
-        List<Catenation> unfinished = ImmutableList.<Catenation>builder().addAll(catenations.get(world)).addAll(cantenationsToAdd.get(world)).build();
-        CatenationPersistenceImpl.onWorldUnload(CraftTweakerMC.getIWorld(world), unfinished);
         catenations.removeAll(world);
         cantenationsToAdd.removeAll(world);
+    }
+
+    @SubscribeEvent
+    public static void onWorldSave(WorldEvent.Save event) {
+        World world = event.getWorld();
+        if (!world.isRemote) {
+            List<Catenation> unfinished = ImmutableList.<Catenation>builder().addAll(catenations.get(world)).addAll(cantenationsToAdd.get(world)).build();
+            CatenationPersistenceImpl.onWorldSave(CraftTweakerMC.getIWorld(world), unfinished);
+        }
     }
 
     @Mod.EventBusSubscriber(Side.CLIENT)

@@ -1,10 +1,10 @@
 package youyihj.zenutils.impl.util.catenation.persistence;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.reflect.TypeToken;
 import crafttweaker.api.data.*;
 import crafttweaker.api.world.IWorld;
 import youyihj.zenutils.api.util.catenation.Catenation;
+import youyihj.zenutils.api.util.catenation.CatenationContext;
 import youyihj.zenutils.api.util.catenation.CatenationStatus;
 import youyihj.zenutils.api.util.catenation.ICatenationTask;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationFactory;
@@ -43,6 +43,7 @@ public class CatenationPersistenceImpl {
     }
 
     public static IData serialize(Catenation catenation) {
+        CatenationContext context = catenation.getContext();
         Map<String, IData> total = new HashMap<>();
 
         total.put("key", new DataString(catenation.getPersistenceKey()));
@@ -51,16 +52,15 @@ public class CatenationPersistenceImpl {
         total.put("taskCount", new DataInt(tasks.size()));
         total.put("taskData", tasks.element().serializeToData());
 
-        IData data = catenation.getContext().getData();
-        if (data != null) {
-            total.put("data", data);
+        if (context.hasData()) {
+            total.put("data", context.getData());
         }
 
         Map<String, IData> objData = new HashMap<>();
-        Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = catenation.getContext().getObjectHolders();
+        Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = context.getObjectHolders();
         objectHolders.forEach((key, objHolder) -> {
             Map<String, IData> objDataSingle = new HashMap<>();
-            objDataSingle.put("type", new DataString(objHolder.getType().getTypeToken().toString()));
+            objDataSingle.put("type", new DataString(objHolder.getType().getValueType().getName()));
             objDataSingle.put("value", objHolder.serializeToData());
             objData.put(key.getKey(), new DataMap(objDataSingle, true));
         });
@@ -70,8 +70,10 @@ public class CatenationPersistenceImpl {
     }
 
     public static Catenation deserialize(IData data, IWorld world) {
-        Catenation catenation = persistData.get(data.memberGet("key").asString()).getCatenationFactory().get(world);
+        String persistKey = data.memberGet("key").asString();
+        Catenation catenation = persistData.get(persistKey).getCatenationFactory().get(world);
         catenation.getContext().setStatus(CatenationStatus.SERIAL, world);
+        catenation.setPersistenceKey(persistKey);
 
         Queue<ICatenationTask> tasks = catenation.getTasks();
         int toRemoveTasks = tasks.size() - data.memberGet("taskCount").asInt();
@@ -113,7 +115,7 @@ public class CatenationPersistenceImpl {
         }
     }
 
-    public static void onWorldUnload(IWorld world, List<Catenation> unfinished) {
+    public static void onWorldSave(IWorld world, List<Catenation> unfinished) {
         List<IData> catenationDataList = new ArrayList<>();
         for (Catenation catenation : unfinished) {
             if (catenation.getPersistenceKey() != null) {
@@ -126,7 +128,7 @@ public class CatenationPersistenceImpl {
     @SuppressWarnings("unchecked")
     public static <T> void receiveObject(ICatenationObjectHolder.Type<T> type, T object) {
         Iterator<Catenation> iterator = waitingCatenation.iterator();
-        while (!iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Catenation catenation = iterator.next();
             Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = catenation.getContext().getObjectHolders();
             for (Map.Entry<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> holderEntry : objectHolders.entrySet()) {
@@ -162,8 +164,8 @@ public class CatenationPersistenceImpl {
                 for (ICatenationObjectHolder.Key<?> dataKey : dataKeys) {
                     if (key.equals(dataKey.getKey())) {
                         found = true;
-                        TypeToken<?> expected = entry.getValue().getTypeToken();
-                        TypeToken<?> given = dataKey.getType().getTypeToken();
+                        Class<?> expected = entry.getValue().getValueType();
+                        Class<?> given = dataKey.getType().getValueType();
                         if (!expected.equals(given)) {
                             throw new IllegalArgumentException("Type mismatches at key " + key + ", expected " + expected + ", but given " + given);
                         }
@@ -171,7 +173,7 @@ public class CatenationPersistenceImpl {
                     }
                 }
                 if (!found) {
-                    throw new IllegalArgumentException("catenation object: {key: " + key + ", type: " + entry.getValue().getTypeToken() + "} is missing.");
+                    throw new IllegalArgumentException("catenation object: {key: " + key + ", type: " + entry.getValue().getValueType().getName() + "} is missing.");
                 }
             }
         }

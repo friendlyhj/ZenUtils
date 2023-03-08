@@ -15,7 +15,7 @@ public enum CatenationStatus {
     STOP_MANUAL,
     STOP_INTERNAL,
     ERROR,
-    UNLOAD,
+    UNLOAD(false),
     SERIAL(false);
 
     private final boolean stop;

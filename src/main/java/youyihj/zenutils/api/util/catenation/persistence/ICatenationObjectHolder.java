@@ -1,6 +1,5 @@
 package youyihj.zenutils.api.util.catenation.persistence;
 
-import com.google.gson.reflect.TypeToken;
 import crafttweaker.api.data.IData;
 import org.apache.commons.lang3.mutable.Mutable;
 import youyihj.zenutils.impl.util.catenation.persistence.ObjectHolderTypeRegistry;
@@ -26,15 +25,15 @@ public interface ICatenationObjectHolder<T> extends Mutable<T> {
 
     final class Type<T> {
         private final Supplier<ICatenationObjectHolder<T>> factory;
-        private final TypeToken<T> typeToken;
+        private final Class<T> valueType;
 
-        private Type(Supplier<ICatenationObjectHolder<T>> factory, TypeToken<T> typeToken) {
+        private Type(Supplier<ICatenationObjectHolder<T>> factory, Class<T> valueType) {
             this.factory = factory;
-            this.typeToken = typeToken;
+            this.valueType = valueType;
         }
 
-        public static <T> Type<T> of(Supplier<ICatenationObjectHolder<T>> factory) {
-            Type<T> type = new Type<>(factory, new TypeToken<T>() {});
+        public static <T> Type<T> of(Supplier<ICatenationObjectHolder<T>> factory, Class<T> valueType) {
+            Type<T> type = new Type<>(factory, valueType);
             ObjectHolderTypeRegistry.register(type);
             return type;
         }
@@ -43,8 +42,8 @@ public interface ICatenationObjectHolder<T> extends Mutable<T> {
             return factory.get();
         }
 
-        public TypeToken<T> getTypeToken() {
-            return typeToken;
+        public Class<T> getValueType() {
+            return valueType;
         }
     }
 

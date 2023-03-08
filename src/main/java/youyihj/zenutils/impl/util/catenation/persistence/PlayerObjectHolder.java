@@ -42,7 +42,7 @@ public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
 
     @Override
     public void receiveObject(IPlayer object) {
-        if (Objects.equals(EntityPlayer.getUUID(CraftTweakerMC.getPlayer(player).getGameProfile()), serial)) {
+        if (Objects.equals(EntityPlayer.getUUID(CraftTweakerMC.getPlayer(object).getGameProfile()), serial)) {
             this.player = object;
         }
     }
