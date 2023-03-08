@@ -22,7 +22,7 @@ public class CatenationPersistenceAPI {
         return new PersistedCatenationStarter(world, key);
     }
 
-    public <T> void receiveObject(ICatenationObjectHolder.Type<T> type, T object) {
+    public static <T> void receiveObject(ICatenationObjectHolder.Type<T> type, T object) {
         CatenationPersistenceImpl.receiveObject(type, object);
     }
 }

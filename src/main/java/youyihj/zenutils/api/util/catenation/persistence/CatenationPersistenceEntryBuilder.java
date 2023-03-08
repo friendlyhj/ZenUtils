@@ -5,7 +5,6 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.impl.util.catenation.persistence.PlayerObjectHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +36,6 @@ public class CatenationPersistenceEntryBuilder {
 
     @ZenMethod
     public void addPlayerHolder(@Optional(value = "player") String objectKey) {
-        addObjectHolder(objectKey, PlayerObjectHolder.TYPE);
+        addObjectHolder(objectKey, BuiltinObjectHolderTypes.PLAYER);
     }
 }

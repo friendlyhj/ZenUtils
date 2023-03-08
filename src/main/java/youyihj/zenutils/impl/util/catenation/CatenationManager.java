@@ -1,7 +1,9 @@
 package youyihj.zenutils.impl.util.catenation;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.world.MCWorld;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -13,6 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.CatenationStatus;
+import youyihj.zenutils.impl.util.catenation.persistence.CatenationPersistenceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,9 +55,12 @@ public class CatenationManager {
 
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
+        World world = event.getWorld();
         catenations.entries().forEach(it -> it.getValue().getContext().setStatus(CatenationStatus.UNLOAD, new MCWorld(it.getKey())));
-        catenations.removeAll(event.getWorld());
-        cantenationsToAdd.removeAll(event.getWorld());
+        List<Catenation> unfinished = ImmutableList.<Catenation>builder().addAll(catenations.get(world)).addAll(cantenationsToAdd.get(world)).build();
+        CatenationPersistenceImpl.onWorldUnload(CraftTweakerMC.getIWorld(world), unfinished);
+        catenations.removeAll(world);
+        cantenationsToAdd.removeAll(world);
     }
 
     @Mod.EventBusSubscriber(Side.CLIENT)

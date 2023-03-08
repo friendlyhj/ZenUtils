@@ -6,6 +6,7 @@ import crafttweaker.api.data.IData;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import net.minecraft.entity.player.EntityPlayer;
+import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
 import java.util.Arrays;
@@ -17,7 +18,6 @@ import java.util.UUID;
  * @author youyihj
  */
 public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
-    public static final Type<IPlayer> TYPE = Type.of(PlayerObjectHolder::new);
 
     private IPlayer player;
 
@@ -25,7 +25,7 @@ public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
 
     @Override
     public Type<IPlayer> getType() {
-        return TYPE;
+        return BuiltinObjectHolderTypes.PLAYER;
     }
 
     @Override

@@ -2,16 +2,14 @@ package youyihj.zenutils.impl.util.catenation.persistence;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.reflect.TypeToken;
-import crafttweaker.api.data.DataInt;
-import crafttweaker.api.data.DataMap;
-import crafttweaker.api.data.DataString;
-import crafttweaker.api.data.IData;
+import crafttweaker.api.data.*;
 import crafttweaker.api.world.IWorld;
 import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.CatenationStatus;
 import youyihj.zenutils.api.util.catenation.ICatenationTask;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationFactory;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
+import youyihj.zenutils.api.world.ZenUtilsWorld;
 
 import java.util.*;
 
@@ -81,6 +79,9 @@ public class CatenationPersistenceImpl {
             tasks.poll();
         }
         tasks.element().deserializeFromData(data.memberGet("taskData"));
+        if (tasks.element().isComplete()) {
+            tasks.poll();
+        }
 
         if (data.contains(new DataString("data"))) {
             catenation.getContext().setData(data.memberGet("data"));
@@ -96,13 +97,30 @@ public class CatenationPersistenceImpl {
             objectHolders.put(holderKey, holder);
         });
 
-        if (objectHolders.values().stream().allMatch(ICatenationObjectHolder::isReady)) {
-            catenation.getContext().setStatus(CatenationStatus.WORKING, world);
-        } else {
-            waitingCatenation.add(catenation);
-        }
-
         return catenation;
+    }
+
+    public static void onWorldLoad(IWorld world) {
+        IData catenationsData = ZenUtilsWorld.getCustomWorldData(world).memberGet("catenations");
+        if (catenationsData == null) return;
+        for (IData catenationData : catenationsData.asList()) {
+            Catenation catenation = deserialize(catenationData, world);
+            if (catenation.getContext().getObjectHolders().values().stream().allMatch(ICatenationObjectHolder::isReady)) {
+                catenation.getContext().setStatus(CatenationStatus.WORKING, world);
+            } else {
+                waitingCatenation.add(catenation);
+            }
+        }
+    }
+
+    public static void onWorldUnload(IWorld world, List<Catenation> unfinished) {
+        List<IData> catenationDataList = new ArrayList<>();
+        for (Catenation catenation : unfinished) {
+            if (catenation.getPersistenceKey() != null) {
+                catenationDataList.add(serialize(catenation));
+            }
+        }
+        ZenUtilsWorld.getCustomWorldData(world).memberSet("catenations", new DataList(catenationDataList, true));
     }
 
     @SuppressWarnings("unchecked")
