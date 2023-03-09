@@ -107,7 +107,7 @@ public class CatenationPersistenceImpl {
         if (catenationsData == null) return;
         for (IData catenationData : catenationsData.asList()) {
             Catenation catenation = deserialize(catenationData, world);
-            if (catenation.getContext().getObjectHolders().values().stream().allMatch(ICatenationObjectHolder::isReady)) {
+            if (isReady(catenation)) {
                 catenation.getContext().setStatus(CatenationStatus.WORKING, world);
             } else {
                 waitingCatenation.add(catenation);
@@ -125,22 +125,36 @@ public class CatenationPersistenceImpl {
         ZenUtilsWorld.getCustomWorldData(world).memberSet("catenations", new DataList(catenationDataList, true));
     }
 
+    public static void onServerTick() {
+        Iterator<Catenation> iterator = waitingCatenation.iterator();
+        while (iterator.hasNext()) {
+            Catenation catenation = iterator.next();
+            if (isReady(catenation)) {
+                catenation.getContext().setStatus(CatenationStatus.WORKING, catenation.getWorld());
+                iterator.remove();
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> void receiveObject(ICatenationObjectHolder.Type<T> type, T object) {
         Iterator<Catenation> iterator = waitingCatenation.iterator();
         while (iterator.hasNext()) {
             Catenation catenation = iterator.next();
-            Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = catenation.getContext().getObjectHolders();
-            for (Map.Entry<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> holderEntry : objectHolders.entrySet()) {
+            for (Map.Entry<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> holderEntry : catenation.getContext().getObjectHolders().entrySet()) {
                 if (type.equals(holderEntry.getKey().getType())) {
                     ((ICatenationObjectHolder<Object>) holderEntry.getValue()).receiveObject(object);
                 }
             }
-            if (objectHolders.values().stream().allMatch(ICatenationObjectHolder::isReady)) {
+            if (isReady(catenation)) {
                 catenation.getContext().setStatus(CatenationStatus.WORKING, catenation.getWorld());
                 iterator.remove();
             }
         }
+    }
+
+    private static boolean isReady(Catenation catenation) {
+        return catenation.getContext().getObjectHolders().values().stream().allMatch(it -> it.isReady(catenation));
     }
 
     public static class Entry {

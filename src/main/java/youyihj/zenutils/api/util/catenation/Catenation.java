@@ -8,7 +8,6 @@ import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.Queue;
 
 /**
@@ -22,7 +21,7 @@ public class Catenation {
     private final IWorldCondition stopWhen;
     private final CatenationContext context;
 
-    private WeakReference<IWorld> world = new WeakReference<>(null);
+    private IWorld world;
     @Nullable
     private String persistenceKey;
 
@@ -34,7 +33,7 @@ public class Catenation {
 
     @ZenMethod
     public boolean tick(IWorld world) {
-        this.world = new WeakReference<>(world);
+        this.world = world;
         if (context.getStatus() == CatenationStatus.WORKING) {
             if (stopWhen != null) {
                 try {
@@ -71,17 +70,17 @@ public class Catenation {
 
     @ZenMethod
     public void stop() {
-        context.setStatus(CatenationStatus.STOP_MANUAL, world.get());
+        context.setStatus(CatenationStatus.STOP_MANUAL, world);
     }
 
     @ZenMethod
     public void pause() {
-        context.setStatus(CatenationStatus.PAUSE, world.get());
+        context.setStatus(CatenationStatus.PAUSE, world);
     }
 
     @ZenMethod
     public void play() {
-        context.setStatus(CatenationStatus.WORKING, world.get());
+        context.setStatus(CatenationStatus.WORKING, world);
     }
 
     @ZenGetter("stopped")
@@ -98,7 +97,7 @@ public class Catenation {
 
     // not exposed
     public IWorld getWorld() {
-        return world.get();
+        return world;
     }
 
     public Queue<ICatenationTask> getTasks() {

@@ -1,7 +1,10 @@
 package youyihj.zenutils.api.util.catenation.persistence;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.IData;
+import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.player.IPlayer;
+import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -39,5 +42,20 @@ public class PersistedCatenationStarter {
     @ZenMethod
     public PersistedCatenationStarter withPlayer(IPlayer player, @Optional("player") String key) {
         return with(key, BuiltinObjectHolderTypes.PLAYER, player);
+    }
+
+    @ZenMethod
+    public PersistedCatenationStarter withPosition(IBlockPos pos, @Optional("pos") String key) {
+        return with(key, BuiltinObjectHolderTypes.POSITION, pos);
+    }
+
+    @ZenMethod
+    public PersistedCatenationStarter withData(IData data, @Optional("data") String key) {
+        return with(key, BuiltinObjectHolderTypes.DATA, data);
+    }
+
+    @ZenMethod
+    public PersistedCatenationStarter withEntity(IEntity entity, @Optional("entity") String key) {
+        return with(key, BuiltinObjectHolderTypes.ENTITY, entity);
     }
 }

@@ -3,7 +3,9 @@ package youyihj.zenutils.api.util.catenation;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
+import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.player.IPlayer;
+import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
@@ -79,7 +81,12 @@ public class CatenationContext {
 
     @SuppressWarnings("unchecked")
     public <T> T getObject(String key, ICatenationObjectHolder.Type<T> type) {
-        return (T) objectHolders.get(ICatenationObjectHolder.Key.of(key, type)).getValue();
+        ICatenationObjectHolder<?> objectHolder = objectHolders.get(ICatenationObjectHolder.Key.of(key, type));
+        if (objectHolder != null) {
+            return (T) objectHolder.getValue();
+        } else {
+            throw new IllegalArgumentException("No such object key: " + key);
+        }
     }
 
     @ZenMethod
@@ -90,5 +97,20 @@ public class CatenationContext {
     @ZenMethod
     public IPlayer getPlayer(@Optional("player") String key) {
         return getObject(key, BuiltinObjectHolderTypes.PLAYER);
+    }
+
+    @ZenMethod
+    public IBlockPos getPosition(@Optional("pos") String key) {
+        return getObject(key, BuiltinObjectHolderTypes.POSITION);
+    }
+
+    @ZenMethod
+    public IData getPersistedData(@Optional("data") String key) {
+        return getObject(key, BuiltinObjectHolderTypes.DATA);
+    }
+
+    @ZenMethod
+    public IEntity getEntity(@Optional("entity") String key) {
+        return getObject(key, BuiltinObjectHolderTypes.ENTITY);
     }
 }

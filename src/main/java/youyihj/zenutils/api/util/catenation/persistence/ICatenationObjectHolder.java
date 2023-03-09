@@ -2,6 +2,7 @@ package youyihj.zenutils.api.util.catenation.persistence;
 
 import crafttweaker.api.data.IData;
 import org.apache.commons.lang3.mutable.Mutable;
+import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.impl.util.catenation.persistence.ObjectHolderTypeRegistry;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ public interface ICatenationObjectHolder<T> extends Mutable<T> {
 
     void receiveObject(T object);
 
-    default boolean isReady() {
+    default boolean isReady(Catenation catenation) {
         return getValue() != null;
     }
 

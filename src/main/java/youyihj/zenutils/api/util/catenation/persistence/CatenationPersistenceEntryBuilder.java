@@ -47,4 +47,19 @@ public class CatenationPersistenceEntryBuilder {
     public CatenationPersistenceEntryBuilder addPlayerHolder(@Optional("player") String objectKey) {
         return addObjectHolder(objectKey, BuiltinObjectHolderTypes.PLAYER);
     }
+
+    @ZenMethod
+    public CatenationPersistenceEntryBuilder addPositionHolder(@Optional("pos") String objectKey) {
+        return addObjectHolder(objectKey, BuiltinObjectHolderTypes.POSITION);
+    }
+
+    @ZenMethod
+    public CatenationPersistenceEntryBuilder addDataHolder(@Optional("data") String objectKey) {
+        return addObjectHolder(objectKey, BuiltinObjectHolderTypes.DATA);
+    }
+
+    @ZenMethod
+    public CatenationPersistenceEntryBuilder addEntityHolder(@Optional("entity") String objectKey) {
+        return addObjectHolder(objectKey, BuiltinObjectHolderTypes.ENTITY);
+    }
 }
