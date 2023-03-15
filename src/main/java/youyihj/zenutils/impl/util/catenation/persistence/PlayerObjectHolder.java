@@ -6,6 +6,7 @@ import crafttweaker.api.data.IData;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import net.minecraft.entity.player.EntityPlayer;
+import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
@@ -21,7 +22,7 @@ public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
 
     private IPlayer player;
 
-    private UUID serial;
+    private UUID uuid;
 
     @Override
     public Type<IPlayer> getType() {
@@ -30,19 +31,18 @@ public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
 
     @Override
     public IData serializeToData() {
-        UUID uuid = EntityPlayer.getUUID(CraftTweakerMC.getPlayer(player).getGameProfile());
         return new DataList(Arrays.asList(new DataLong(uuid.getMostSignificantBits()), new DataLong(uuid.getLeastSignificantBits())), true);
     }
 
     @Override
     public void deserializeFromData(IData data) {
         List<IData> list = data.asList();
-        serial = new UUID(list.get(0).asLong(), list.get(1).asLong());
+        uuid = new UUID(list.get(0).asLong(), list.get(1).asLong());
     }
 
     @Override
     public void receiveObject(IPlayer object) {
-        if (Objects.equals(EntityPlayer.getUUID(CraftTweakerMC.getPlayer(object).getGameProfile()), serial)) {
+        if (Objects.equals(EntityPlayer.getUUID(CraftTweakerMC.getPlayer(object).getGameProfile()), uuid)) {
             this.player = object;
         }
     }
@@ -55,5 +55,11 @@ public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
     @Override
     public void setValue(IPlayer value) {
         this.player = value;
+        this.uuid = EntityPlayer.getUUID(CraftTweakerMC.getPlayer(player).getGameProfile());
+    }
+
+    @Override
+    public boolean isValid(Catenation catenation) {
+        return player != null && CraftTweakerMC.getWorld(catenation.getWorld()).playerEntities.contains(CraftTweakerMC.getPlayer(player));
     }
 }

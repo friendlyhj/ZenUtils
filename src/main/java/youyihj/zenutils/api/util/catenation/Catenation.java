@@ -34,6 +34,7 @@ public class Catenation {
     @ZenMethod
     public boolean tick(IWorld world) {
         this.world = world;
+        context.checkObjectHolders();
         if (context.getStatus() == CatenationStatus.WORKING) {
             if (stopWhen != null) {
                 try {
@@ -111,5 +112,9 @@ public class Catenation {
     @Nullable
     public String getPersistenceKey() {
         return persistenceKey;
+    }
+
+    public boolean isAllObjectsValid() {
+        return this.getContext().getObjectHolders().values().stream().allMatch(it -> it.isValid(this));
     }
 }

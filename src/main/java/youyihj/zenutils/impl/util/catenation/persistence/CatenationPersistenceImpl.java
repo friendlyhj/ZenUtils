@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class CatenationPersistenceImpl {
     private static final Map<String, Entry> persistData = new HashMap<>();
-    private static final List<Catenation> waitingCatenation = new ArrayList<>();
+    private static final Set<Catenation> waitingCatenation = new HashSet<>();
 
     public static void registerPersistCatenation(String key, ICatenationFactory catenationFactory, Map<String, ICatenationObjectHolder.Type<?>> objectHolderTypes) {
         persistData.put(key, new Entry(catenationFactory, ImmutableMap.copyOf(objectHolderTypes)));
@@ -107,10 +107,10 @@ public class CatenationPersistenceImpl {
         if (catenationsData == null) return;
         for (IData catenationData : catenationsData.asList()) {
             Catenation catenation = deserialize(catenationData, world);
-            if (isReady(catenation)) {
+            if (catenation.isAllObjectsValid()) {
                 catenation.getContext().setStatus(CatenationStatus.WORKING, world);
             } else {
-                waitingCatenation.add(catenation);
+                addWaitingCatenation(catenation);
             }
         }
     }
@@ -125,17 +125,6 @@ public class CatenationPersistenceImpl {
         ZenUtilsWorld.getCustomWorldData(world).memberSet("catenations", new DataList(catenationDataList, true));
     }
 
-    public static void onServerTick() {
-        Iterator<Catenation> iterator = waitingCatenation.iterator();
-        while (iterator.hasNext()) {
-            Catenation catenation = iterator.next();
-            if (isReady(catenation)) {
-                catenation.getContext().setStatus(CatenationStatus.WORKING, catenation.getWorld());
-                iterator.remove();
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> void receiveObject(ICatenationObjectHolder.Type<T> type, T object) {
         Iterator<Catenation> iterator = waitingCatenation.iterator();
@@ -146,15 +135,15 @@ public class CatenationPersistenceImpl {
                     ((ICatenationObjectHolder<Object>) holderEntry.getValue()).receiveObject(object);
                 }
             }
-            if (isReady(catenation)) {
+            if (catenation.isAllObjectsValid()) {
                 catenation.getContext().setStatus(CatenationStatus.WORKING, catenation.getWorld());
                 iterator.remove();
             }
         }
     }
 
-    private static boolean isReady(Catenation catenation) {
-        return catenation.getContext().getObjectHolders().values().stream().allMatch(it -> it.isReady(catenation));
+    public static void addWaitingCatenation(Catenation catenation) {
+        waitingCatenation.add(catenation);
     }
 
     public static class Entry {

@@ -5,6 +5,7 @@ import crafttweaker.api.data.DataLong;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
@@ -52,5 +53,10 @@ public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
     @Override
     public void setValue(IEntity value) {
         this.entity = value;
+    }
+
+    @Override
+    public boolean isValid(Catenation catenation) {
+        return entity != null && entity.isAlive();
     }
 }

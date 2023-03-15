@@ -20,7 +20,7 @@ public interface ICatenationObjectHolder<T> extends Mutable<T> {
 
     void receiveObject(T object);
 
-    default boolean isReady(Catenation catenation) {
+    default boolean isValid(Catenation catenation) {
         return getValue() != null;
     }
 

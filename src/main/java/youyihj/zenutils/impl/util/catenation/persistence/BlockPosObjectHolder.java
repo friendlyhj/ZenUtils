@@ -49,7 +49,7 @@ public class BlockPosObjectHolder implements ICatenationObjectHolder<IBlockPos> 
     }
 
     @Override
-    public boolean isReady(Catenation catenation) {
+    public boolean isValid(Catenation catenation) {
         return CraftTweakerMC.getWorld(catenation.getWorld()).isBlockLoaded(CraftTweakerMC.getBlockPos(pos));
     }
 }

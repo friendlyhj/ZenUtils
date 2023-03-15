@@ -10,6 +10,7 @@ import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
+import youyihj.zenutils.impl.util.catenation.persistence.CatenationPersistenceImpl;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -63,6 +64,9 @@ public class CatenationContext {
 
     // not exposed
     public void setStatus(CatenationStatus status, IWorld world) {
+        if (status == CatenationStatus.SERIAL) {
+            CatenationPersistenceImpl.addWaitingCatenation(catenation);
+        }
         if (!this.getStatus().isStop()) {
             this.status = status;
             if (this.getStatus().isStop() && this.onStop != null && world != null) {
@@ -72,6 +76,12 @@ public class CatenationContext {
                     CraftTweakerAPI.logError("Exception occurred in onStop function", e);
                 }
             }
+        }
+    }
+
+    public void setStatus(CatenationStatus status) {
+        if (!status.isStop()) {
+            setStatus(status, catenation.getWorld());
         }
     }
 
@@ -86,6 +96,15 @@ public class CatenationContext {
             return (T) objectHolder.getValue();
         } else {
             throw new IllegalArgumentException("No such object key: " + key);
+        }
+    }
+
+    public void checkObjectHolders() {
+        boolean isReady = catenation.isAllObjectsValid();
+        if (isReady && getStatus() == CatenationStatus.SERIAL) {
+            setStatus(CatenationStatus.WORKING);
+        } else if (!isReady && getStatus() == CatenationStatus.WORKING) {
+            setStatus(CatenationStatus.SERIAL);
         }
     }
 

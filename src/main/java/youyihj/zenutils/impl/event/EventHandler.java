@@ -8,7 +8,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI;
 import youyihj.zenutils.impl.util.FireEntityRemoveEventListener;
@@ -36,13 +35,6 @@ public class EventHandler {
                 CatenationPersistenceAPI.receiveObject(BuiltinObjectHolderTypes.PLAYER, CraftTweakerMC.getIPlayer((EntityPlayer) entity));
             }
             CatenationPersistenceAPI.receiveObject(BuiltinObjectHolderTypes.ENTITY, CraftTweakerMC.getIEntity(entity));
-        }
-    }
-
-    @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            CatenationPersistenceImpl.onServerTick();
         }
     }
 }
