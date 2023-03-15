@@ -14,7 +14,7 @@ import youyihj.zenutils.impl.zenscript.IOrderlyType;
  * @author youyihj
  */
 @Mixin(value = ZenType.class, remap = false)
-public class MixinZenType {
+public abstract class MixinZenType {
     @Inject(method = "read", at = @At("RETURN"))
     private static void readOrderlyTag(ZenTokener tokener, IEnvironmentGlobal environment, CallbackInfoReturnable<ZenType> cir) {
         ZenType returnValue = cir.getReturnValue();

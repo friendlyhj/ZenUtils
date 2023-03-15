@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
  * @author youyihj
  */
 @Mixin(value = ExpressionMap.class, remap = false)
-public class MixinExpressionMap {
+public abstract class MixinExpressionMap {
     @Shadow
     @Final
     private ZenTypeAssociative type;
