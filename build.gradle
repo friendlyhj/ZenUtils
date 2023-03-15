@@ -1,12 +1,18 @@
 buildscript {
     repositories {
         maven { url = "https://maven.minecraftforge.net" }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
@@ -37,6 +43,13 @@ minecraft {
     // simply re-run your setup task after changing the mappings to update your workspace.
     mappings = "snapshot_20171003"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    def args = [
+            "-Dmixin.hotSwap=true",
+            "-Dmixin.checks.interfaces=true",
+            "-Dmixin.debug.export=true"
+    ]
+    clientJvmArgs.addAll(args)
+    serverJvmArgs.addAll(args)
 }
 
 dependencies {
@@ -61,13 +74,14 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.680"
+    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.685"
     deobfCompile "com.teamacronymcoders.base:base:1.12.2-3.13.0-SNAPSHOT.+"
     deobfCompile "com.teamacronymcoders:ContentTweaker:1.12.2-4.10.0"
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.+:universal"
     deobfCompile "curse.maven:ftb-library-legacy-forge-237167:2985811"
     deobfCompile "curse.maven:item-filters-309674:3003364"
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
+    deobfCompile "zone.rong:mixinbooter:7.0"
 }
 
 repositories {
@@ -89,6 +103,14 @@ repositories {
         name = 'jei'
         url = 'http://dvs1.progwml6.com/files/maven'
     }
+    maven {
+        name = "Cleanroom"
+        url "https://maven.cleanroommc.com"
+    }
+}
+
+mixin {
+    add sourceSets.main, "mixins.zenutils.refmap.json"
 }
 
 processResources {
