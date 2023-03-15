@@ -40,7 +40,7 @@ public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
     public static final String VERSION = "1.12.8";
-    public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests";
+    public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests;required-after:mixinbooter";
 
     public static Logger forgeLogger;
     public static ZenUtilsLogger crafttweakerLogger;
