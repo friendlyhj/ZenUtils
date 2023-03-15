@@ -21,7 +21,7 @@ public class MixinZenType {
         if (returnValue instanceof IOrderlyType) {
             if (tokener.optional(ZenTokener.T_DOLLAR) != null) {
                 Token orderlyToken = tokener.required(ZenTokener.T_ID, "orderly required");
-                if (orderlyToken.getValue().equals("orderly")) {
+                if ("orderly".equals(orderlyToken.getValue())) {
                     ((IOrderlyType) returnValue).setOrderly();
                 } else {
                     environment.error("orderly required");
