@@ -25,6 +25,8 @@ import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.util.CrTUUID;
 import youyihj.zenutils.api.util.catenation.ICatenationBuilder;
+import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI;
+import youyihj.zenutils.api.util.catenation.persistence.PersistedCatenationStarter;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.util.catenation.CatenationBuilder;
@@ -146,6 +148,11 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static ICatenationBuilder catenation(IWorld world) {
         return new CatenationBuilder(world);
+    }
+
+    @ZenMethod
+    public static PersistedCatenationStarter persistedCatenation(IWorld world, String catenationKey) {
+        return CatenationPersistenceAPI.startPersistedCatenation(catenationKey, world);
     }
 
     private static IZenWorldCapability getWorldCap(IWorld world) {

@@ -22,6 +22,8 @@ public class Catenation {
     private final CatenationContext context;
 
     private IWorld world;
+    @Nullable
+    private String persistenceKey;
 
     public Catenation(Queue<ICatenationTask> tasks, @Nullable IWorldCondition stopWhen, @Nullable IWorldFunction onStop) {
         this.tasks = tasks;
@@ -32,6 +34,7 @@ public class Catenation {
     @ZenMethod
     public boolean tick(IWorld world) {
         this.world = world;
+        context.checkObjectHolders();
         if (context.getStatus() == CatenationStatus.WORKING) {
             if (stopWhen != null) {
                 try {
@@ -96,5 +99,22 @@ public class Catenation {
     // not exposed
     public IWorld getWorld() {
         return world;
+    }
+
+    public Queue<ICatenationTask> getTasks() {
+        return tasks;
+    }
+
+    public void setPersistenceKey(@Nullable String persistenceKey) {
+        this.persistenceKey = persistenceKey;
+    }
+
+    @Nullable
+    public String getPersistenceKey() {
+        return persistenceKey;
+    }
+
+    public boolean isAllObjectsValid() {
+        return this.getContext().getObjectHolders().values().stream().allMatch(it -> it.isValid(this));
     }
 }
