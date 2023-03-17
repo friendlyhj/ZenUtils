@@ -9,23 +9,25 @@ import stanhebben.zenscript.annotations.*;
 @ZenRegister
 @ZenClass("mods.zenutils.CatenationStatus")
 public enum CatenationStatus {
-    WORKING(false),
-    PAUSE(false),
-    FINISH,
-    STOP_MANUAL,
-    STOP_INTERNAL,
-    ERROR,
-    UNLOAD(false),
-    SERIAL(false);
+    WORKING,
+    PAUSE,
+    FINISH(true, false),
+    STOP_MANUAL(true, false),
+    STOP_INTERNAL(true, false),
+    ERROR(true, false),
+    UNLOAD(true, true),
+    SERIAL;
 
     private final boolean stop;
+    private final boolean rerun;
 
     CatenationStatus() {
-        this(true);
+        this(false, true);
     }
 
-    CatenationStatus(boolean stop) {
+    CatenationStatus(boolean stop, boolean rerun) {
         this.stop = stop;
+        this.rerun = rerun;
     }
 
     @ZenMethod
@@ -64,9 +66,20 @@ public enum CatenationStatus {
     }
 
     @ZenMethod
+    public static CatenationStatus serial() {
+        return SERIAL;
+    }
+
+    @ZenMethod
     @ZenGetter("isStop")
     public boolean isStop() {
         return stop;
+    }
+
+    @ZenMethod
+    @ZenGetter("isRerun")
+    public boolean isRerun() {
+        return rerun;
     }
 
     @ZenOperator(OperatorType.EQUALS)

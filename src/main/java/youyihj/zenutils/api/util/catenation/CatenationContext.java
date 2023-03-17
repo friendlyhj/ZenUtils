@@ -67,7 +67,7 @@ public class CatenationContext {
         if (status == CatenationStatus.SERIAL) {
             CatenationPersistenceImpl.addWaitingCatenation(catenation);
         }
-        if (!this.getStatus().isStop()) {
+        if (this.getStatus().isRerun()) {
             this.status = status;
             if (this.getStatus().isStop() && this.onStop != null && world != null) {
                 try {
