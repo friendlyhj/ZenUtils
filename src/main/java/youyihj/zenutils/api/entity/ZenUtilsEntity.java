@@ -23,8 +23,8 @@ public class ZenUtilsEntity {
     @ZenMethod
     public static void setMotionVector(IEntity entity, IVector3d vector) {
         entity.setMotionX(vector.getX());
-        entity.setMotionX(vector.getY());
-        entity.setMotionX(vector.getZ());
+        entity.setMotionY(vector.getY());
+        entity.setMotionZ(vector.getZ());
     }
 
     @ZenMethod
