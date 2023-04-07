@@ -113,6 +113,7 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
     @Override
     public void logError(String message, Throwable exception) {
         if (shouldNotLog(message)) return;
+        this.hasError = true;
         if (InternalUtils.onSuppressErrorSingleScriptMode()) {
             getLoggers().forEach(logger -> logger.logError(message, exception));
 
@@ -130,7 +131,6 @@ public class ZenUtilsLogger extends MTLogger implements ILogger {
                 }
             }
             String message2 = "\u00a7cERROR: " + super.getMessageToSendPlayer(message, exception);
-            this.hasError = true;
             if (playerList.isEmpty()) {
                 messagesToSendPlayer.add(message2);
             } else {
