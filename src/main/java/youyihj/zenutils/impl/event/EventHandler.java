@@ -4,12 +4,14 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes;
 import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI;
+import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 import youyihj.zenutils.impl.util.FireEntityRemoveEventListener;
 import youyihj.zenutils.impl.util.catenation.persistence.CatenationPersistenceImpl;
 
@@ -36,5 +38,15 @@ public class EventHandler {
             }
             CatenationPersistenceAPI.receiveObject(BuiltinObjectHolderTypes.ENTITY, CraftTweakerMC.getIEntity(entity));
         }
+    }
+
+    @SubscribeEvent
+    public static void registerObjectHolder(RegistryEvent.Register<ICatenationObjectHolder.TypeRegistryEntry> event) {
+        event.getRegistry().registerAll(
+                BuiltinObjectHolderTypes.PLAYER.getRegistryEntry(),
+                BuiltinObjectHolderTypes.ENTITY.getRegistryEntry(),
+                BuiltinObjectHolderTypes.DATA.getRegistryEntry(),
+                BuiltinObjectHolderTypes.POSITION.getRegistryEntry()
+        );
     }
 }

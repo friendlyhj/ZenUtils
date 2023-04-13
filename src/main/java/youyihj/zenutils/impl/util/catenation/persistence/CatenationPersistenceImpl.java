@@ -3,6 +3,9 @@ package youyihj.zenutils.impl.util.catenation.persistence;
 import com.google.common.collect.ImmutableMap;
 import crafttweaker.api.data.*;
 import crafttweaker.api.world.IWorld;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.CatenationContext;
 import youyihj.zenutils.api.util.catenation.CatenationStatus;
@@ -19,6 +22,8 @@ import java.util.*;
 public class CatenationPersistenceImpl {
     private static final Map<String, Entry> persistData = new HashMap<>();
     private static final Set<Catenation> waitingCatenation = new HashSet<>();
+
+    public static final IForgeRegistry<ICatenationObjectHolder.TypeRegistryEntry> TYPE_REGISTRY = GameRegistry.findRegistry(ICatenationObjectHolder.TypeRegistryEntry.class);
 
     public static void registerPersistCatenation(String key, ICatenationFactory catenationFactory, Map<String, ICatenationObjectHolder.Type<?>> objectHolderTypes) {
         persistData.put(key, new Entry(catenationFactory, ImmutableMap.copyOf(objectHolderTypes)));
@@ -60,7 +65,7 @@ public class CatenationPersistenceImpl {
         Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = context.getObjectHolders();
         objectHolders.forEach((key, objHolder) -> {
             Map<String, IData> objDataSingle = new HashMap<>();
-            objDataSingle.put("type", new DataString(objHolder.getType().getValueType().getName()));
+            objDataSingle.put("type", new DataString(Objects.requireNonNull(objHolder.getType().getRegistryEntry().getRegistryName()).toString()));
             objDataSingle.put("value", objHolder.serializeToData());
             objData.put(key.getKey(), new DataMap(objDataSingle, true));
         });
@@ -92,11 +97,14 @@ public class CatenationPersistenceImpl {
         Map<String, IData> objData = data.memberGet("objects").asMap();
         Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = catenation.getContext().getObjectHolders();
         objData.forEach((key, value) -> {
-            ICatenationObjectHolder.Type<?> holderType = ObjectHolderTypeRegistry.get(value.memberGet("type").asString());
-            ICatenationObjectHolder.Key<?> holderKey = ICatenationObjectHolder.Key.of(key, holderType);
-            ICatenationObjectHolder<?> holder = holderType.createHolder();
-            holder.deserializeFromData(value.memberGet("value"));
-            objectHolders.put(holderKey, holder);
+            ResourceLocation type = new ResourceLocation(value.memberGet("type").asString());
+            if (TYPE_REGISTRY.containsKey(type)) {
+                ICatenationObjectHolder.Type<?> holderType = Objects.requireNonNull(TYPE_REGISTRY.getValue(type)).getType();
+                ICatenationObjectHolder.Key<?> holderKey = ICatenationObjectHolder.Key.of(key, holderType);
+                ICatenationObjectHolder<?> holder = holderType.createHolder();
+                holder.deserializeFromData(value.memberGet("value"));
+                objectHolders.put(holderKey, holder);
+            }
         });
 
         return catenation;

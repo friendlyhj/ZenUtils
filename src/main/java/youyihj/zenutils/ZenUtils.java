@@ -7,11 +7,13 @@ import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.preprocessor.PreprocessorManager;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
@@ -20,6 +22,7 @@ import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
 import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
 import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
+import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
@@ -49,6 +52,10 @@ public class ZenUtils {
     @SidedProxy(clientSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Client", serverSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Server")
     public static IStatFormatterAdapter statFormatterAdapter;
 
+    public static ResourceLocation rl(String path) {
+        return new ResourceLocation(ZenUtils.NAME, path);
+    }
+
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.673", () -> InternalUtils.hasMethod(CraftTweakerMC.class, "getIItemStackForMatching", ItemStack.class));
@@ -59,6 +66,7 @@ public class ZenUtils {
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
+        initObjectHoldersRegistry();
         try {
             crafttweakerLogger = new ZenUtilsLogger(CrafttweakerImplementationAPI.logger);
             final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
@@ -110,5 +118,14 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarted(FMLServerStartedEvent event) {
         CraftTweakerAPI.tweaker.getActions().clear();
+    }
+
+
+    private static void initObjectHoldersRegistry() {
+        new RegistryBuilder<ICatenationObjectHolder.TypeRegistryEntry>()
+                .setType(ICatenationObjectHolder.TypeRegistryEntry.class)
+                .setName(rl("object_holder_types"))
+                .setDefaultKey(new ResourceLocation("empty"))
+                .create();
     }
 }
