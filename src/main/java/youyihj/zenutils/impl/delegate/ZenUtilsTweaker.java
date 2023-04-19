@@ -147,19 +147,22 @@ public class ZenUtilsTweaker implements ITweaker {
         return reloadableActions;
     }
 
-    public <T extends IAction> void addReloadCallback(Class<T> clazz, IActionReloadCallback<T> callback) {
+    public void addReloadCallback(Class<?> clazz, IActionReloadCallback<?> callback) {
         reloadCallbacks.put(clazz, callback);
     }
 
     @SuppressWarnings("unchecked")
     private IActionReloadCallback<IAction> getReloadCallback(IAction action) {
-        Class<? extends IAction> clazz = action.getClass();
-        if (reloadCallbacks.containsKey(clazz)) {
-            return (IActionReloadCallback<IAction>) reloadCallbacks.get(clazz);
-        } else if (clazz.isAnnotationPresent(Reloadable.class)) {
-            AnnotatedActionReloadCallback annotatedActionReloadCallback = new AnnotatedActionReloadCallback(clazz);
-            reloadCallbacks.put(clazz, annotatedActionReloadCallback);
-            return annotatedActionReloadCallback;
+        Class<?> clazz = action.getClass();
+        while (IAction.class.isAssignableFrom(clazz)) {
+            if (reloadCallbacks.containsKey(clazz)) {
+                return (IActionReloadCallback<IAction>) reloadCallbacks.get(clazz);
+            } else if (clazz.isAnnotationPresent(Reloadable.class)) {
+                AnnotatedActionReloadCallback annotatedActionReloadCallback = new AnnotatedActionReloadCallback(clazz);
+                reloadCallbacks.put(clazz, annotatedActionReloadCallback);
+                return annotatedActionReloadCallback;
+            }
+            clazz = clazz.getSuperclass();
         }
         return null;
     }

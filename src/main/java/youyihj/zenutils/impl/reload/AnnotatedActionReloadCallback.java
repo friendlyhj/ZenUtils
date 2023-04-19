@@ -17,7 +17,7 @@ public class AnnotatedActionReloadCallback implements IActionReloadCallback<IAct
     private MethodHandle applyReloadMethod;
     private MethodHandle undoMethod;
 
-    public <T extends IAction> AnnotatedActionReloadCallback(Class<T> clazz) {
+    public AnnotatedActionReloadCallback(Class<?> clazz) {
         try {
             this.applyReloadMethod = LOOKUP.findVirtual(clazz, "applyReload", MethodType.methodType(Void.TYPE));
         } catch (Exception e) {

@@ -7,7 +7,7 @@ import youyihj.zenutils.ZenUtils;
  * @author youyihj
  */
 public interface IActionReloadCallback<T extends IAction> {
-    static <T extends IAction> void register(Class<T> clazz, IActionReloadCallback<T> callback) {
+    static void register(Class<?> clazz, IActionReloadCallback<?> callback) {
         ZenUtils.tweaker.addReloadCallback(clazz, callback);
     }
 
