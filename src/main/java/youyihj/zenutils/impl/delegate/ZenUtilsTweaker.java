@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.delegate;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.api.network.NetworkSide;
 import crafttweaker.preprocessor.PreprocessorManager;
@@ -9,22 +10,17 @@ import crafttweaker.runtime.ScriptLoader;
 import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.util.IEventHandler;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.reload.IActionReloadCallback;
 import youyihj.zenutils.api.reload.Reloadable;
+import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.*;
 
 public class ZenUtilsTweaker implements ITweaker {
-    private static final MethodHandles.Lookup LOOKUP = MethodHandles.publicLookup();
-
     private final ITweaker tweaker;
     private boolean freeze = false;
     private final Queue<IAction> reloadableActions = new LinkedList<>();
-    private final Map<Class<?>, Boolean> actionReloadableCheck = new HashMap<>();
-    private final Map<Class<?>, Optional<MethodHandle>> undoMethods = new HashMap<>();
+    private final Map<Class<?>, IActionReloadCallback<?>> reloadCallbacks = new HashMap<>();
 
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
@@ -32,11 +28,22 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public void apply(IAction action) {
-        boolean reloadable = isReloadable(action);
-        if (!freeze || reloadable) {
+        IActionReloadCallback<IAction> reloadCallback = getReloadCallback(action);
+        boolean reloadable = reloadCallback != null;
+        if (!freeze) {
             tweaker.apply(action);
+        } else if (reloadable) {
+            if (!action.validate()) {
+                CraftTweakerAPI.logError("Action could not be applied", new UnsupportedOperationException(action.describeInvalid()));
+                return;
+            }
+            String describe = action.describe();
+            if (describe != null && !describe.isEmpty()) {
+                CraftTweakerAPI.logInfo(describe);
+            }
+            reloadCallback.applyReload(action);
         }
-        if (reloadable && getUndoMethod(action).isPresent()) {
+        if (reloadable && reloadCallback.hasUndoMethod()) {
             reloadableActions.add(action);
         }
     }
@@ -132,13 +139,7 @@ public class ZenUtilsTweaker implements ITweaker {
     public void onReload() {
         while (!reloadableActions.isEmpty()) {
             IAction action = reloadableActions.poll();
-            getUndoMethod(action).ifPresent(methodHandle -> {
-                try {
-                    methodHandle.invoke(action);
-                } catch (Throwable e) {
-                    ZenUtils.forgeLogger.error("Failed to invoke undo method", e);
-                }
-            });
+            Objects.requireNonNull(getReloadCallback(action)).undo(action);
         }
     }
 
@@ -146,17 +147,20 @@ public class ZenUtilsTweaker implements ITweaker {
         return reloadableActions;
     }
 
-    private boolean isReloadable(IAction action) {
-        return actionReloadableCheck.computeIfAbsent(action.getClass(), clazz -> clazz.isAnnotationPresent(Reloadable.class));
+    public <T extends IAction> void addReloadCallback(Class<T> clazz, IActionReloadCallback<T> callback) {
+        reloadCallbacks.put(clazz, callback);
     }
 
-    private Optional<MethodHandle> getUndoMethod(IAction action) {
-        return undoMethods.computeIfAbsent(action.getClass(), clazz -> {
-            try {
-                return Optional.of(LOOKUP.findVirtual(clazz, "undo", MethodType.methodType(Void.TYPE)));
-            } catch (Throwable e) {
-                return Optional.empty();
-            }
-        });
+    @SuppressWarnings("unchecked")
+    private IActionReloadCallback<IAction> getReloadCallback(IAction action) {
+        Class<? extends IAction> clazz = action.getClass();
+        if (reloadCallbacks.containsKey(clazz)) {
+            return (IActionReloadCallback<IAction>) reloadCallbacks.get(clazz);
+        } else if (clazz.isAnnotationPresent(Reloadable.class)) {
+            AnnotatedActionReloadCallback annotatedActionReloadCallback = new AnnotatedActionReloadCallback(clazz);
+            reloadCallbacks.put(clazz, annotatedActionReloadCallback);
+            return annotatedActionReloadCallback;
+        }
+        return null;
     }
 }
