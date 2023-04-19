@@ -8,6 +8,7 @@ import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
@@ -23,13 +24,17 @@ import java.lang.reflect.Field;
  */
 @Mod.EventBusSubscriber
 public class ReloadEventHandler {
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onReloadPre(ScriptReloadEvent.Pre event) {
         InternalUtils.getAllEventLists().forEach(EventList::clear);
         reRegisterInternalEvents();
         // remove duplicate recipe name warning, since we don't register new recipes
         ZenUtilsGlobal.addRegexLogFilter("Recipe name \\[.*\\] has duplicate uses, defaulting to calculated hash!");
 
+        int reloadActionCount = ZenUtils.tweaker.getReloadableActions().size();
+        if (reloadActionCount != 0) {
+            event.getRequester().sendMessage(new TextComponentString(reloadActionCount + " actions reloaded."));
+        }
         ZenUtils.tweaker.onReload();
     }
 
@@ -38,10 +43,6 @@ public class ReloadEventHandler {
         if (InternalUtils.isContentTweakerInstalled()) {
             LateGetContentLookup.refreshFields();
             LateGetContentLookup.clear();
-        }
-        int reloadActionCount = ZenUtils.tweaker.getReloadableActions().size();
-        if (reloadActionCount != 0) {
-            event.getRequester().sendMessage(new TextComponentString(reloadActionCount + " actions reloaded."));
         }
     }
 

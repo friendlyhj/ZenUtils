@@ -10,7 +10,8 @@ import crafttweaker.runtime.ScriptLoader;
 import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.util.IEventHandler;
-import youyihj.zenutils.api.reload.IActionReloadCallback;
+import youyihj.zenutils.api.reload.ActionReloadCallback;
+import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
 import youyihj.zenutils.api.reload.Reloadable;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 
@@ -19,8 +20,8 @@ import java.util.*;
 public class ZenUtilsTweaker implements ITweaker {
     private final ITweaker tweaker;
     private boolean freeze = false;
-    private final Queue<IAction> reloadableActions = new LinkedList<>();
-    private final Map<Class<?>, IActionReloadCallback<?>> reloadCallbacks = new HashMap<>();
+    private final Queue<ActionReloadCallback<?>> reloadableActions = new LinkedList<>();
+    private final Map<Class<?>, IActionReloadCallbackFactory<?>> reloadCallbacks = new HashMap<>();
 
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
@@ -28,23 +29,21 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public void apply(IAction action) {
-        IActionReloadCallback<IAction> reloadCallback = getReloadCallback(action);
+        ActionReloadCallback<IAction> reloadCallback = getReloadCallback(action);
         boolean reloadable = reloadCallback != null;
         if (!freeze) {
-            tweaker.apply(action);
+            if (validateAction(action)) return;
+            if (reloadable) reloadCallback.beforeApply(false);
+            action.apply();
+            if (reloadable) reloadCallback.afterApply(false);
         } else if (reloadable) {
-            if (!action.validate()) {
-                CraftTweakerAPI.logError("Action could not be applied", new UnsupportedOperationException(action.describeInvalid()));
-                return;
-            }
-            String describe = action.describe();
-            if (describe != null && !describe.isEmpty()) {
-                CraftTweakerAPI.logInfo(describe);
-            }
-            reloadCallback.applyReload(action);
+            if (validateAction(action)) return;
+            reloadCallback.beforeApply(true);
+            reloadCallback.applyReload();
+            reloadCallback.afterApply(true);
         }
         if (reloadable && reloadCallback.hasUndoMethod()) {
-            reloadableActions.add(action);
+            reloadableActions.add(reloadCallback);
         }
     }
 
@@ -138,31 +137,39 @@ public class ZenUtilsTweaker implements ITweaker {
 
     public void onReload() {
         while (!reloadableActions.isEmpty()) {
-            IAction action = reloadableActions.poll();
-            Objects.requireNonNull(getReloadCallback(action)).undo(action);
+            reloadableActions.poll().undo();
         }
     }
 
-    public Queue<IAction> getReloadableActions() {
+    public Queue<ActionReloadCallback<?>> getReloadableActions() {
         return reloadableActions;
     }
 
-    public void addReloadCallback(Class<?> clazz, IActionReloadCallback<?> callback) {
+    public <T extends IAction> void addReloadCallback(Class<T> clazz, IActionReloadCallbackFactory<T> callback) {
         reloadCallbacks.put(clazz, callback);
     }
 
+    private boolean validateAction(IAction action) {
+        if (!action.validate()) {
+            CraftTweakerAPI.logError("Action could not be applied", new UnsupportedOperationException(action.describeInvalid()));
+            return true;
+        }
+        String describe = action.describe();
+        if (describe != null && !describe.isEmpty()) {
+            CraftTweakerAPI.logInfo(describe);
+        }
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
-    private IActionReloadCallback<IAction> getReloadCallback(IAction action) {
-        Class<?> clazz = action.getClass();
-        while (IAction.class.isAssignableFrom(clazz)) {
+    private ActionReloadCallback<IAction> getReloadCallback(IAction action) {
+        for (Class<?> clazz = action.getClass(); IAction.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
             if (reloadCallbacks.containsKey(clazz)) {
-                return (IActionReloadCallback<IAction>) reloadCallbacks.get(clazz);
+                return ((IActionReloadCallbackFactory<IAction>) reloadCallbacks.get(clazz)).create(action);
             } else if (clazz.isAnnotationPresent(Reloadable.class)) {
-                AnnotatedActionReloadCallback annotatedActionReloadCallback = new AnnotatedActionReloadCallback(clazz);
-                reloadCallbacks.put(clazz, annotatedActionReloadCallback);
-                return annotatedActionReloadCallback;
+                reloadCallbacks.put(clazz, AnnotatedActionReloadCallback::new);
+                return new AnnotatedActionReloadCallback(action);
             }
-            clazz = clazz.getSuperclass();
         }
         return null;
     }
