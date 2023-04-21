@@ -2,8 +2,12 @@ package youyihj.zenutils.api.reload;
 
 import crafttweaker.IAction;
 
+
 /**
- * @author youyihj
+ * Handles an existed action reload callback behaviors. Each action object has a reload callback object. Extend it to describe
+ * your reload behavior for an action.
+ *
+ * @see IActionReloadCallbackFactory
  */
 public abstract class ActionReloadCallback<T extends IAction> {
     protected final T action;
@@ -12,10 +16,16 @@ public abstract class ActionReloadCallback<T extends IAction> {
         this.action = action;
     }
 
+    /**
+     * Same as {@link IAction#apply()} but will be called on reloading
+     */
     public void applyReload() {
         action.apply();
     }
 
+    /**
+     * Rolls back changes carried by the action.
+     */
     public void undo() {
 
     }
@@ -28,5 +38,8 @@ public abstract class ActionReloadCallback<T extends IAction> {
 
     }
 
+    /**
+     * @return If the action requires some cleanup code
+     */
     public abstract boolean hasUndoMethod();
 }

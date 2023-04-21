@@ -7,9 +7,10 @@ import java.lang.annotation.*;
  * In other words, it will be applied again when script reloading.
  * <p>
  * If the action requires some cleanup code, please add a public method called <code>undo</code> that rolls back changes carried by the action.
+ * If the action requires different apply logic when reloading, add a public method called <code>applyReload</code> which is invoked when the action is applied by reload command
  * It shouldn't have any arguments and return value.
  * It will be called before script reloading.
- *
+ * <p>
  * <b>Example</b>: <blockquote><pre>{@code
  * @Reloadable
  * public class TestAction implements IAction {
