@@ -2,12 +2,11 @@ package youyihj.zenutils.api.world;
 
 import crafttweaker.annotations.ZenRegister;
 import net.minecraft.world.GameRules;
-import stanhebben.zenscript.ZenRuntimeException;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenRegister
-@ZenClass("mods.zenutils.world.GameRuleHelper")
+@ZenClass("mods.zenutils.GameRuleHelper")
 @SuppressWarnings("unused")
 public class GameRuleHelper {
 
@@ -55,7 +54,7 @@ public class GameRuleHelper {
                 valueType = GameRules.ValueType.BOOLEAN_VALUE;
                 break;
             default:
-                throw new ZenRuntimeException("Invalid GameRule type, must be Any, Numeric or Boolean.");
+                throw new IllegalArgumentException("Invalid GameRule type, must be Any, Numeric or Boolean.");
         }
         rules.addGameRule(key, value, valueType);
     }
