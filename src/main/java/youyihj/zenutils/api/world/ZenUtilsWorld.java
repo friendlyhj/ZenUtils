@@ -13,6 +13,8 @@ import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -153,6 +155,26 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static PersistedCatenationStarter persistedCatenation(IWorld world, String catenationKey) {
         return CatenationPersistenceAPI.startPersistedCatenation(catenationKey, world);
+    }
+
+    @ZenMethod
+    public static int getBlockBrightness(IWorld world, IBlockPos pos) {
+        return CraftTweakerMC.getWorld(world).getLightFor(EnumSkyBlock.BLOCK, CraftTweakerMC.getBlockPos(pos));
+    }
+
+    @ZenMethod
+    public static int getSkyBrightness(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional boolean subtracted) {
+        World mcWorld = CraftTweakerMC.getWorld(world);
+        int light = mcWorld.getLightFor(EnumSkyBlock.SKY, CraftTweakerMC.getBlockPos(pos));
+        if (subtracted) {
+            light -= mcWorld.getSkylightSubtracted();
+        }
+        return light;
+    }
+
+    @ZenMethod
+    public static int getBrightnessSubtracted(IWorld world, IBlockPos pos) {
+        return CraftTweakerMC.getWorld(world).getLightFromNeighbors(CraftTweakerMC.getBlockPos(pos));
     }
 
     private static IZenWorldCapability getWorldCap(IWorld world) {
