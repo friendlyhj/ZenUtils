@@ -22,6 +22,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
+import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
@@ -175,6 +176,12 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static int getBrightnessSubtracted(IWorld world, IBlockPos pos) {
         return CraftTweakerMC.getWorld(world).getLightFromNeighbors(CraftTweakerMC.getBlockPos(pos));
+    }
+
+    @ZenMethod
+    @ZenGetter("gameRuleHelper")
+    public static GameRuleHelper getGameRuleHelper(IWorld world) {
+        return new GameRuleHelper(CraftTweakerMC.getWorld(world).getGameRules());
     }
 
     private static IZenWorldCapability getWorldCap(IWorld world) {
