@@ -104,7 +104,7 @@ public class StaticString {
 
     @ZenMethod
     public static String[] stripAll(String[] strings, String stripChars) {
-        return StringUtils.stripAll(String.valueOf(strings));
+        return StringUtils.stripAll(strings, stripChars);
     }
 
     @ZenMethod
