@@ -10,7 +10,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @SuppressWarnings("unused")
 public class GameRuleHelper {
 
-    private static GameRules rules;
+    private final GameRules rules;
 
     public GameRuleHelper(GameRules gameRules) {
         rules = gameRules;
