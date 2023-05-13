@@ -177,6 +177,11 @@ public class ZenUtilsWorld {
         return CraftTweakerMC.getWorld(world).getLightFromNeighbors(CraftTweakerMC.getBlockPos(pos));
     }
 
+    @ZenMethod
+    public static GameRuleHelper getGameRuleHelper(IWorld world) {
+        return new GameRuleHelper(CraftTweakerMC.getWorld(world).getGameRules());
+    }
+
     private static IZenWorldCapability getWorldCap(IWorld world) {
         return CraftTweakerMC.getWorld(world).getCapability(ZenWorldCapabilityHandler.ZEN_WORLD_CAPABILITY, null);
     }
