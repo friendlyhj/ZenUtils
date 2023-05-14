@@ -56,7 +56,7 @@ public class CatenationManager {
     @SubscribeEvent
     public static void onWorldUnload(WorldEvent.Unload event) {
         World world = event.getWorld();
-        catenations.entries().forEach(it -> it.getValue().getContext().setStatus(CatenationStatus.UNLOAD, new MCWorld(it.getKey())));
+        catenations.get(world).forEach(it -> it.getContext().setStatus(CatenationStatus.UNLOAD, new MCWorld(world)));
         catenations.removeAll(world);
         cantenationsToAdd.removeAll(world);
     }
