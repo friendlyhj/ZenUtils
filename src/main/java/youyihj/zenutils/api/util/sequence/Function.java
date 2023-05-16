@@ -12,4 +12,9 @@ import stanhebben.zenscript.annotations.ZenMethod;
 public interface Function<T, R> {
     @ZenMethod
     R apply(T t);
+
+    @ZenMethod
+    static <T> Function<T, T> identity() {
+        return it -> it;
+    }
 }
