@@ -218,8 +218,8 @@ public abstract class AbstractSequence<T> implements Sequence<T> {
     public boolean allMatch(Predicate<T> predicate) {
         boolean result = true;
         T element = this.provide();
-        while (element != endObject()) {
-            result &= predicate.test(element);
+        while (result && element != endObject()) {
+            result = predicate.test(element);
             element = this.provide();
         }
         return result;
@@ -229,8 +229,8 @@ public abstract class AbstractSequence<T> implements Sequence<T> {
     public boolean anyMatch(Predicate<T> predicate) {
         boolean result = false;
         T element = this.provide();
-        while (element != endObject()) {
-            result |= predicate.test(element);
+        while (!result && element != endObject()) {
+            result = predicate.test(element);
             element = this.provide();
         }
         return result;
@@ -240,8 +240,8 @@ public abstract class AbstractSequence<T> implements Sequence<T> {
     public boolean noneMatch(Predicate<T> predicate) {
         boolean result = true;
         T element = this.provide();
-        while (element != endObject()) {
-            result &= !predicate.test(element);
+        while (result && element != endObject()) {
+            result = !predicate.test(element);
             element = this.provide();
         }
         return result;
