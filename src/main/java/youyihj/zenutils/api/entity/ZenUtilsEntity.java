@@ -1,11 +1,15 @@
 package youyihj.zenutils.api.entity;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.IData;
 import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IVector3d;
+import crafttweaker.mc1120.data.NBTUpdater;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -34,5 +38,14 @@ public class ZenUtilsEntity {
         } else {
             return new CrTUUID(CraftTweakerMC.getEntity(entity).getUniqueID());
         }
+    }
+
+    @ZenMethod
+    public static void updateNBT(IEntity entity, IData data) {
+        Entity mcEntity = CraftTweakerMC.getEntity(entity);
+        NBTTagCompound nbt = new NBTTagCompound();
+        mcEntity.writeToNBT(nbt);
+        NBTUpdater.updateMap(nbt, data);
+        mcEntity.readFromNBT(nbt);
     }
 }

@@ -6,11 +6,9 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.CapabilityItemHandler;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.api.item.CrTItemHandler;
 
 /**
@@ -50,5 +48,11 @@ public class ZenUtilsPlayer {
     public static void takeStat(IPlayer player, PlayerStat stat) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         mcPlayer.takeStat(stat.getInternal());
+    }
+
+    @ZenMethod
+    @ZenGetter("fake")
+    public static boolean isFake(IPlayer player) {
+        return CraftTweakerMC.getPlayer(player) instanceof FakePlayer;
     }
 }
