@@ -39,7 +39,7 @@ import java.lang.reflect.Field;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.13.6";
+    public static final String VERSION = "1.13.7";
     public static final String DEPENDENCIES = "required-after:crafttweaker;after:contenttweaker;required-after:redstoneflux;after:ftbquests;required-after:mixinbooter";
 
     public static Logger forgeLogger;
