@@ -1,8 +1,10 @@
 package youyihj.zenutils.impl.util.sequence;
 
+import crafttweaker.CraftTweakerAPI;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableInt;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.api.util.sequence.*;
 import youyihj.zenutils.api.util.sequence.Comparator;
 
@@ -67,6 +69,24 @@ public abstract class AbstractSequence<T> implements Sequence<T> {
             @Override
             public T provide() {
                 return hasProvided++ < size ? getParent().provide() : endObject();
+            }
+        };
+    }
+
+    @Override
+    public Sequence<T> skip(int count) {
+        return new SubSequence<T, T>(this) {
+            private boolean skipped;
+
+            @Override
+            protected T provide() {
+                if (!skipped) {
+                    skipped = true;
+                    for (int i = 0; i < count; i++) {
+                        getParent().provide();
+                    }
+                }
+                return getParent().provide();
             }
         };
     }
@@ -151,6 +171,16 @@ public abstract class AbstractSequence<T> implements Sequence<T> {
         List<T> list = this.toList();
         list.sort(comparator::compare);
         return new IteratorSequence<>(list.iterator());
+    }
+
+    @Override
+    public Sequence<T> log(Function<T, String> printMapper) {
+        return peek(it -> CraftTweakerAPI.logInfo(printMapper.apply(it)));
+    }
+
+    @Override
+    public Sequence<T> log() {
+        return log(ZenUtilsGlobal::toString);
     }
 
     @Override

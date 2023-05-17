@@ -29,6 +29,9 @@ public interface Sequence<T> {
     Sequence<T> limit(int size);
 
     @ZenMethod
+    Sequence<T> skip(int count);
+
+    @ZenMethod
     Sequence<T> distinct();
 
     @ZenMethod
@@ -45,6 +48,12 @@ public interface Sequence<T> {
 
     @ZenMethod
     Sequence<T> sorted(Comparator<T> comparator);
+
+    @ZenMethod
+    Sequence<T> log(Function<T, String> printMapper);
+
+    @ZenMethod
+    Sequence<T> log();
 
     @ZenMethod
     T first();
