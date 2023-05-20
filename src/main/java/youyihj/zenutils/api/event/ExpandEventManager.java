@@ -15,9 +15,15 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenRegister
 public class ExpandEventManager {
     public static final EventList<EntityRemoveEvent> elEntityRemove = new EventList<>();
+    public static final EventList<EntityItemFallEvent> elEntityItemFall = new EventList<>();
 
     @ZenMethod
     public static IEventHandle onEntityRemove(IEventManager manager, IEventHandler<EntityRemoveEvent> ev) {
         return elEntityRemove.add(ev);
+    }
+
+    @ZenMethod
+    public static IEventHandle onEntityItemFall(IEventManager manager, IEventHandler<EntityItemFallEvent> ev) {
+        return elEntityItemFall.add(ev);
     }
 }

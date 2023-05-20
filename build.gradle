@@ -46,7 +46,8 @@ minecraft {
     def args = [
             "-Dmixin.hotSwap=true",
             "-Dmixin.checks.interfaces=true",
-            "-Dmixin.debug.export=true"
+            "-Dmixin.debug.export=true",
+            "-Dfml.coreMods.load=youyihj.zenutils.impl.core.ZenUtilsPlugin"
     ]
     clientJvmArgs.addAll(args)
     serverJvmArgs.addAll(args)
@@ -135,7 +136,10 @@ processResources {
 jar {
     manifest {
         attributes([
-                "FMLAT": "zenutils_at.cfg"
+                "FMLAT": "zenutils_at.cfg",
+                "FMLCorePlugin": "youyihj.zenutils.impl.core.ZenUtilsPlugin",
+                "FMLCorePluginContainsFMLMod": true,
+                "ForceLoadAsMod": true
         ])
     }
 }
