@@ -5,6 +5,7 @@ import crafttweaker.api.event.IEventHandle;
 import crafttweaker.api.event.IEventManager;
 import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
+import net.minecraft.entity.item.EntityItem;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -25,5 +26,11 @@ public class ExpandEventManager {
     @ZenMethod
     public static IEventHandle onEntityItemFall(IEventManager manager, IEventHandler<EntityItemFallEvent> ev) {
         return elEntityItemFall.add(ev);
+    }
+
+    public static void handleEntityItemFallEvent(EntityItem entityItem, float distance) {
+        if (ExpandEventManager.elEntityItemFall.hasHandlers()) {
+            ExpandEventManager.elEntityItemFall.publish(new EntityItemFallEvent(entityItem, distance));
+        }
     }
 }

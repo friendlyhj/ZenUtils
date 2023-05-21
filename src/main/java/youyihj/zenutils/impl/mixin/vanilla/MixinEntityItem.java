@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import youyihj.zenutils.api.event.EntityItemFallEvent;
 import youyihj.zenutils.api.event.ExpandEventManager;
 
 /**
@@ -18,9 +17,7 @@ public abstract class MixinEntityItem extends Entity {
 
     @Override
     public void fall(float distance, float damageMultiplier) {
-        if (ExpandEventManager.elEntityItemFall.hasHandlers()) {
-            ExpandEventManager.elEntityItemFall.publish(new EntityItemFallEvent((EntityItem) ((Object) this), distance));
-        }
+        ExpandEventManager.handleEntityItemFallEvent((EntityItem) ((Object) this), distance);
         super.fall(distance, damageMultiplier);
     }
 }
