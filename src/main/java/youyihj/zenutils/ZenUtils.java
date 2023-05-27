@@ -18,6 +18,7 @@ import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.HardFailPreprocessor;
 import youyihj.zenutils.api.preprocessor.NoFixRecipeBookPreprocessor;
+import youyihj.zenutils.api.preprocessor.ReloadablePreprocessor;
 import youyihj.zenutils.api.preprocessor.SuppressErrorPreprocessor;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
@@ -59,6 +60,7 @@ public class ZenUtils {
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
+        preprocessorManager.registerPreprocessorAction(ReloadablePreprocessor.NAME, ReloadablePreprocessor::new);
         try {
             crafttweakerLogger = new ZenUtilsLogger(CrafttweakerImplementationAPI.logger);
             final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");

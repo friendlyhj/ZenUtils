@@ -42,7 +42,7 @@ public class EntityItemFallEvent {
     @ZenGetter("blockState")
     public IBlockState getBlockState() {
         World world = entityItem.world;
-        List<AxisAlignedBB> aabbList =  world.getCollisionBoxes(entityItem, entityItem.getEntityBoundingBox().offset(0, -0.2, 0));
+        List<AxisAlignedBB> aabbList = world.getCollisionBoxes(entityItem, entityItem.getEntityBoundingBox().offset(0, -0.2, 0));
         if (!aabbList.isEmpty()) {
             AxisAlignedBB aabb = aabbList.get(0);
             return CraftTweakerMC.getBlockState(world.getBlockState(new BlockPos(MathHelper.floor(aabb.minX), MathHelper.floor(aabb.minY), MathHelper.floor(aabb.minZ))));
