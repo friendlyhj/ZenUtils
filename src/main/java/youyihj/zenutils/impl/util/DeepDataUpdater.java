@@ -1,9 +1,11 @@
-package youyihj.zenutils.impl.data;
+package youyihj.zenutils.impl.util;
 
 import crafttweaker.api.data.*;
 import org.apache.commons.lang3.ArrayUtils;
 import youyihj.zenutils.api.util.ExpandData;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -18,10 +20,11 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         public static final int BUMP = 4;
 
         private static final int SUB_OPERATOR_MASK = 3;
-
     }
 
+    @Nullable
     private final IData data;
+    @Nullable
     private final IData updateOperation;
 
     public DeepDataUpdater(IData data, IData updateOperation) {
@@ -29,7 +32,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         this.updateOperation = updateOperation;
     }
 
-    public static IData deepUpdate(IData data, IData toUpdate, IData updateOperation) {
+    public static IData deepUpdate(@Nullable IData data, @Nonnull IData toUpdate, @Nullable IData updateOperation) {
         return toUpdate.convert(new DeepDataUpdater(data, updateOperation));
     }
 
@@ -108,8 +111,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                         break;
                 }
             } else {
-                DataList oldDataList = new DataList(oldValues, true);
-                switch (operator) {
+                switch (operator & Operation.SUB_OPERATOR_MASK) {
                     case Operation.OVERWRITE:
                         newValues = values;
                         break;
@@ -118,7 +120,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                         break;
                     case Operation.MERGE:
                         for (IData value : values) {
-                            if (!oldDataList.contains(value)) {
+                            if (!safeContains(oldValues, value)) {
                                 newValues.add(value);
                             }
                         }
@@ -139,18 +141,17 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 if (i < operationsList.size()) {
                     operator = operationsList.get(i);
                 }
-                if (i < oldValues.size()) {
-                    IData oldValue = oldValues.get(i);
-                    if (oldValue != null) {
-                        newValues.set(i, deepUpdate(oldValue, values.get(i), operator));
+                IData newValue = values.get(i);
+                if (newValue != null) {
+                    if (i < oldValues.size()) {
+                        IData oldValue = oldValues.get(i);
+                        newValues.set(i, deepUpdate(oldValue, newValue, operator));
+                    } else if ((operator.asInt() & Operation.SUB_OPERATOR_MASK) != Operation.REMOVE) {
+                        newValues.add(newValue);
                     }
-                } else if ((operator.asInt() & Operation.SUB_OPERATOR_MASK) != Operation.REMOVE) {
-                    newValues.add(values.get(i));
                 }
             }
         }
-
-
         return new DataList(newValues, true);
     }
 
@@ -163,11 +164,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         if (isMap(updateOperation)) {
             values.forEach((key, value) -> {
                 IData oldValue = dataMap.get(key);
-                if (oldValue == null) {
-                    dataMap.put(key, value);
-                } else {
-                    dataMap.put(key, deepUpdate(oldValue, value, updateOperation.memberGet(key)));
-                }
+                dataMap.put(key, deepUpdate(oldValue, value, updateOperation.memberGet(key)));
             });
         } else {
             int operator = updateOperation.asInt();
@@ -180,11 +177,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 case Operation.MERGE:
                     values.forEach((key, value) -> {
                         IData oldValue = dataMap.get(key);
-                        if (oldValue == null) {
-                            dataMap.put(key, value);
-                        } else {
-                            dataMap.put(key, deepUpdate(oldValue, value, new DataInt(operator)));
-                        }
+                        dataMap.put(key, deepUpdate(oldValue, value, new DataInt(operator)));
                     });
                     break;
                 case Operation.REMOVE:
@@ -202,6 +195,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
 
     @Override
     public IData fromByteArray(byte[] value) {
+        if (data == null || updateOperation == null) {
+            return new DataByteArray(value, true);
+        }
         if (data instanceof DataList) {
             return fromList(new DataByteArray(value, true).asList());
         }
@@ -244,6 +240,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
 
     @Override
     public IData fromIntArray(int[] value) {
+        if (data == null || updateOperation == null) {
+            return new DataIntArray(value, true);
+        }
         if (data instanceof DataList) {
             return fromList(new DataIntArray(value, true).asList());
         }

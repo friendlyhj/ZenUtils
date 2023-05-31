@@ -5,7 +5,7 @@ import crafttweaker.api.data.DataInt;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import stanhebben.zenscript.annotations.*;
-import youyihj.zenutils.impl.data.DeepDataUpdater;
+import youyihj.zenutils.impl.util.DeepDataUpdater;
 
 import java.util.HashMap;
 
