@@ -5,7 +5,6 @@ import crafttweaker.api.block.IBlockState;
 import crafttweaker.api.entity.IEntityItem;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -13,7 +12,9 @@ import net.minecraft.world.World;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author youyihj
@@ -39,14 +40,14 @@ public class EntityItemFallEvent {
         return distance;
     }
 
-    @ZenGetter("blockState")
-    public IBlockState getBlockState() {
+    @ZenGetter("blockStates")
+    public List<IBlockState> getBlockStates() {
         World world = entityItem.world;
-        List<AxisAlignedBB> aabbList = world.getCollisionBoxes(entityItem, entityItem.getEntityBoundingBox().offset(0, -0.2, 0));
-        if (!aabbList.isEmpty()) {
-            AxisAlignedBB aabb = aabbList.get(0);
-            return CraftTweakerMC.getBlockState(world.getBlockState(new BlockPos(MathHelper.floor(aabb.minX), MathHelper.floor(aabb.minY), MathHelper.floor(aabb.minZ))));
-        }
-        return CraftTweakerMC.getBlockState(Blocks.AIR.getDefaultState());
+        List<AxisAlignedBB> aabbList = new ArrayList<>();
+        world.getCollisionBoxes(entityItem, entityItem.getEntityBoundingBox().offset(0, -0.2, 0), true, aabbList);
+        return aabbList.stream()
+                .map(it -> world.getBlockState(new BlockPos(MathHelper.floor(it.minX), MathHelper.floor(it.minY), MathHelper.floor(it.minZ))))
+                .map(CraftTweakerMC::getBlockState)
+                .collect(Collectors.toList());
     }
 }
