@@ -223,6 +223,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 }
                 return new DataByteArray(Arrays.copyOf(temp, origin.length + addCount), true);
             case Operation.REMOVE:
+                if (value.length == 0) {
+                    return new DataByteArray(new byte[0], true);
+                }
                 byte[] valueSorted = value.clone();
                 Arrays.sort(valueSorted);
                 byte[] tempR = new byte[origin.length];
@@ -268,6 +271,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 }
                 return new DataIntArray(Arrays.copyOf(temp, origin.length + addCount), true);
             case Operation.REMOVE:
+                if (value.length == 0) {
+                    return new DataIntArray(new int[0], true);
+                }
                 int[] valueSorted = value.clone();
                 Arrays.sort(valueSorted);
                 int[] tempR = new int[origin.length];
