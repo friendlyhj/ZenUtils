@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.util.catenation.persistence;
 import com.google.common.collect.ImmutableMap;
 import crafttweaker.api.data.*;
 import crafttweaker.api.world.IWorld;
+import youyihj.zenutils.api.util.ExpandData;
 import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.CatenationContext;
 import youyihj.zenutils.api.util.catenation.CatenationStatus;
@@ -122,7 +123,13 @@ public class CatenationPersistenceImpl {
                 catenationDataList.add(serialize(catenation));
             }
         }
-        ZenUtilsWorld.getCustomWorldData(world).memberSet("catenations", new DataList(catenationDataList, true));
+        Map<String, IData> newCatenationDataMap = new HashMap<>();
+        newCatenationDataMap.put("catenations", new DataList(catenationDataList, true));
+        DataMap newCatenationData = new DataMap(newCatenationDataMap, true);
+        Map<String, IData> operationMap = new HashMap<>();
+        operationMap.put("catenations", ExpandData.DataUpdateOperation.OVERWRITE);
+        DataMap operationData = new DataMap(operationMap, true);
+        ZenUtilsWorld.setCustomWorldData(world, ExpandData.deepUpdate(ZenUtilsWorld.getCustomWorldData(world), newCatenationData, operationData));
     }
 
     @SuppressWarnings("unchecked")
