@@ -34,6 +34,9 @@ public class Catenation {
     @ZenMethod
     public boolean tick(IWorld world) {
         this.world = world;
+        if (isStopped()) {
+            return true;
+        }
         context.checkObjectHolders();
         if (context.getStatus() == CatenationStatus.WORKING) {
             if (stopWhen != null) {
