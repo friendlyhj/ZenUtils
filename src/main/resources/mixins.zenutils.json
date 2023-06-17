@@ -9,7 +9,8 @@
   "mixins": [
     "MixinExpressionMap",
     "MixinZenType",
-    "MixinZenTypeAssociate"
+    "MixinZenTypeAssociate",
+    "MixinCoTItemBracketHandler"
   ],
   "client": [
   ]
