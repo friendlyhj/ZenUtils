@@ -167,10 +167,7 @@ public class ZenUtilsWorld {
     public static int getSkyBrightness(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional boolean subtracted) {
         World mcWorld = CraftTweakerMC.getWorld(world);
         int light = mcWorld.getLightFor(EnumSkyBlock.SKY, CraftTweakerMC.getBlockPos(pos));
-        if (subtracted) {
-            light -= mcWorld.getSkylightSubtracted();
-        }
-        return light;
+        return subtracted ? Math.max(0, light - mcWorld.getSkylightSubtracted()) : light;
     }
 
     @ZenMethod
