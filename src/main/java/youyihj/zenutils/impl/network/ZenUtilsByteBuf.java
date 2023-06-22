@@ -64,7 +64,7 @@ public class ZenUtilsByteBuf implements IByteBuf {
 
     @Override
     public void writeItemStack(IItemStack itemStack) {
-        if (itemStack.isEmpty()) {
+        if (itemStack == null || itemStack.isEmpty()) {
             buf.writeByte(-1);
             return;
         } else {
