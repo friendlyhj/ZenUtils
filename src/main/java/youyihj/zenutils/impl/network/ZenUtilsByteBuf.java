@@ -27,6 +27,11 @@ public class ZenUtilsByteBuf implements IByteBuf {
     }
 
     @Override
+    public void writeBoolean(boolean value) {
+        buf.writeBoolean(value);
+    }
+
+    @Override
     public void writeInt(int value) {
         buf.writeInt(value);
     }
@@ -88,6 +93,11 @@ public class ZenUtilsByteBuf implements IByteBuf {
     public void writeUUID(CrTUUID uuid) {
         buf.writeLong(uuid.getMostSignificantBits());
         buf.writeLong(uuid.getLeastSignificantBits());
+    }
+
+    @Override
+    public boolean readBoolean() {
+        return buf.readBoolean();
     }
 
     @Override

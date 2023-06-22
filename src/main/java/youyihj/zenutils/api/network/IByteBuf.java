@@ -16,6 +16,9 @@ import youyihj.zenutils.api.util.CrTUUID;
 @ZenClass("mods.zenutils.IByteBuf")
 public interface IByteBuf {
     @ZenMethod
+    void writeBoolean(boolean value);
+
+    @ZenMethod
     void writeInt(int value);
 
     @ZenMethod
@@ -44,6 +47,9 @@ public interface IByteBuf {
 
     @ZenMethod
     void writeUUID(CrTUUID uuid);
+
+    @ZenMethod
+    boolean readBoolean();
 
     @ZenMethod
     int readInt();
