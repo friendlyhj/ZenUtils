@@ -96,7 +96,7 @@ public class PlayerStat {
 
     @ZenMethod
     @ZenGetter("name")
-    private ITextComponent getName() {
+    public ITextComponent getName() {
         return CraftTweakerMC.getITextComponent(internal.getStatName());
     }
 
