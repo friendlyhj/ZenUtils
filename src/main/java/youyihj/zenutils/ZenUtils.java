@@ -28,6 +28,7 @@ import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.reload.ReloadCommand;
 import youyihj.zenutils.impl.util.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.impl.util.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.lang.reflect.Field;
@@ -85,6 +86,7 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onPreInit(FMLPreInitializationEvent event) {
         ZenWorldCapabilityHandler.register();
+        PlayerInteractionSimulation.registerNetworkMessage();
         forgeLogger = event.getModLog();
         try {
             InternalUtils.scanAllEventLists();
