@@ -54,9 +54,7 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.673", () -> InternalUtils.hasMethod(CraftTweakerMC.class, "getIItemStackForMatching", ItemStack.class));
-        CraftTweakerAPI.registerGlobalSymbol("typeof", CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, "typeof", Object.class));
-        CraftTweakerAPI.registerGlobalSymbol("toString", CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, "toString", Object.class));
-        CraftTweakerAPI.registerGlobalSymbol("addRegexLogFilter", CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, "addRegexLogFilter", String.class));
+        ZenUtilsGlobal.registerMethods();
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
