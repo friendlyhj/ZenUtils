@@ -2,7 +2,9 @@ package youyihj.zenutils.api.event;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.block.IBlockState;
+import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.entity.IEntityItem;
+import crafttweaker.api.event.IEntityEvent;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
  */
 @ZenRegister
 @ZenClass("mods.zenutils.event.EntityItemFallEvent")
-public class EntityItemFallEvent {
+public class EntityItemFallEvent implements IEntityEvent {
     private final EntityItem entityItem;
     private final float distance;
 
@@ -49,5 +51,10 @@ public class EntityItemFallEvent {
                 .map(it -> world.getBlockState(new BlockPos(MathHelper.floor(it.minX), MathHelper.floor(it.minY), MathHelper.floor(it.minZ))))
                 .map(CraftTweakerMC::getBlockState)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public IEntity getEntity() {
+        return getItem();
     }
 }
