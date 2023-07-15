@@ -1,14 +1,11 @@
 package youyihj.zenutils.api.util;
 
-import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.zenscript.GlobalRegistry;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.ZenUtils;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
@@ -145,14 +142,4 @@ public class ZenUtilsGlobal {
         return "boolean";
     }
 
-    public static void registerMethods() {
-        for (Method method : ZenUtilsGlobal.class.getDeclaredMethods()) {
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            String name = method.getName();
-            // skip typeof for primitive types
-            if (name.equals("typeof") && parameterTypes[0].isPrimitive())
-                continue;
-            GlobalRegistry.registerGlobal(name, CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, name, parameterTypes));
-        }
-    }
 }

@@ -5,6 +5,7 @@ import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.preprocessor.PreprocessorManager;
+import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +33,7 @@ import youyihj.zenutils.impl.util.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * @author youyihj
@@ -54,7 +56,7 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.673", () -> InternalUtils.hasMethod(CraftTweakerMC.class, "getIItemStackForMatching", ItemStack.class));
-        ZenUtilsGlobal.registerMethods();
+        registerGlobalMethods();
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
@@ -112,5 +114,16 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarted(FMLServerStartedEvent event) {
         CraftTweakerAPI.tweaker.getActions().clear();
+    }
+
+    public static void registerGlobalMethods() {
+        for (Method method : ZenUtilsGlobal.class.getDeclaredMethods()) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            String name = method.getName();
+            // skip typeof for primitive types
+            if (name.equals("typeof") && parameterTypes[0].isPrimitive())
+                continue;
+            GlobalRegistry.registerGlobal(name, CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, name, parameterTypes));
+        }
     }
 }
