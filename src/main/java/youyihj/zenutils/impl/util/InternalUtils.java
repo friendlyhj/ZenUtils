@@ -12,8 +12,6 @@ import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
@@ -47,17 +45,7 @@ public final class InternalUtils {
     public static void checkCraftTweakerVersion(String requiredVersion, IVersionChecker versionChecker) {
         boolean result = versionChecker.getResult();
         if (!result) {
-            InvalidCraftTweakerVersionException exception = new InvalidCraftTweakerVersionException(requiredVersion);
-            if (FMLCommonHandler.instance().getSide().isServer()) {
-                throw exception;
-            } else {
-                try {
-                    Field errorToDisplayField = ReflectUtils.removePrivate(FMLClientHandler.class, "errorToDisplay");
-                    errorToDisplayField.set(FMLClientHandler.instance(), exception);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            throw new InvalidCraftTweakerVersionException(requiredVersion);
         }
     }
 

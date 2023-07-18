@@ -116,7 +116,7 @@ public class ZenUtils {
         CraftTweakerAPI.tweaker.getActions().clear();
     }
 
-    public static void registerGlobalMethods() {
+    private static void registerGlobalMethods() {
         for (Method method : ZenUtilsGlobal.class.getDeclaredMethods()) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             String name = method.getName();
