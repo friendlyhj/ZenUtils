@@ -7,6 +7,9 @@ import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -19,6 +22,9 @@ public class ExpandEventManager {
     public static final EventList<EntityRemoveEvent> elEntityRemove = new EventList<>();
     public static final EventList<EntityItemFallEvent> elEntityItemFall = new EventList<>();
     public static final EventList<EntityItemDeathEvent> elEntityItemDeath = new EventList<>();
+    public static final EventList<WorldLoadEvent> elWorldLoad = new EventList<>();
+    public static final EventList<WorldUnloadEvent> elWorldUnload = new EventList<>();
+    public static final EventList<WorldSaveEvent> elWorldSave = new EventList<>();
 
     @ZenMethod
     public static IEventHandle onEntityRemove(IEventManager manager, IEventHandler<EntityRemoveEvent> ev) {
@@ -35,6 +41,21 @@ public class ExpandEventManager {
         return elEntityItemDeath.add(ev);
     }
 
+    @ZenMethod
+    public static IEventHandle onWorldLoad(IEventManager manager, IEventHandler<WorldLoadEvent> ev) {
+        return elWorldLoad.add(ev);
+    }
+
+    @ZenMethod
+    public static IEventHandle onWorldUnload(IEventManager manager, IEventHandler<WorldUnloadEvent> ev) {
+        return elWorldUnload.add(ev);
+    }
+
+    @ZenMethod
+    public static IEventHandle onWorldSave(IEventManager manager, IEventHandler<WorldSaveEvent> ev) {
+        return elWorldSave.add(ev);
+    }
+
     public static void handleEntityItemFallEvent(EntityItem entityItem, float distance) {
         if (ExpandEventManager.elEntityItemFall.hasHandlers()) {
             ExpandEventManager.elEntityItemFall.publish(new EntityItemFallEvent(entityItem, distance));
@@ -44,6 +65,30 @@ public class ExpandEventManager {
     public static void handleEntityItemDeathEvent(EntityItem entityItem, DamageSource damageSource) {
         if (ExpandEventManager.elEntityItemDeath.hasHandlers()) {
             ExpandEventManager.elEntityItemDeath.publish(new EntityItemDeathEvent(entityItem, damageSource));
+        }
+    }
+
+    @Mod.EventBusSubscriber
+    public static class ForgeEventHandler {
+        @SubscribeEvent
+        public static void onWorldLoad(WorldEvent.Load event) {
+            if (ExpandEventManager.elWorldLoad.hasHandlers()) {
+                ExpandEventManager.elWorldLoad.publish(new WorldLoadEvent(event));
+            }
+        }
+
+        @SubscribeEvent
+        public static void onWorldUnload(WorldEvent.Unload event) {
+            if (ExpandEventManager.elWorldUnload.hasHandlers()) {
+                ExpandEventManager.elWorldUnload.publish(new WorldUnloadEvent(event));
+            }
+        }
+
+        @SubscribeEvent
+        public static void onWorldSave(WorldEvent.Save event) {
+            if (ExpandEventManager.elWorldSave.hasHandlers()) {
+                ExpandEventManager.elWorldSave.publish(new WorldSaveEvent(event));
+            }
         }
     }
 }
