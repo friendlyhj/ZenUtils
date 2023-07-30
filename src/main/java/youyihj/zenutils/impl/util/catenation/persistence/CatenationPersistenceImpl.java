@@ -103,7 +103,7 @@ public class CatenationPersistenceImpl {
         return catenation;
     }
 
-    public static void onWorldLoad(IWorld world) {
+    public static void loadCatenations(IWorld world) {
         IData catenationsData = ZenUtilsWorld.getCustomWorldData(world).memberGet("catenations");
         if (catenationsData == null) return;
         for (IData catenationData : catenationsData.asList()) {
@@ -116,7 +116,7 @@ public class CatenationPersistenceImpl {
         }
     }
 
-    public static void onWorldSave(IWorld world, List<Catenation> unfinished) {
+    public static void saveCatenations(IWorld world, List<Catenation> unfinished) {
         List<IData> catenationDataList = new ArrayList<>();
         for (Catenation catenation : unfinished) {
             if (catenation.getPersistenceKey() != null) {

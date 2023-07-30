@@ -66,7 +66,7 @@ public class CatenationManager {
         World world = event.getWorld();
         if (!world.isRemote) {
             List<Catenation> unfinished = ImmutableList.<Catenation>builder().addAll(catenations.get(world)).addAll(cantenationsToAdd.get(world)).build();
-            CatenationPersistenceImpl.onWorldSave(CraftTweakerMC.getIWorld(world), unfinished);
+            CatenationPersistenceImpl.saveCatenations(CraftTweakerMC.getIWorld(world), unfinished);
         }
     }
 

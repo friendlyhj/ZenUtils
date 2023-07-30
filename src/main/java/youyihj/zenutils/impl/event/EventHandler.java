@@ -23,7 +23,7 @@ public class EventHandler {
         World world = event.getWorld();
         world.addEventListener(new FireEntityRemoveEventListener(world));
         if (!world.isRemote) {
-            CatenationPersistenceImpl.onWorldLoad(CraftTweakerMC.getIWorld(world));
+            CatenationPersistenceImpl.loadCatenations(CraftTweakerMC.getIWorld(world));
         }
     }
 
