@@ -1,13 +1,12 @@
 package youyihj.zenutils.impl.reload;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.api.event.MTEventManager;
 import crafttweaker.api.event.PlayerLoggedInEvent;
 import crafttweaker.api.event.PlayerLoggedOutEvent;
 import crafttweaker.mc1120.entity.MCEntityDefinition;
-import crafttweaker.mc1120.game.MCGame;
-import crafttweaker.mc1120.util.CraftTweakerHacks;
 import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
 import net.minecraft.util.text.TextComponentString;
@@ -68,7 +67,7 @@ public class ReloadEventHandler {
     }
 
     private static void refreshEntityDrops() {
-        List<IEntityDefinition> entityDefinitions = CraftTweakerHacks.getPrivateStaticObject(MCGame.class, "ENTITY_DEFINITIONS");
+        List<IEntityDefinition> entityDefinitions = CraftTweakerAPI.game.getEntities();
         entityDefinitions.clear();
         ForgeRegistries.ENTITIES.forEach(it -> entityDefinitions.add(new MCEntityDefinition(it)));
     }
