@@ -2,12 +2,15 @@ package youyihj.zenutils.api.util;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.DataInt;
+import crafttweaker.api.data.DataList;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.impl.util.DeepDataUpdater;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author youyihj
@@ -18,6 +21,16 @@ public class ExpandData {
     @ZenMethodStatic
     public static IData createEmptyMutableDataMap() {
         return new DataMap(new HashMap<>(), false);
+    }
+
+    @ZenMethodStatic
+    public static IData createEmptyMutableDataList() {
+        return new DataList(new ArrayList<>(), false);
+    }
+
+    @ZenMethodStatic
+    public static IData createDataList(List<IData> dataList) {
+        return new DataList(dataList, true);
     }
 
     @ZenMethod
