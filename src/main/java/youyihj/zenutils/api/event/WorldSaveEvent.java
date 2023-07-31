@@ -10,7 +10,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 /**
  * @author youyihj
  */
-@ZenClass("mods.zenutils.WorldSaveEvent")
+@ZenClass("mods.zenutils.event.WorldSaveEvent")
 @ZenRegister
 public class WorldSaveEvent implements IWorldEvent {
     private final WorldEvent.Save event;

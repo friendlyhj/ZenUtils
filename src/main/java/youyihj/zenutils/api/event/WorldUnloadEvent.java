@@ -10,7 +10,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 /**
  * @author youyihj
  */
-@ZenClass("mods.zenutils.WorldUnloadEvent")
+@ZenClass("mods.zenutils.event.WorldUnloadEvent")
 @ZenRegister
 public class WorldUnloadEvent implements IWorldEvent {
     private final WorldEvent.Unload event;
