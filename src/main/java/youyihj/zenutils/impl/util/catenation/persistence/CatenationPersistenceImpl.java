@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.util.catenation.persistence;
 import com.google.common.collect.ImmutableMap;
 import crafttweaker.api.data.*;
 import crafttweaker.api.world.IWorld;
+import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.util.ExpandData;
 import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.api.util.catenation.CatenationContext;
@@ -70,27 +71,32 @@ public class CatenationPersistenceImpl {
         return new DataMap(total, true);
     }
 
-    public static Catenation deserialize(IData data, IWorld world) {
+    public static Catenation deserialize(IData data, IWorld world) throws DeserializationException {
         String persistKey = data.memberGet("key").asString();
-        Catenation catenation = persistData.get(persistKey).getCatenationFactory().get(world);
+        Entry persistEntry = persistData.get(persistKey);
+        Catenation catenation = persistEntry.getCatenationFactory().get(world);
         catenation.getContext().setStatus(CatenationStatus.SERIAL, world);
         catenation.setPersistenceKey(persistKey);
 
         Queue<ICatenationTask> tasks = catenation.getTasks();
         int toRemoveTasks = tasks.size() - data.memberGet("taskCount").asInt();
-        for (int i = 0; i < toRemoveTasks; i++) {
-            tasks.poll();
+        try {
+            for (int i = 0; i < toRemoveTasks; i++) {
+                tasks.remove();
+            }
+            tasks.element().deserializeFromData(data.memberGet("taskData"));
+            if (tasks.element().isComplete()) {
+                tasks.remove();
+            }
+        } catch (NoSuchElementException e) {
+            throw new DeserializationException("Too few tasks. At least: " + toRemoveTasks);
         }
-        tasks.element().deserializeFromData(data.memberGet("taskData"));
-        if (tasks.element().isComplete()) {
-            tasks.poll();
-        }
-
         if (data.contains(new DataString("data"))) {
             catenation.getContext().setData(data.memberGet("data"));
         }
 
         Map<String, IData> objData = data.memberGet("objects").asMap();
+        persistEntry.checkObjData(objData);
         Map<ICatenationObjectHolder.Key<?>, ICatenationObjectHolder<?>> objectHolders = catenation.getContext().getObjectHolders();
         objData.forEach((key, value) -> {
             ICatenationObjectHolder.Type<?> holderType = ObjectHolderTypeRegistry.get(value.memberGet("type").asString());
@@ -107,7 +113,13 @@ public class CatenationPersistenceImpl {
         IData catenationsData = ZenUtilsWorld.getCustomWorldData(world).memberGet("catenations");
         if (catenationsData == null) return;
         for (IData catenationData : catenationsData.asList()) {
-            Catenation catenation = deserialize(catenationData, world);
+            Catenation catenation;
+            try {
+                catenation = deserialize(catenationData, world);
+            } catch (DeserializationException e) {
+                ZenUtils.forgeLogger.error("Failed to read catenation from data " + catenationData.asString() + ". The catenation format maybe changed?", e);
+                continue;
+            }
             if (catenation.isAllObjectsValid()) {
                 catenation.getContext().setStatus(CatenationStatus.WORKING, world);
             } else {
@@ -186,6 +198,30 @@ public class CatenationPersistenceImpl {
                     throw new IllegalArgumentException("catenation object: {key: " + key + ", type: " + entry.getValue().getValueType().getName() + "} is missing.");
                 }
             }
+        }
+
+        public void checkObjData(Map<String, IData> objectsData) throws DeserializationException {
+            for (Map.Entry<String, IData> entry : objectsData.entrySet()) {
+                String key = entry.getKey();
+                IData value = entry.getValue();
+                ICatenationObjectHolder.Type<?> type = objectHolderTypes.get(key);
+                if (type == null) {
+                    throw new DeserializationException("Extra object key: " + key);
+                } else if (!type.getValueType().getName().equals(value.memberGet("type").asString())) {
+                    throw new DeserializationException("Type mismatches at key " + key);
+                }
+            }
+            for (String key : objectHolderTypes.keySet()) {
+                if (!objectsData.containsKey(key)) {
+                    throw new DeserializationException("Catenation object " + key + " is missing.");
+                }
+            }
+        }
+    }
+
+    public static class DeserializationException extends Exception {
+        public DeserializationException(String message) {
+            super(message);
         }
     }
 }
