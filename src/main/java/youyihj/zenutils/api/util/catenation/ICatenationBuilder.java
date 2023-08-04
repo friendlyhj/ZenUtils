@@ -22,6 +22,9 @@ public interface ICatenationBuilder {
     ICatenationBuilder sleepUntil(IWorldCondition condition);
 
     @ZenMethod
+    ICatenationBuilder customTimer(long duration, ITimerHandler handler);
+
+    @ZenMethod
     ICatenationBuilder stopWhen(IWorldCondition condition);
 
     @ZenMethod

@@ -38,6 +38,11 @@ public abstract class AbstractCatenationBuilder implements ICatenationBuilder {
     }
 
     @Override
+    public ICatenationBuilder customTimer(long duration, ITimerHandler handler) {
+        return addTask(new TimerTask(duration, handler));
+    }
+
+    @Override
     public ICatenationBuilder stopWhen(IWorldCondition condition) {
         stopWhen = condition;
         return this;
