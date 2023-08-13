@@ -5,8 +5,10 @@ import com.feed_the_beast.ftbquests.quest.Quest;
 import com.feed_the_beast.ftbquests.quest.QuestObjectBase;
 import com.feed_the_beast.ftbquests.quest.reward.Reward;
 import com.feed_the_beast.ftbquests.quest.task.Task;
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.text.ITextComponent;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 
@@ -74,7 +76,15 @@ public class CTQuest extends CTQuestObjectBase{
 
     @ZenGetter("description")
     public String[] getDescription() {
+        CraftTweakerAPI.logWarning("Use descriptionText getter instead. The method doesn't work on dedicated server.");
         return quest.getDescription();
+    }
+
+    @ZenGetter("descriptionText")
+    public List<ITextComponent> getDescriptionText() {
+        return quest.description.stream()
+                .map(CTQuestObjectBase::serverAvailableText)
+                .collect(Collectors.toList());
     }
 
     @ZenGetter("shape")
