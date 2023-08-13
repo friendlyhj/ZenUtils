@@ -75,6 +75,7 @@ public class CTQuest extends CTQuestObjectBase{
     }
 
     @ZenGetter("description")
+    @Deprecated
     public String[] getDescription() {
         CraftTweakerAPI.logWarning("Use descriptionText getter instead. The method doesn't work on dedicated server.");
         return quest.getDescription();
