@@ -20,7 +20,6 @@ import youyihj.zenutils.impl.util.PlayerInteractionSimulation;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.ZenUtilsPlayer")
 @ZenExpansion("crafttweaker.player.IPlayer")
 @SuppressWarnings("unused")
 public class ZenUtilsPlayer {

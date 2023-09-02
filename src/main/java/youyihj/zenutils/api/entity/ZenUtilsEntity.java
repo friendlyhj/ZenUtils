@@ -10,7 +10,6 @@ import crafttweaker.mc1120.data.NBTUpdater;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.util.CrTUUID;
@@ -19,7 +18,6 @@ import youyihj.zenutils.api.util.CrTUUID;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.ZenUtilsEntity")
 @ZenExpansion("crafttweaker.entity.IEntity")
 @SuppressWarnings("unused")
 public class ZenUtilsEntity {

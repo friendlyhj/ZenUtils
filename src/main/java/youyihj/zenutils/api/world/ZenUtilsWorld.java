@@ -20,12 +20,11 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.item.CrTItemHandler;
+import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.util.CrTUUID;
 import youyihj.zenutils.api.util.catenation.ICatenationBuilder;
 import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI;
@@ -43,7 +42,6 @@ import java.util.stream.Collectors;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.ZenUtilsWorld")
 @ZenExpansion("crafttweaker.world.IWorld")
 @SuppressWarnings("unused")
 public class ZenUtilsWorld {
