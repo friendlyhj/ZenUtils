@@ -1,7 +1,6 @@
 package youyihj.zenutils.api.util.catenation.persistence;
 
 import crafttweaker.api.data.IData;
-import org.apache.commons.lang3.mutable.Mutable;
 import youyihj.zenutils.api.util.catenation.Catenation;
 import youyihj.zenutils.impl.util.catenation.persistence.ObjectHolderTypeRegistry;
 
@@ -11,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * @author youyihj
  */
-public interface ICatenationObjectHolder<T> extends Mutable<T> {
+public interface ICatenationObjectHolder<T> {
     Type<T> getType();
 
     IData serializeToData();
@@ -19,6 +18,10 @@ public interface ICatenationObjectHolder<T> extends Mutable<T> {
     void deserializeFromData(IData data);
 
     void receiveObject(T object);
+
+    T getValue();
+
+    void setValue(T value);
 
     default boolean isValid(Catenation catenation) {
         return getValue() != null;
