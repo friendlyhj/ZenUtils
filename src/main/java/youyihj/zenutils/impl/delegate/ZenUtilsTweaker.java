@@ -41,6 +41,11 @@ public class ZenUtilsTweaker implements ITweaker {
             reloadCallback.beforeApply(true);
             reloadCallback.applyReload();
             reloadCallback.afterApply(true);
+        } else {
+            String describe = action.describe();
+            if (describe != null && !describe.isEmpty()) {
+                CraftTweakerAPI.logInfo("Tried to reload action: " + describe + ", which is not reloadable.");
+            }
         }
         if (reloadable && reloadCallback.hasUndoMethod()) {
             reloadableActions.add(reloadCallback);
