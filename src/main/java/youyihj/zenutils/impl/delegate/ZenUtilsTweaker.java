@@ -45,6 +45,8 @@ public class ZenUtilsTweaker implements ITweaker {
             String describe = action.describe();
             if (describe != null && !describe.isEmpty()) {
                 CraftTweakerAPI.logInfo("Tried to reload action: " + describe + ", which is not reloadable.");
+            } else {
+                CraftTweakerAPI.logInfo("Tried to reload an un-reloadable action: " + action);
             }
         }
         if (reloadable && reloadCallback.hasUndoMethod()) {
