@@ -42,4 +42,8 @@ public abstract class ActionReloadCallback<T extends IAction> {
      * @return If the action requires some cleanup code
      */
     public abstract boolean hasUndoMethod();
+
+    public String describeAction() {
+        return action.describe();
+    }
 }

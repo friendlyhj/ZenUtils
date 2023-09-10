@@ -144,7 +144,12 @@ public class ZenUtilsTweaker implements ITweaker {
 
     public void onReload() {
         while (!reloadableActions.isEmpty()) {
-            reloadableActions.poll().undo();
+            ActionReloadCallback<?> action = reloadableActions.poll();
+            try {
+                action.undo();
+            } catch (Exception e) {
+                CraftTweakerAPI.logError("Failed to undo action " + action.describeAction());
+            }
         }
     }
 
