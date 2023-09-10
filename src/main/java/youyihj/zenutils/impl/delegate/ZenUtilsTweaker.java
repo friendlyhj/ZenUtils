@@ -33,14 +33,22 @@ public class ZenUtilsTweaker implements ITweaker {
         boolean reloadable = reloadCallback != null;
         if (!freeze) {
             if (validateAction(action)) return;
-            if (reloadable) reloadCallback.beforeApply(false);
-            action.apply();
-            if (reloadable) reloadCallback.afterApply(false);
+            try {
+                if (reloadable) reloadCallback.beforeApply(false);
+                action.apply();
+                if (reloadable) reloadCallback.afterApply(false);
+            } catch (Exception e) {
+                CraftTweakerAPI.logError("Failed to apply this action", e);
+            }
         } else if (reloadable) {
             if (validateAction(action)) return;
-            reloadCallback.beforeApply(true);
-            reloadCallback.applyReload();
-            reloadCallback.afterApply(true);
+            try {
+                reloadCallback.beforeApply(true);
+                reloadCallback.applyReload();
+                reloadCallback.afterApply(true);
+            } catch (Exception e) {
+                CraftTweakerAPI.logError("Failed to apply this action", e);
+            }
         } else {
             String describe = action.describe();
             if (describe != null && !describe.isEmpty()) {
