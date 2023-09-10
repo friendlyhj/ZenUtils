@@ -5,6 +5,7 @@ import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Arrays;
 
@@ -104,6 +105,11 @@ public class ZenUtilsGlobal {
             Arrays.fill(array, true);
         }
         return array;
+    }
+
+    @ZenMethod
+    public static int scriptStatus() {
+        return InternalUtils.getScriptStatus().ordinal();
     }
 
     // Actually, these below are not global

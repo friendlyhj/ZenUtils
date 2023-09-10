@@ -33,6 +33,8 @@ public final class InternalUtils {
     private static boolean suppressErrorSingleScriptMode = false;
     private static boolean isFirstSetMode = true;
 
+    private static ScriptStatus scriptStatus = ScriptStatus.INIT;
+
     private InternalUtils() {
     }
 
@@ -137,5 +139,13 @@ public final class InternalUtils {
     @SuppressWarnings("rawtypes")
     public static List<EventList> getAllEventLists() {
         return ImmutableList.copyOf(ALL_EVENT_LISTS);
+    }
+
+    public static void setScriptStatus(ScriptStatus scriptStatus) {
+        InternalUtils.scriptStatus = scriptStatus;
+    }
+
+    public static ScriptStatus getScriptStatus() {
+        return scriptStatus;
     }
 }

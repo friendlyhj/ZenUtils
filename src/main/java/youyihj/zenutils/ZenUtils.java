@@ -27,10 +27,7 @@ import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
 import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.reload.ReloadCommand;
-import youyihj.zenutils.impl.util.IStatFormatterAdapter;
-import youyihj.zenutils.impl.util.InternalUtils;
-import youyihj.zenutils.impl.util.PlayerInteractionSimulation;
-import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.impl.util.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -114,6 +111,7 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onServerStarted(FMLServerStartedEvent event) {
         CraftTweakerAPI.tweaker.getActions().clear();
+        InternalUtils.setScriptStatus(ScriptStatus.STARTED);
     }
 
     private static void registerGlobalMethods() {

@@ -20,6 +20,7 @@ import youyihj.zenutils.api.reload.ScriptReloadEvent;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.impl.util.ScriptStatus;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 public class ReloadEventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onReloadPre(ScriptReloadEvent.Pre event) {
+        InternalUtils.setScriptStatus(ScriptStatus.RELOAD);
         InternalUtils.getAllEventLists().forEach(EventList::clear);
         reRegisterInternalEvents();
         refreshEntityDrops();
@@ -50,6 +52,7 @@ public class ReloadEventHandler {
             LateGetContentLookup.refreshFields();
             LateGetContentLookup.clear();
         }
+        InternalUtils.setScriptStatus(ScriptStatus.STARTED);
     }
 
     @SuppressWarnings("unchecked")
