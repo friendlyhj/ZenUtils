@@ -5,6 +5,7 @@ import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.impl.reload.ScriptReloader;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Arrays;
@@ -110,6 +111,14 @@ public class ZenUtilsGlobal {
     @ZenMethod
     public static int scriptStatus() {
         return InternalUtils.getScriptStatus().ordinal();
+    }
+
+    @ZenMethod
+    public static void addReloadableLoader(String loaderName) {
+        if (loaderName.equals("preinit") || loaderName.equals("contenttweaker")) {
+            throw new IllegalArgumentException("This loader is not reloadable");
+        }
+        ScriptReloader.addReloadableLoader(loaderName);
     }
 
     // Actually, these below are not global
