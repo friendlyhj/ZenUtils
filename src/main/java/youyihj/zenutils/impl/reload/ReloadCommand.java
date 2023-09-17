@@ -35,23 +35,31 @@ public class ReloadCommand extends CraftTweakerCommand {
             sender.sendMessage(getNormalMessage(TextFormatting.DARK_RED + "The command only can be run in integrated server (SinglePlayer)!"));
             return;
         }
-        sender.sendMessage(getNormalMessage(TextFormatting.AQUA + "Beginning reload scripts"));
-//        sender.sendMessage(getNormalMessage("Only scripts that marked " + TextFormatting.GRAY + "#reloadable " + TextFormatting.RESET + "can be reloaded."));
+        reloadScripts(sender);
+    }
+
+    /**
+     * Partial reload stuff that can be easily accessed by other mods.
+     * Not suggested, not sure if there are some issues reloading scripts on server.
+     */
+    public static void reloadScripts(ICommandSender requester) {
+        requester.sendMessage(getNormalMessage(TextFormatting.AQUA + "Beginning reload scripts"));
+//        requester.sendMessage(getNormalMessage("Only scripts that marked " + TextFormatting.GRAY + "#reloadable " + TextFormatting.RESET + "can be reloaded."));
         if (!Loader.isModLoaded("zenrecipereloading")) {
-            sender.sendMessage(getNormalMessage(TextFormatting.YELLOW + "Most recipe modifications are not reloadable, they will be ignored."));
+            requester.sendMessage(getNormalMessage(TextFormatting.YELLOW + "Most recipe modifications are not reloadable, they will be ignored."));
         }
         ZenUtils.tweaker.freezeActionApplying();
         ZenModule.loadedClasses.clear();
         ZenUtils.crafttweakerLogger.clear();
         InternalUtils.setScriptStatus(ScriptStatus.RELOAD);
-        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Pre(sender));
+        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Pre(requester));
         boolean successful = ScriptReloader.reloadScripts();
         if (successful) {
-            sender.sendMessage(getNormalMessage("Reloaded successfully"));
+            requester.sendMessage(getNormalMessage("Reloaded successfully"));
         } else {
-            sender.sendMessage(getNormalMessage(TextFormatting.DARK_RED + "Failed to reload scripts"));
+            requester.sendMessage(getNormalMessage(TextFormatting.DARK_RED + "Failed to reload scripts"));
         }
-        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Post(sender));
+        MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Post(requester));
         InternalUtils.setScriptStatus(ScriptStatus.STARTED);
     }
 }
