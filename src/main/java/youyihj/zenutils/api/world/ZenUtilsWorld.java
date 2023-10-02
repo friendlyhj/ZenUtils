@@ -15,6 +15,7 @@ import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -31,6 +32,7 @@ import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI
 import youyihj.zenutils.api.util.catenation.persistence.PersistedCatenationStarter;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.impl.util.FakePlayerHolder;
 import youyihj.zenutils.impl.util.catenation.CatenationBuilder;
 
 import javax.annotation.Nullable;
@@ -177,6 +179,17 @@ public class ZenUtilsWorld {
     @ZenGetter("gameRuleHelper")
     public static GameRuleHelper getGameRuleHelper(IWorld world) {
         return new GameRuleHelper(CraftTweakerMC.getWorld(world).getGameRules());
+    }
+
+    @ZenMethod
+    @ZenGetter("fakePlayer")
+    public static IPlayer getFakePlayer(IWorld world) {
+        World mcWorld = CraftTweakerMC.getWorld(world);
+        if (mcWorld instanceof WorldServer) {
+            return CraftTweakerMC.getIPlayer(FakePlayerHolder.get(((WorldServer) mcWorld)));
+        } else {
+            throw new IllegalStateException("Server side only.");
+        }
     }
 
     private static IZenWorldCapability getWorldCap(IWorld world) {
