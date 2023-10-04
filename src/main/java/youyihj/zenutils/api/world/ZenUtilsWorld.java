@@ -32,7 +32,7 @@ import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI
 import youyihj.zenutils.api.util.catenation.persistence.PersistedCatenationStarter;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
-import youyihj.zenutils.impl.util.FakePlayerHolder;
+import youyihj.zenutils.impl.player.FakePlayerHolder;
 import youyihj.zenutils.impl.util.catenation.CatenationBuilder;
 
 import javax.annotation.Nullable;

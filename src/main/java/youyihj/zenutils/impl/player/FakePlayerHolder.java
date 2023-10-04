@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.util;
+package youyihj.zenutils.impl.player;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.world.WorldServer;

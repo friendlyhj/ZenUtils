@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.util;
+package youyihj.zenutils.impl.player;
 
 import com.google.common.base.Throwables;
 import crafttweaker.api.entity.IEntity;
@@ -18,6 +18,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 import youyihj.zenutils.api.network.ZenNetworkHandler;
+import youyihj.zenutils.api.player.IActionResult;
 
 import java.util.concurrent.Callable;
 
@@ -27,33 +28,34 @@ import java.util.concurrent.Callable;
 public class PlayerInteractionSimulation {
     private static final String INTERACT_ENTITY_MESSAGE_KEY = "zenutils.internal.interactEntity";
 
-    public static EnumActionResult simulateRightClickItem(IPlayer player, IItemStack stack, IEntityEquipmentSlot hand) {
+    public static IActionResult<EnumActionResult> simulateRightClickItem(IPlayer player, IItemStack stack, IEntityEquipmentSlot hand) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         EnumHand mcHand = hand == null ? EnumHand.MAIN_HAND : CraftTweakerMC.getHand(hand);
+        ItemStack mcItem = CraftTweakerMC.getItemStack(stack);
         if (mcPlayer instanceof EntityPlayerMP) {
-            return ghostItemOperation(mcPlayer, CraftTweakerMC.getItemStack(stack), mcHand, () -> {
+            return ghostItemOperation(mcPlayer, mcItem, mcHand, () -> {
                 PlayerInteractionManager interactionManager = ((EntityPlayerMP) mcPlayer).interactionManager;
-                return interactionManager.processRightClick(mcPlayer, mcPlayer.world, CraftTweakerMC.getItemStack(stack), mcHand);
+                return interactionManager.processRightClick(mcPlayer, mcPlayer.world, mcItem, mcHand);
             });
         }
-        return EnumActionResult.PASS;
+        return new ActionResult<>(mcItem, EnumActionResult.PASS);
     }
 
-    public static EnumActionResult simulateRightClickBlock(IPlayer player, IItemStack stack, IEntityEquipmentSlot hand, IBlockPos pos, IFacing facing, float hitX, float hitY, float hitZ) {
+    public static IActionResult<EnumActionResult> simulateRightClickBlock(IPlayer player, IItemStack stack, IEntityEquipmentSlot hand, IBlockPos pos, IFacing facing, float hitX, float hitY, float hitZ) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         InteractBlockContext context = new InteractBlockContext(mcPlayer, CraftTweakerMC.getBlockPos(pos), CraftTweakerMC.getFacing(facing), hitX, hitY, hitZ);
+        ItemStack mcItem = CraftTweakerMC.getItemStack(stack);
         if (mcPlayer instanceof EntityPlayerMP) {
             EnumHand mcHand = hand == null ? EnumHand.MAIN_HAND : CraftTweakerMC.getHand(hand);
-            ItemStack mcItem = CraftTweakerMC.getItemStack(stack);
             return ghostItemOperation(mcPlayer, mcItem, mcHand, () -> {
                 PlayerInteractionManager interactionManager = ((EntityPlayerMP) mcPlayer).interactionManager;
                 return interactionManager.processRightClickBlock(mcPlayer, mcPlayer.world, mcItem, mcHand, context.getPos(), context.getSide(), context.getHitX(), context.getHitY(), context.getHitZ());
             });
         }
-        return EnumActionResult.PASS;
+        return new ActionResult<>(mcItem, EnumActionResult.PASS);
     }
 
-    public static EnumActionResult simulateRightClickEntity(IPlayer player, IEntity entity, IItemStack stack, IEntityEquipmentSlot hand) {
+    public static IActionResult<EnumActionResult> simulateRightClickEntity(IPlayer player, IEntity entity, IItemStack stack, IEntityEquipmentSlot hand) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         Entity mcEntity = CraftTweakerMC.getEntity(entity);
         EnumHand mcHand = hand == null ? EnumHand.MAIN_HAND : CraftTweakerMC.getHand(hand);
@@ -65,16 +67,17 @@ public class PlayerInteractionSimulation {
         return ghostItemOperation(mcPlayer, CraftTweakerMC.getItemStack(stack), mcHand, () -> mcPlayer.interactOn(mcEntity, mcHand));
     }
 
-    public static void simulateLeftClickBlock(IPlayer player, IItemStack stack, IBlockPos pos, IFacing side) {
+    public static IActionResult<Void> simulateLeftClickBlock(IPlayer player, IItemStack stack, IBlockPos pos, IFacing side) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
         InteractBlockContext context = new InteractBlockContext(mcPlayer, CraftTweakerMC.getBlockPos(pos), CraftTweakerMC.getFacing(side));
         if (mcPlayer instanceof EntityPlayerMP) {
-            ghostItemOperation(mcPlayer, CraftTweakerMC.getItemStack(stack), EnumHand.MAIN_HAND, () -> {
+            return ghostItemOperation(mcPlayer, CraftTweakerMC.getItemStack(stack), EnumHand.MAIN_HAND, () -> {
                 PlayerInteractionManager interactionManager = ((EntityPlayerMP) mcPlayer).interactionManager;
                 interactionManager.onBlockClicked(context.getPos(), context.getSide());
                 return null;
             });
         }
+        return new ActionResult<>(ItemStack.EMPTY, null);
     }
 
     public static IItemStack simulateUseItemFinish(IPlayer player, IItemStack itemStack, IEntityEquipmentSlot hand) {
@@ -88,7 +91,7 @@ public class PlayerInteractionSimulation {
             ItemStack result = mcItem.onItemUseFinish(CraftTweakerMC.getWorld(player.getWorld()), mcPlayer);
             result = ForgeEventFactory.onItemUseFinish(mcPlayer, mcItem.copy(), mcItem.getMaxItemUseDuration(), result);
             return CraftTweakerMC.getIItemStack(result);
-        });
+        }).getResult();
     }
 
     public static void registerNetworkMessage() {
@@ -104,13 +107,14 @@ public class PlayerInteractionSimulation {
         });
     }
 
-    private static <T> T ghostItemOperation(EntityPlayer player, ItemStack item, EnumHand hand, Callable<T> operation) {
+    private static <T> IActionResult<T> ghostItemOperation(EntityPlayer player, ItemStack item, EnumHand hand, Callable<T> operation) {
         ItemStack origin = player.getHeldItem(hand);
         if (!item.isEmpty()) {
             player.setHeldItem(hand, item);
         }
         try {
-            return operation.call();
+            T result = operation.call();
+            return new ActionResult<>(player.getHeldItem(hand), result);
         } catch (Exception e) {
             Throwables.throwIfUnchecked(e);
             throw new RuntimeException(e);

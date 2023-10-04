@@ -23,8 +23,12 @@ import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
 import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
+import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
-import youyihj.zenutils.impl.util.*;
+import youyihj.zenutils.impl.util.IStatFormatterAdapter;
+import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.impl.util.ScriptStatus;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

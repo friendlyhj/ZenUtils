@@ -10,11 +10,12 @@ import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IFacing;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.EnumActionResult;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.CapabilityItemHandler;
 import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.api.item.CrTItemHandler;
-import youyihj.zenutils.impl.util.PlayerInteractionSimulation;
+import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 
 /**
  * @author youyihj
@@ -61,23 +62,23 @@ public class ZenUtilsPlayer {
     }
 
     @ZenMethod
-    public static String simulateRightClickItem(IPlayer player, IItemStack stack, @Optional IEntityEquipmentSlot hand) {
-        return PlayerInteractionSimulation.simulateRightClickItem(player, stack, hand).name();
+    public static IActionResult<EnumActionResult> simulateRightClickItem(IPlayer player, IItemStack stack, @Optional IEntityEquipmentSlot hand) {
+        return PlayerInteractionSimulation.simulateRightClickItem(player, stack, hand);
     }
 
     @ZenMethod
-    public static String simulateRightClickBlock(IPlayer player, IItemStack stack, @Optional IEntityEquipmentSlot hand, @Optional IBlockPos pos, @Optional IFacing facing, @Optional(valueDouble = -1) float hitX, @Optional(valueDouble = -1) float hitY, @Optional(valueDouble = -1) float hitZ) {
-        return PlayerInteractionSimulation.simulateRightClickBlock(player, stack, hand, pos, facing, hitX, hitY, hitZ).name();
+    public static IActionResult<EnumActionResult> simulateRightClickBlock(IPlayer player, IItemStack stack, @Optional IEntityEquipmentSlot hand, @Optional IBlockPos pos, @Optional IFacing facing, @Optional(valueDouble = -1) float hitX, @Optional(valueDouble = -1) float hitY, @Optional(valueDouble = -1) float hitZ) {
+        return PlayerInteractionSimulation.simulateRightClickBlock(player, stack, hand, pos, facing, hitX, hitY, hitZ);
     }
 
     @ZenMethod
-    public static String simulateRightClickEntity(IPlayer player, IEntity entity, @Optional IItemStack stack, @Optional IEntityEquipmentSlot hand) {
-        return PlayerInteractionSimulation.simulateRightClickEntity(player, entity, stack, hand).name();
+    public static IActionResult<EnumActionResult> simulateRightClickEntity(IPlayer player, IEntity entity, @Optional IItemStack stack, @Optional IEntityEquipmentSlot hand) {
+        return PlayerInteractionSimulation.simulateRightClickEntity(player, entity, stack, hand);
     }
 
     @ZenMethod
-    public static void simulateLeftClickBlock(IPlayer player, @Optional IItemStack stack, @Optional IBlockPos pos, @Optional IFacing side) {
-        PlayerInteractionSimulation.simulateLeftClickBlock(player, stack, pos, side);
+    public static IActionResult<Void> simulateLeftClickBlock(IPlayer player, @Optional IItemStack stack, @Optional IBlockPos pos, @Optional IFacing side) {
+        return PlayerInteractionSimulation.simulateLeftClickBlock(player, stack, pos, side);
     }
 
     @ZenMethod
