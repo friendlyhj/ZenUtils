@@ -106,6 +106,8 @@ public class CatenationPersistenceImpl {
             objectHolders.put(holderKey, holder);
         });
 
+        catenation.setWorld(world);
+
         return catenation;
     }
 

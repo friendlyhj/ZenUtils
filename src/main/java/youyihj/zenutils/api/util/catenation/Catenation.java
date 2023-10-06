@@ -33,7 +33,7 @@ public class Catenation {
 
     @ZenMethod
     public boolean tick(IWorld world) {
-        this.world = world;
+        setWorld(world);
         if (isStopped()) {
             return true;
         }
@@ -102,6 +102,10 @@ public class Catenation {
     // not exposed
     public IWorld getWorld() {
         return world;
+    }
+
+    public void setWorld(IWorld world) {
+        this.world = world;
     }
 
     public Queue<ICatenationTask> getTasks() {
