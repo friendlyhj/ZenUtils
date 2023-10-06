@@ -19,6 +19,8 @@ public class FakePlayerHolder {
         FakePlayer ret = playerRef != null ? playerRef.get() : null;
         if (ret == null) {
             ret = FakePlayerFactory.get(world, PROFILE);
+            // also set the handler to the player
+            new DummyNetHandler(ret.getServer(), ret);
             playerRef = new WeakReference<>(ret);
         }
         return ret;
