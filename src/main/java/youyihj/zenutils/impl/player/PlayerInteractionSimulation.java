@@ -109,9 +109,7 @@ public class PlayerInteractionSimulation {
 
     private static <T> IActionResult<T> ghostItemOperation(EntityPlayer player, ItemStack item, EnumHand hand, Callable<T> operation) {
         ItemStack origin = player.getHeldItem(hand);
-        if (!item.isEmpty()) {
-            player.setHeldItem(hand, item);
-        }
+        player.setHeldItem(hand, item);
         try {
             T result = operation.call();
             return new ActionResult<>(player.getHeldItem(hand), result);
@@ -119,9 +117,7 @@ public class PlayerInteractionSimulation {
             Throwables.throwIfUnchecked(e);
             throw new RuntimeException(e);
         } finally {
-            if (!item.isEmpty()) {
-                player.setHeldItem(hand, origin);
-            }
+            player.setHeldItem(hand, origin);
         }
     }
 }
