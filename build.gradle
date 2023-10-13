@@ -79,6 +79,7 @@ dependencies {
     deobfCompile "com.teamacronymcoders.base:base:1.12.2-3.13.0-SNAPSHOT.+"
     deobfCompile "com.teamacronymcoders:ContentTweaker:1.12.2-4.10.0"
     deobfCompile "cofh:RedstoneFlux:1.12-2.1.0.+:universal"
+    deobfCompile "curse.maven:Baubles-227083:2518667"
     deobfCompile "curse.maven:ftb-library-legacy-forge-237167:2985811"
     deobfCompile "curse.maven:item-filters-309674:3003364"
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"

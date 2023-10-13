@@ -5,6 +5,7 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import stanhebben.zenscript.annotations.IterableSimple;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
@@ -49,6 +50,16 @@ public class CrTItemHandler implements Iterable<IItemStack> {
     public IItemStack getStackInSlot(int slot) {
         ItemStack stack = itemHandler.getStackInSlot(slot);
         return stack.isEmpty() ? null : new TotallyImmutableItemStack(stack);
+    }
+
+    @ZenMethod
+    public boolean setStackInSlot(int slot, IItemStack stack) {
+        if (itemHandler instanceof IItemHandlerModifiable) {
+            ((IItemHandlerModifiable) itemHandler).setStackInSlot(slot, CraftTweakerMC.getItemStack(stack));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @ZenMethod
