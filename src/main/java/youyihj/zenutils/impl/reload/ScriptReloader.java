@@ -24,7 +24,8 @@ public class ScriptReloader {
         return reloadableLoaders;
     }
 
-    public static boolean reloadScripts() {
+    // go to ReloadCommand#reloadScripts
+    /* package-private */ static boolean reloadScripts() {
         ScriptLoader loader = new ScriptLoader(reloadableLoaders.toArray(new String[0]));
         CraftTweakerAPI.tweaker.loadScript(false, loader);
         return loader.getLoaderStage() != ScriptLoader.LoaderStage.ERROR;
