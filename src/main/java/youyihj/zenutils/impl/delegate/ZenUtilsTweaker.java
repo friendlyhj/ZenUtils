@@ -150,7 +150,7 @@ public class ZenUtilsTweaker implements ITweaker {
         return tweaker;
     }
 
-    public void onReload() {
+    public void rollbackChanges() {
         while (!reloadableActions.isEmpty()) {
             ActionReloadCallback<?> action = reloadableActions.poll();
             try {

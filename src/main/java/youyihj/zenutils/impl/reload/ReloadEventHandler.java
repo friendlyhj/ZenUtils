@@ -41,7 +41,7 @@ public class ReloadEventHandler {
         if (reloadActionCount != 0) {
             event.getRequester().sendMessage(new TextComponentString(reloadActionCount + " actions reloaded."));
         }
-        ZenUtils.tweaker.onReload();
+        ZenUtils.tweaker.rollbackChanges();
     }
 
     @SubscribeEvent
