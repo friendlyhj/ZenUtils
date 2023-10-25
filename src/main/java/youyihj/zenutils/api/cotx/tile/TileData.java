@@ -1,7 +1,5 @@
 package youyihj.zenutils.api.cotx.tile;
 
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.mc1120.data.NBTConverter;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,9 +12,7 @@ import youyihj.zenutils.impl.util.InternalUtils;
 /**
  * @author youyihj
  */
-@ZenRegister
 @ZenClass("mods.zenutils.cotx.TileData")
-@ModOnly("contenttweaker")
 public class TileData implements INBTSerializable<NBTTagCompound> {
     private final NBTTagCompound nbtTagCompound = new NBTTagCompound();
 

@@ -6,8 +6,6 @@ import com.teamacronymcoders.contenttweaker.api.ctobjects.entity.player.ICTPlaye
 import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Facing;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Hand;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.world.IWorld;
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.util.Position3f;
 import stanhebben.zenscript.annotations.ZenClass;
 
@@ -15,8 +13,6 @@ import stanhebben.zenscript.annotations.ZenClass;
  * @author youyihj
  */
 @FunctionalInterface
-@ZenRegister
-@ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.IBlockActivated")
 public interface IBlockActivated {
     boolean activate(IWorld world, IBlockPos pos, ICTBlockState state, ICTPlayer player, Hand hand, Facing facing, Position3f blockHit);

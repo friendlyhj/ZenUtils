@@ -1,8 +1,6 @@
 package youyihj.zenutils.api.cotx;
 
 import com.teamacronymcoders.contenttweaker.api.ctobjects.blockmaterial.IBlockMaterialDefinition;
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.api.cotx.block.DirectionalBlockRepresentation;
@@ -16,8 +14,6 @@ import youyihj.zenutils.api.cotx.tile.TileEntityRepresentation;
 /**
  * @author youyihj
  */
-@ZenRegister
-@ModOnly("contenttweaker")
 @ZenExpansion("mods.contenttweaker.VanillaFactory")
 public class ExpandVanillaFactory {
     @ZenMethodStatic

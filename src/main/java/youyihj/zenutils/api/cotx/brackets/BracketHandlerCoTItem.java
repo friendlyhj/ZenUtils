@@ -6,8 +6,6 @@ import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemContent;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemRepresentation;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.BracketHandler;
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.zenscript.IBracketHandler;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -25,8 +23,6 @@ import java.util.List;
 /**
  * @author youyihj
  */
-@ZenRegister
-@ModOnly("contenttweaker")
 @BracketHandler(priority = 100)
 public class BracketHandlerCoTItem implements IBracketHandler {
     private static final IJavaMethod representationGetter = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getItemRepresentation", String.class);

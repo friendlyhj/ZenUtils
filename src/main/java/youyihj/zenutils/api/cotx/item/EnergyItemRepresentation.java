@@ -2,15 +2,12 @@ package youyihj.zenutils.api.cotx.item;
 
 import com.teamacronymcoders.base.registrysystem.ItemRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
+import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 
 /**
  * @author youyihj
  */
-@ZenRegister
-@ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.EnergyItem")
 public class EnergyItemRepresentation extends ExpandItemRepresentation {
 
@@ -26,6 +23,7 @@ public class EnergyItemRepresentation extends ExpandItemRepresentation {
     }
 
     @Override
+    @Optional.Method(modid = "redstoneflux")
     public void register() {
         ContentTweaker.instance.getRegistry(ItemRegistry.class, "ITEM").register(new EnergyItemContent(this));
     }

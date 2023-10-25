@@ -1,7 +1,5 @@
 package youyihj.zenutils.api.cotx.tile;
 
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IWorld;
@@ -14,9 +12,7 @@ import javax.annotation.Nullable;
 /**
  * @author youyihj
  */
-@ZenRegister
 @ZenExpansion("crafttweaker.world.IWorld")
-@ModOnly("contenttweaker")
 public class ExpandWorldForTile {
     @ZenMethod
     @Nullable

@@ -2,8 +2,6 @@ package youyihj.zenutils.api.cotx.tile;
 
 import com.teamacronymcoders.contenttweaker.api.ctobjects.blockpos.MCBlockPos;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
-import crafttweaker.annotations.ModOnly;
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.mc1120.data.NBTConverter;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,8 +18,6 @@ import javax.annotation.Nonnull;
 /**
  * @author youyihj
  */
-@ZenRegister
-@ModOnly("contenttweaker")
 @ZenClass("mods.zenutils.cotx.TileEntityInGame")
 public class TileEntityContent extends TileEntity implements ITickable {
     private final TileData customData = new TileData();

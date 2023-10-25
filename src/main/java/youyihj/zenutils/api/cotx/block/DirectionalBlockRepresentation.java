@@ -5,7 +5,6 @@ import com.google.common.collect.EnumHashBiMap;
 import com.teamacronymcoders.base.registrysystem.BlockRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.blockmaterial.IBlockMaterialDefinition;
-import crafttweaker.annotations.ZenRegister;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
@@ -15,7 +14,6 @@ import stanhebben.zenscript.annotations.ZenClass;
 /**
  * @author youyihj
  */
-@ZenRegister
 @ZenClass("mods.zenutils.cotx.DirectionalBlock")
 public class DirectionalBlockRepresentation extends ExpandBlockRepresentation {
     private final Directions directions;
