@@ -7,7 +7,7 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.CraftTweaker;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.impl.delegate.NoFeedbackCommandSender;
+import youyihj.zenutils.impl.util.NoFeedbackCommandSender;
 
 /**
  * @author youyihj

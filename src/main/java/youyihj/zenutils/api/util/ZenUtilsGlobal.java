@@ -6,9 +6,11 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.impl.reload.ScriptReloader;
+import youyihj.zenutils.api.logger.RegexLogFilter;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * @author youyihj
@@ -33,7 +35,7 @@ public class ZenUtilsGlobal {
 
     @ZenMethod
     public static void addRegexLogFilter(String regex) {
-        ZenUtils.crafttweakerLogger.addRegexLogFilter(regex);
+        ZenUtils.crafttweakerLogger.getLogOption().addFilter(new RegexLogFilter(Pattern.compile(regex)));
     }
 
     @ZenMethod

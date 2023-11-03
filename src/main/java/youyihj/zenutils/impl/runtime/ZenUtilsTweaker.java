@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.delegate;
+package youyihj.zenutils.impl.runtime;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;

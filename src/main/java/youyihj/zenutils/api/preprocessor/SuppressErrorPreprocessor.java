@@ -1,38 +1,48 @@
 package youyihj.zenutils.api.preprocessor;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.PreprocessorActionBase;
 import crafttweaker.runtime.ScriptFile;
-import crafttweaker.util.SuppressErrorFlag;
-import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.logger.LogLevel;
+import youyihj.zenutils.api.logger.ScriptSuppressLogFilter;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * @author youyihj
  */
 public class SuppressErrorPreprocessor extends PreprocessorActionBase {
     public static final String NAME = "suppress";
-    public final SuppressErrorFlag suppressLevel;
+    public final Set<LogLevel> suppressLevels = EnumSet.noneOf(LogLevel.class);
 
     public SuppressErrorPreprocessor(String fileName, String preprocessorLine, int lineIndex) {
         super(fileName, preprocessorLine, lineIndex);
-        switch (preprocessorLine.substring(NAME.length() + 1).trim()) {
-            case "warning":
-            case "warnings":
-                suppressLevel = SuppressErrorFlag.ONLY_WARNINGS;
-                break;
-            case "errors":
-            case "error":
-            case "all":
-                suppressLevel = SuppressErrorFlag.ALL;
-                break;
-            default:
-                suppressLevel = SuppressErrorFlag.DEFAULT;
+        String[] levelsString = preprocessorLine.substring(NAME.length() + 1).trim().split(" +");
+        for (String levelString : levelsString) {
+            LogLevel suppressLevel;
+            levelString = levelString.toUpperCase();
+            if (levelString.charAt(levelString.length() - 1) == 'S') {
+                levelString = levelString.substring(0, levelString.length() - 1);
+            }
+            if (levelString.equals("ALL")) {
+                suppressLevel = LogLevel.FATAL;
+            } else {
+                try {
+                    suppressLevel = LogLevel.valueOf(levelString);
+                } catch (IllegalArgumentException e) {
+                    CraftTweakerAPI.logError("No such log level: " + levelString);
+                    continue;
+                }
+            }
+            suppressLevels.add(suppressLevel);
         }
     }
 
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
-        InternalUtils.doSuppressErrorSingleScriptMode();
-        InternalUtils.putSuppressErrorFlag(scriptFile.getEffectiveName(), suppressLevel);
+        ZenUtils.crafttweakerLogger.getLogOption().addFilter(new ScriptSuppressLogFilter(scriptFile.getName(), suppressLevels));
     }
 
     @Override

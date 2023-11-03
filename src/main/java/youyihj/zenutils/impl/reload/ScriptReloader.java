@@ -3,7 +3,10 @@ package youyihj.zenutils.impl.reload;
 import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.runtime.ScriptLoader;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.logger.LogLevel;
 import youyihj.zenutils.api.preprocessor.ReloadablePreprocessor;
+import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 
 import java.util.List;
 
@@ -27,6 +30,15 @@ public class ScriptReloader {
     // go to ReloadCommand#reloadScripts
     /* package-private */ static boolean reloadScripts() {
         ScriptLoader loader = new ScriptLoader(reloadableLoaders.toArray(new String[0]));
+        ZenUtilsLogger logger = ZenUtils.crafttweakerLogger;
+        logger.clear();
+        logger.getLogOption().setMinLogLevel(LogLevel.WARNING);
+        CraftTweakerAPI.tweaker.loadScript(true, loader);
+        if (loader.getLoaderStage() == ScriptLoader.LoaderStage.ERROR || logger.hasError()) {
+            return false;
+        }
+        loader.setLoaderStage(ScriptLoader.LoaderStage.NOT_LOADED);
+        logger.clear();
         CraftTweakerAPI.tweaker.loadScript(false, loader);
         return loader.getLoaderStage() != ScriptLoader.LoaderStage.ERROR;
     }

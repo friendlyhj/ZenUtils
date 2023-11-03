@@ -13,7 +13,6 @@ public class HardFailPreprocessor extends PreprocessorActionBase {
 
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
-        InternalUtils.doSuppressErrorSingleScriptMode();
         InternalUtils.hardFailMode = true;
     }
 

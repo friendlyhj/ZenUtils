@@ -2,9 +2,11 @@ package youyihj.zenutils;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
+import crafttweaker.api.logger.MTLogger;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.preprocessor.PreprocessorManager;
+import crafttweaker.runtime.ILogger;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.item.ItemStack;
@@ -22,10 +24,10 @@ import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.StatCommand;
-import youyihj.zenutils.impl.delegate.ZenUtilsLogger;
-import youyihj.zenutils.impl.delegate.ZenUtilsTweaker;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
+import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
+import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
@@ -33,6 +35,7 @@ import youyihj.zenutils.impl.util.ScriptStatus;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author youyihj
@@ -63,12 +66,9 @@ public class ZenUtils {
         preprocessorManager.registerPreprocessorAction(ReloadablePreprocessor.NAME, ReloadablePreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NotReloadablePreprocessor.NAME, NotReloadablePreprocessor::new);
         try {
-            crafttweakerLogger = new ZenUtilsLogger(CrafttweakerImplementationAPI.logger);
-            final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
-            loggerField.set(null, crafttweakerLogger);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            CraftTweakerAPI.logInfo("Fail to set crafttweaker logger to zenutils one. #suppress preprocessor cannot work properly.");
-            e.printStackTrace();
+            redirectLogger();
+        } catch (Exception e) {
+            CraftTweakerAPI.logWarning("Failed to set crafttweaker logger");
         }
         try {
             tweaker = new ZenUtilsTweaker(CraftTweakerAPI.tweaker);
@@ -88,6 +88,7 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onPreInit(FMLPreInitializationEvent event) {
+        CraftTweakerAPI.logInfo("Hey! Here is ZenUtils.");
         ZenWorldCapabilityHandler.register();
         PlayerInteractionSimulation.registerNetworkMessage();
         forgeLogger = event.getModLog();
@@ -129,5 +130,15 @@ public class ZenUtils {
                 continue;
             GlobalRegistry.registerGlobal(name, CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, name, parameterTypes));
         }
+    }
+
+    private static void redirectLogger() throws Exception {
+        crafttweakerLogger = new ZenUtilsLogger();
+        final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
+        final Field mtLoggerSubLoggerField = ReflectUtils.removePrivate(MTLogger.class, "loggers");
+        @SuppressWarnings("unchecked")
+        List<ILogger> loggerList = (List<ILogger>) mtLoggerSubLoggerField.get(CrafttweakerImplementationAPI.logger);
+        loggerList.forEach(crafttweakerLogger::addLogger);
+        loggerField.set(null, crafttweakerLogger);
     }
 }

@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.delegate;
+package youyihj.zenutils.impl.util;
 
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;

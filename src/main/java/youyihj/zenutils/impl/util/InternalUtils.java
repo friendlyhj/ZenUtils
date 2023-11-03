@@ -5,33 +5,26 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
-import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.util.EventList;
-import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.GlobalRegistry;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import youyihj.zenutils.ZenUtils;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author youyihj
  */
 public final class InternalUtils {
-    private static final Map<String, SuppressErrorFlag> suppressErrorScriptMap = new HashMap<>();
     @SuppressWarnings("rawtypes")
     private static final List<EventList> ALL_EVENT_LISTS = new ArrayList<>();
     public static boolean hardFailMode = false;
-    private static boolean suppressErrorSingleScriptMode = false;
-    private static boolean isFirstSetMode = true;
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
@@ -62,45 +55,6 @@ public final class InternalUtils {
 
     public static boolean isContentTweakerInstalled() {
         return Loader.isModLoaded("contenttweaker");
-    }
-
-    public static boolean onSuppressErrorSingleScriptMode() {
-        return suppressErrorSingleScriptMode;
-    }
-
-    public static void doSuppressErrorSingleScriptMode() {
-        suppressErrorSingleScriptMode = true;
-        if (isFirstSetMode) {
-            CraftTweakerAPI.logInfo("ZenUtils' suppress error in single script mode is enable.");
-            CraftTweakerAPI.logInfo("#ikwid and #nowarn preprocessors of vanilla CraftTweaker are useless now.");
-        }
-        isFirstSetMode = false;
-    }
-
-    private static String getLastZenScriptStack() {
-        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-            String fileName = stackTraceElement.getFileName();
-            if (!StringUtils.isNullOrEmpty(fileName) && fileName.endsWith(".zs")) {
-                return fileName;
-            }
-        }
-        return "";
-    }
-
-    @Nonnull
-    public static SuppressErrorFlag getCurrentSuppressErrorFlag() {
-        return Optional.ofNullable(suppressErrorScriptMap.get(getLastZenScriptStack())).orElse(SuppressErrorFlag.DEFAULT);
-    }
-
-    public static void putSuppressErrorFlag(String zsName, SuppressErrorFlag errorFlag) {
-        suppressErrorScriptMap.put(zsName, errorFlag);
-    }
-
-    public static Optional<EntityPlayerMP> getPlayer(UUID uuid) {
-        return Optional.ofNullable(CraftTweakerAPI.server)
-                .map(CraftTweakerMC::getMCServer)
-                .map(MinecraftServer::getPlayerList)
-                .map(playerList -> playerList.getPlayerByUUID(uuid));
     }
 
     @SuppressWarnings("unchecked")
