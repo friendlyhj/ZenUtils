@@ -27,7 +27,7 @@ import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
-import youyihj.zenutils.impl.runtime.NioMCLogger;
+import youyihj.zenutils.impl.runtime.ZenUtilsFileLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.IStatFormatterAdapter;
@@ -145,7 +145,7 @@ public class ZenUtils {
         List<ILogger> loggerList = (List<ILogger>) mtLoggerSubLoggerField.get(CrafttweakerImplementationAPI.logger);
         PrintWriter printWriter = (PrintWriter) mcLoggerWriterField.get(loggerList.get(0));
         printWriter.close();
-        crafttweakerLogger.addLogger(new NioMCLogger(FileSystems.getDefault().getPath("crafttweaker.log")));
+        crafttweakerLogger.addLogger(new ZenUtilsFileLogger(FileSystems.getDefault().getPath("crafttweaker.log")));
         loggerField.set(null, crafttweakerLogger);
     }
 }

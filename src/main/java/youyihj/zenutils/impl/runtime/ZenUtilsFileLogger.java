@@ -17,11 +17,11 @@ import java.nio.file.Path;
 /**
  * @author youyihj
  */
-public class NioMCLogger implements ILogger {
+public class ZenUtilsFileLogger implements ILogger {
     private final PrintWriter printWriter;
     private boolean disableTrace;
 
-    public NioMCLogger(Path output) {
+    public ZenUtilsFileLogger(Path output) {
         try {
             Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8);
             this.printWriter = new PrintWriter(writer, true);
