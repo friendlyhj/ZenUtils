@@ -13,7 +13,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 /**
  * @author youyihj
@@ -24,7 +23,7 @@ public class NioMCLogger implements ILogger {
 
     public NioMCLogger(Path output) {
         try {
-            Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            Writer writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8);
             this.printWriter = new PrintWriter(writer, true);
         } catch (IOException e) {
             throw new RuntimeException("Could not open log file " + output);
