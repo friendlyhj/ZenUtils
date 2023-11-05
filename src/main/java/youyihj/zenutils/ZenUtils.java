@@ -5,6 +5,7 @@ import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.logger.MTLogger;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.commands.CTChatCommand;
+import crafttweaker.mc1120.logger.MCLogger;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ILogger;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -26,6 +27,7 @@ import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
+import youyihj.zenutils.impl.runtime.NioMCLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.IStatFormatterAdapter;
@@ -33,8 +35,10 @@ import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 import youyihj.zenutils.impl.util.ScriptStatus;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.FileSystems;
 import java.util.List;
 
 /**
@@ -136,9 +140,12 @@ public class ZenUtils {
         crafttweakerLogger = new ZenUtilsLogger();
         final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
         final Field mtLoggerSubLoggerField = ReflectUtils.removePrivate(MTLogger.class, "loggers");
+        final Field mcLoggerWriterField = ReflectUtils.removePrivate(MCLogger.class, "printWriter");
         @SuppressWarnings("unchecked")
         List<ILogger> loggerList = (List<ILogger>) mtLoggerSubLoggerField.get(CrafttweakerImplementationAPI.logger);
-        loggerList.forEach(crafttweakerLogger::addLogger);
+        PrintWriter printWriter = (PrintWriter) mcLoggerWriterField.get(loggerList.get(0));
+        printWriter.close();
+        crafttweakerLogger.addLogger(new NioMCLogger(FileSystems.getDefault().getPath("crafttweaker.log")));
         loggerField.set(null, crafttweakerLogger);
     }
 }
