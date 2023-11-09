@@ -3,14 +3,14 @@ package youyihj.zenutils;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.logger.MTLogger;
-import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.api.player.IPlayer;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.mc1120.logger.MCLogger;
+import crafttweaker.mc1120.player.expand.ExpandPlayer;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ILogger;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.command.CommandHandler;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -61,7 +61,7 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
-        InternalUtils.checkCraftTweakerVersion("4.1.20.673", () -> InternalUtils.hasMethod(CraftTweakerMC.class, "getIItemStackForMatching", ItemStack.class));
+        InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
         registerGlobalMethods();
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);

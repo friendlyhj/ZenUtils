@@ -298,24 +298,10 @@ public class DeepDataUpdater implements IDataConverter<IData> {
     }
 
     private static boolean safeEquals(IData a, IData b) {
-        if (Objects.equals(a, b)) {
-            return true;
-        }
-        if (isCollection(a)) {
-            return isCollection(b) && a.equals(b);
-        }
-        if (isMap(a)) {
-            return isMap(b) && a.equals(b);
-        }
-        return a.equals(b);
+        return Objects.equals(a, b);
     }
 
     private static boolean safeContains(List<IData> data, IData element) {
-        for (IData datum : data) {
-            if (safeEquals(datum, element)) {
-                return true;
-            }
-        }
-        return false;
+        return data.contains(element);
     }
 }
