@@ -44,7 +44,7 @@ public class Catenation {
                     if (stopWhen.apply(world, context)) {
                         context.setStatus(CatenationStatus.STOP_INTERNAL, world);
                     }
-                } catch (Exception exception) {
+                } catch (Throwable exception) {
                     CraftTweakerAPI.logError("Exception occurred in stopWhen function, stopping the catenation...", exception);
                     context.setStatus(CatenationStatus.ERROR, world);
                 }
@@ -59,7 +59,7 @@ public class Catenation {
             }
             try {
                 task.run(world, context);
-            } catch (Exception exception) {
+            } catch (Throwable exception) {
                 CraftTweakerAPI.logError("Exception occurred in a catenation task, stopping the catenation...", exception);
                 context.setStatus(CatenationStatus.ERROR, world);
                 return true;
