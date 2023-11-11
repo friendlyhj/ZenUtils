@@ -3,7 +3,7 @@ package youyihj.zenutils.api.preprocessor;
 import crafttweaker.preprocessor.PreprocessorActionBase;
 import crafttweaker.runtime.ScriptFile;
 import youyihj.zenutils.impl.util.InternalUtils;
-import youyihj.zenutils.impl.util.ScriptStatus;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
 
 /**
  * @author youyihj

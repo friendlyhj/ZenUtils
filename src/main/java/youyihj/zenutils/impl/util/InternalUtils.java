@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
@@ -12,6 +13,8 @@ import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -24,7 +27,6 @@ import java.util.Map;
 public final class InternalUtils {
     @SuppressWarnings("rawtypes")
     private static final List<EventList> ALL_EVENT_LISTS = new ArrayList<>();
-    public static boolean hardFailMode = false;
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
@@ -32,9 +34,7 @@ public final class InternalUtils {
     }
 
     public static void checkDataMap(IData data) {
-        if (!(data instanceof DataMap)) {
-            CraftTweakerAPI.logError("data argument must be DataMap", new IllegalArgumentException());
-        }
+        Preconditions.checkArgument(data instanceof DataMap, "data argument must be DataMap");
     }
 
     public static void checkCraftTweakerVersion(String requiredVersion, IVersionChecker versionChecker) {

@@ -10,7 +10,7 @@ import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.reload.ScriptReloadEvent;
 import youyihj.zenutils.impl.util.InternalUtils;
-import youyihj.zenutils.impl.util.ScriptStatus;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
 
 import static crafttweaker.mc1120.commands.SpecialMessagesChat.getClickableCommandText;
 import static crafttweaker.mc1120.commands.SpecialMessagesChat.getNormalMessage;

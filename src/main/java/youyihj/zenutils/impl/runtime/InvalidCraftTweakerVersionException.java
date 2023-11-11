@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.util;
+package youyihj.zenutils.impl.runtime;
 
 import crafttweaker.mc1120.CraftTweaker;
 import net.minecraftforge.fml.common.MissingModsException;

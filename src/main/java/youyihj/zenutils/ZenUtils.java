@@ -33,7 +33,7 @@ import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
-import youyihj.zenutils.impl.util.ScriptStatus;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Field;

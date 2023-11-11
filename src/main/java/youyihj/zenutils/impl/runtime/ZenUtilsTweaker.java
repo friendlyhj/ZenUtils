@@ -14,6 +14,7 @@ import youyihj.zenutils.api.reload.ActionReloadCallback;
 import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
 import youyihj.zenutils.api.reload.Reloadable;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.*;
 
@@ -74,12 +75,27 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public boolean loadScript(boolean isSyntaxCommand, String loaderName) {
-        return tweaker.loadScript(isSyntaxCommand, loaderName);
+        ScriptStatus origin = InternalUtils.getScriptStatus();
+        if (isSyntaxCommand) {
+            InternalUtils.setScriptStatus(ScriptStatus.SYNTAX);
+        }
+        boolean result = tweaker.loadScript(isSyntaxCommand, loaderName);
+        if (isSyntaxCommand) {
+            InternalUtils.setScriptStatus(origin);
+        }
+        return result;
     }
 
     @Override
     public void loadScript(boolean isSyntaxCommand, ScriptLoader loader) {
+        ScriptStatus origin = InternalUtils.getScriptStatus();
+        if (isSyntaxCommand) {
+            InternalUtils.setScriptStatus(ScriptStatus.SYNTAX);
+        }
         tweaker.loadScript(isSyntaxCommand, loader);
+        if (isSyntaxCommand) {
+            InternalUtils.setScriptStatus(origin);
+        }
     }
 
     @Override

@@ -11,7 +11,9 @@ public interface ILogFilter {
      */
     boolean isBlock(String message, LogLevel logLevel, @Nullable ScriptPosition scriptPosition);
 
+    @Override
     int hashCode();
 
+    @Override
     boolean equals(Object obj);
 }

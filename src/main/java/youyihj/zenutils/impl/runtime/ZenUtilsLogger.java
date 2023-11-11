@@ -5,8 +5,6 @@ import crafttweaker.api.player.IPlayer;
 import crafttweaker.runtime.ILogger;
 import youyihj.zenutils.api.logger.LogLevel;
 import youyihj.zenutils.api.logger.LogOption;
-import youyihj.zenutils.impl.util.InternalUtils;
-import youyihj.zenutils.impl.util.ScriptRunException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,18 +105,6 @@ public class ZenUtilsLogger extends MTLogger {
                 messagesToSendPlayer.add(logLevel.getTextFormatting() + getMessageToSendPlayer(message, exception));
             } else {
                 playerList.forEach(it -> it.sendChat(logLevel.getTextFormatting() + getMessageToSendPlayer(message, exception)));
-            }
-        }
-        if (logLevel.compareTo(LogLevel.ERROR) >= 0) {
-            hasError = true;
-            if (InternalUtils.hardFailMode) {
-                if (exception == null) {
-                    throw new ScriptRunException(message);
-                } else if (exception instanceof ScriptRunException){
-                    throw ((ScriptRunException) exception);
-                } else {
-                    throw new ScriptRunException(message, exception);
-                }
             }
         }
     }
