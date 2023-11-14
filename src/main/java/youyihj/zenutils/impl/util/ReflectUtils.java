@@ -14,7 +14,7 @@ public class ReflectUtils {
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         field.setAccessible(true);
-        modifiersField.set(field, field.getModifiers() & ~Modifier.FINAL);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         return field;
     }
 

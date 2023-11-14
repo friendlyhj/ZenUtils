@@ -27,6 +27,10 @@ public interface ICatenationObjectHolder<T> {
         return getValue() != null;
     }
 
+    default void invalidate() {
+
+    }
+
     final class Type<T> {
         private final Supplier<ICatenationObjectHolder<T>> factory;
         private final Class<T> valueType;

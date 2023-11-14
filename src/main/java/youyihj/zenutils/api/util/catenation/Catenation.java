@@ -6,6 +6,7 @@ import crafttweaker.api.world.IWorld;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
 import javax.annotation.Nullable;
 import java.util.Queue;
@@ -122,6 +123,10 @@ public class Catenation {
     }
 
     public boolean isAllObjectsValid() {
-        return this.getContext().getObjectHolders().values().stream().allMatch(it -> it.isValid(this));
+        return !this.getContext().getObjectHolders().values().stream()
+                .filter(holder -> !holder.isValid(this))
+                .peek(ICatenationObjectHolder::invalidate)
+                .findAny()
+                .isPresent();
     }
 }

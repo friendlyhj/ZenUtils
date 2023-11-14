@@ -56,6 +56,11 @@ public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
     }
 
     @Override
+    public void invalidate() {
+        this.entity = null;
+    }
+
+    @Override
     public boolean isValid(Catenation catenation) {
         return entity != null && entity.isAlive();
     }
