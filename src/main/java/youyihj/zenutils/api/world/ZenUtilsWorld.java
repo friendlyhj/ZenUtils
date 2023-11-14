@@ -1,6 +1,6 @@
 package youyihj.zenutils.api.world;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicates;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.entity.IEntity;
@@ -61,9 +61,7 @@ public class ZenUtilsWorld {
 
     @ZenMethod
     public static List<IPlayer> getAllPlayers(IWorld iWorld) {
-        List<IPlayer> temp = Lists.newArrayList();
-        temp.addAll(CraftTweakerMC.getWorld(iWorld).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList()));
-        return temp;
+        return CraftTweakerMC.getWorld(iWorld).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList());
     }
 
     @ZenMethod
@@ -83,7 +81,8 @@ public class ZenUtilsWorld {
 
     @ZenMethod
     public static List<IEntityItem> getEntityItems(IWorld iWorld) {
-        return CraftTweakerMC.getWorld(iWorld).getEntities(EntityItem.class, (entity -> true)).stream().map(MCEntityItem::new).collect(Collectors.toList());
+        //noinspection Guava
+        return CraftTweakerMC.getWorld(iWorld).getEntities(EntityItem.class, Predicates.alwaysTrue()).stream().map(MCEntityItem::new).collect(Collectors.toList());
     }
 
     @ZenMethod
