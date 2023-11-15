@@ -24,6 +24,7 @@ import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.impl.command.CleanLogCommand;
 import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
@@ -107,6 +108,7 @@ public class ZenUtils {
     public static void onServerStarting(FMLServerStartingEvent event) {
         CTChatCommand.registerCommand(new ReloadCommand());
         CTChatCommand.registerCommand(new StatCommand());
+        CTChatCommand.registerCommand(new CleanLogCommand());
         ZenCommandRegisterAction.ApplyLogic.INSTANCE.init((CommandHandler) event.getServer().commandManager);
         if (InternalUtils.isContentTweakerInstalled()) {
             LateGetContentLookup.refreshFields();

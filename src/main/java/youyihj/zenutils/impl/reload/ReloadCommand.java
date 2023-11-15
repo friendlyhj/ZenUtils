@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.reload;
 import crafttweaker.mc1120.commands.CraftTweakerCommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -11,6 +12,10 @@ import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.reload.ScriptReloadEvent;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 import static crafttweaker.mc1120.commands.SpecialMessagesChat.getClickableCommandText;
 import static crafttweaker.mc1120.commands.SpecialMessagesChat.getNormalMessage;
@@ -35,7 +40,15 @@ public class ReloadCommand extends CraftTweakerCommand {
             sender.sendMessage(getNormalMessage(TextFormatting.DARK_RED + "The command only can be run in integrated server (SinglePlayer)!"));
             return;
         }
+        if (args.length != 0 && "clean".equals(args[0])) {
+            ZenUtils.crafttweakerLogger.clean();
+        }
         reloadScripts(sender);
+    }
+
+    @Override
+    public List<String> getSubSubCommand(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        return Collections.singletonList("clean");
     }
 
     /**

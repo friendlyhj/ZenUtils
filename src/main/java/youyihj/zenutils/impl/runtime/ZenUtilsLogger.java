@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.runtime;
 import crafttweaker.api.logger.MTLogger;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.runtime.ILogger;
+import youyihj.zenutils.api.logger.ICleanableLogger;
 import youyihj.zenutils.api.logger.LogLevel;
 import youyihj.zenutils.api.logger.LogOption;
 
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
 /**
  * @author youyihj
  */
-public class ZenUtilsLogger extends MTLogger {
+public class ZenUtilsLogger extends MTLogger implements ICleanableLogger {
     private boolean hasError = false;
     private final List<ILogger> loggers = new ArrayList<>();
 
@@ -94,6 +95,15 @@ public class ZenUtilsLogger extends MTLogger {
         if (!isLogDisabled()) {
             logOption.setMinLogLevel(LogLevel.INFO);
         }
+    }
+
+    @Override
+    public void clean() {
+        messagesToSendPlayer.clear();
+        loggers.stream()
+                .filter(ICleanableLogger.class::isInstance)
+                .map(ICleanableLogger.class::cast)
+                .forEach(ICleanableLogger::clean);
     }
 
     private void log(LogLevel logLevel, String message, Throwable exception, Consumer<ILogger> loggerConsumer) {
