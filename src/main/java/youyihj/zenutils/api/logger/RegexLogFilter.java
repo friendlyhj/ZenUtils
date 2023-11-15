@@ -24,11 +24,11 @@ public class RegexLogFilter implements ILogFilter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RegexLogFilter that = (RegexLogFilter) o;
-        return Objects.equals(regex, that.regex);
+        return Objects.equals(regex.pattern(), that.regex.pattern());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(regex);
+        return Objects.hash(regex.pattern());
     }
 }
