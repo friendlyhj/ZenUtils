@@ -38,7 +38,7 @@ public class ZenUtilsTweaker implements ITweaker {
                 if (reloadable) reloadCallback.beforeApply(false);
                 action.apply();
                 if (reloadable) reloadCallback.afterApply(false);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 CraftTweakerAPI.logError("Failed to apply this action", e);
             }
         } else if (reloadable) {
@@ -47,7 +47,7 @@ public class ZenUtilsTweaker implements ITweaker {
                 reloadCallback.beforeApply(true);
                 reloadCallback.applyReload();
                 reloadCallback.afterApply(true);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 CraftTweakerAPI.logError("Failed to apply this action", e);
             }
         } else {
@@ -171,8 +171,8 @@ public class ZenUtilsTweaker implements ITweaker {
             ActionReloadCallback<?> action = reloadableActions.poll();
             try {
                 action.undo();
-            } catch (Exception e) {
-                CraftTweakerAPI.logError("Failed to undo action " + action.describeAction());
+            } catch (Throwable e) {
+                CraftTweakerAPI.logError("Failed to undo action " + action.describeAction(), e);
             }
         }
     }
