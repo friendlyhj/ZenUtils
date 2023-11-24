@@ -72,6 +72,11 @@ public class DefaultGetTabCompletion {
     }
 
     @ZenMethodStatic
+    public static IGetTabCompletion fixedValues(String... values) {
+        return (server, sender, targetPos) -> StringList.create(Arrays.asList(values));
+    }
+
+    @ZenMethodStatic
     public static IGetTabCompletion empty() {
         return EMPTY;
     }
