@@ -9,6 +9,8 @@ import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.api.util.StringList;
 
+import java.util.Arrays;
+
 /**
  * @author youyihj
  */
@@ -24,6 +26,9 @@ public class DefaultGetTabCompletion {
     private static final IGetTabCompletion X = (server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getX()));
     private static final IGetTabCompletion Y = (server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getY()));
     private static final IGetTabCompletion Z = (server, sender, targetPos) -> (targetPos == null) ? StringList.empty() : StringList.singletonList(String.valueOf(targetPos.getZ()));
+
+    private static final IGetTabCompletion BOOLEAN = (server, sender, targetPos) -> StringList.create(Arrays.asList("true", "false"));
+
     private static final IGetTabCompletion EMPTY = ((server, sender, targetPos) -> StringList.empty());
 
     @ZenMethodStatic
@@ -59,6 +64,11 @@ public class DefaultGetTabCompletion {
     @ZenMethodStatic
     public static IGetTabCompletion z() {
         return Z;
+    }
+
+    @ZenMethodStatic("boolean")
+    public static IGetTabCompletion bool() {
+        return BOOLEAN;
     }
 
     @ZenMethodStatic
