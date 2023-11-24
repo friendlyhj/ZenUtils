@@ -1,5 +1,6 @@
 package youyihj.zenutils.api.util.catenation;
 
+import com.google.common.base.Preconditions;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
@@ -16,6 +17,7 @@ public class Timer {
     private long current;
 
     public Timer(long duration) {
+        Preconditions.checkArgument(duration > 0, "duration must be positive.");
         this.duration = duration;
     }
 
