@@ -703,7 +703,7 @@ public class StaticString {
     }
 
     @ZenMethod
-    public static String join(Object[] array, String separator) {
+    public static String join(String[] array, String separator) {
         return StringUtils.join(array, separator);
     }
 
