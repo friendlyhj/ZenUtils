@@ -3,6 +3,7 @@ package youyihj.zenutils.api.cotx.item;
 import com.teamacronymcoders.base.registrysystem.ItemRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemRepresentation;
+import crafttweaker.api.item.IIngredient;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.api.cotx.function.IEntityItemUpdate;
@@ -29,6 +30,21 @@ public class ExpandItemRepresentation extends ItemRepresentation {
 
     @ZenProperty
     public int maxItemUseDuration = 0;
+
+    @ZenProperty
+    public IIngredient repairItem;
+
+    @ZenProperty
+    public float attackSpeed;
+
+    @ZenProperty
+    public float attackDamage;
+
+    @ZenProperty
+    public float destroySpeed;
+
+    @ZenProperty
+    public int enchantability;
 
     @Override
     public void register() {
