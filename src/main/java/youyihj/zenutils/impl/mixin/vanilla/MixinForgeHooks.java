@@ -21,6 +21,7 @@ public abstract class MixinForgeHooks {
             method = "onAnvilChange",
             at = @At(
                     // why INVOKE_ASSIGN doesn't hit?
+                    // because constructors don't have a return value. Call it initialization code better?
                     value = "INVOKE",
                     target = "Lnet/minecraftforge/event/AnvilUpdateEvent;<init>(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Ljava/lang/String;I)V",
                     // shift to after two opcodes (INVOKESPECIAL, ASTORE)
