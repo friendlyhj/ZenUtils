@@ -1,16 +1,18 @@
 {
   "required": true,
   "compatibilityLevel": "JAVA_8",
-  "package": "youyihj.zenutils.impl.mixin",
+  "package": "youyihj.zenutils.impl.mixin.crafttweaker",
   "minVersion": "0.7.11",
   "setSourceFile": true,
   "priority": 0,
   "refmap": "mixins.zenutils.refmap.json",
   "mixins": [
+    "MixinCoTItemBracketHandler",
     "MixinExpressionMap",
+    "MixinMCPlayerAnvilUpdateEvent",
+    "MixinPlayerAnvilUpdateEvent",
     "MixinZenType",
-    "MixinZenTypeAssociate",
-    "MixinCoTItemBracketHandler"
+    "MixinZenTypeAssociate"
   ],
   "client": [
   ]

@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.mixin;
+package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import com.teamacronymcoders.contenttweaker.modules.vanilla.resources.ItemBracketHandler;
 import net.minecraftforge.oredict.OreDictionary;

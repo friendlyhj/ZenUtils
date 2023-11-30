@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.mixin;
+package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import org.spongepowered.asm.mixin.Mixin;
 import stanhebben.zenscript.type.ZenType;
