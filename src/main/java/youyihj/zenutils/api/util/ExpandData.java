@@ -9,6 +9,7 @@ import stanhebben.zenscript.annotations.*;
 import youyihj.zenutils.impl.util.DeepDataUpdater;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,9 +34,31 @@ public class ExpandData {
         return new DataList(dataList, true);
     }
 
+    @ZenMethodStatic
+    public static IData createDataList(IData[] dataArray) {
+        return new DataList(Arrays.asList(dataArray), true);
+    }
+
+    @ZenMethod
+    public static IData setAtCopied(IData dataList, int index, IData element) {
+        IData[] operatorsArray = dataArrayOf(index + 1, DataUpdateOperation.APPEND);
+        operatorsArray[index] = DataUpdateOperation.OVERWRITE;
+        IData[] toUpdateArray = dataArrayOf(index + 1, null);
+        toUpdateArray[index] = element;
+        return deepUpdate(dataList, createDataList(toUpdateArray), createDataList(operatorsArray));
+    }
+
     @ZenMethod
     public static IData deepUpdate(IData data, IData toUpdate, @Optional IData updateOperation) {
         return DeepDataUpdater.deepUpdate(data, toUpdate, updateOperation);
+    }
+
+    private static IData[] dataArrayOf(int length, IData element) {
+        IData[] dataArray = new IData[length];
+        if (element != null) {
+            Arrays.fill(dataArray, element);
+        }
+        return dataArray;
     }
 
     @ZenRegister
