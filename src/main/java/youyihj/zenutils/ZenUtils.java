@@ -15,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
@@ -28,13 +29,13 @@ import youyihj.zenutils.impl.command.CleanLogCommand;
 import youyihj.zenutils.impl.command.StatCommand;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsFileLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
-import youyihj.zenutils.impl.runtime.ScriptStatus;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -56,6 +57,7 @@ public class ZenUtils {
     public static Logger forgeLogger;
     public static ZenUtilsLogger crafttweakerLogger;
     public static ZenUtilsTweaker tweaker;
+    public static ASMDataTable asmDataTable;
 
     @SidedProxy(clientSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Client", serverSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Server")
     public static IStatFormatterAdapter statFormatterAdapter;
@@ -96,6 +98,7 @@ public class ZenUtils {
         CraftTweakerAPI.logInfo("Hey! Here is ZenUtils.");
         ZenWorldCapabilityHandler.register();
         PlayerInteractionSimulation.registerNetworkMessage();
+        asmDataTable = event.getAsmData();
         forgeLogger = event.getModLog();
         try {
             InternalUtils.scanAllEventLists();
