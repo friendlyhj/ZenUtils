@@ -1,17 +1,15 @@
 package youyihj.zenutils.impl.fluid;
 
-import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.liquid.ILiquidStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.api.liquid.ILiquidTankProperties;
 
 /**
  * @author various.authors
  */
 public class MCLiquidTankProperties implements ILiquidTankProperties {
-    private IFluidTankProperties properties;
+    private final IFluidTankProperties properties;
 
     public MCLiquidTankProperties(IFluidTankProperties properties) {
       this.properties = properties;

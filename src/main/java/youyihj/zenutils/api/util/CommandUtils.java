@@ -17,7 +17,6 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.command.ZenCommand;
 import youyihj.zenutils.api.command.ZenUtilsCommandSender;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,9 +39,10 @@ public class CommandUtils {
 
     @ZenMethod
     public static List<IPlayer> getPlayers(IServer server, ZenUtilsCommandSender sender, String target) throws CommandException {
-        List<IPlayer> list = new ArrayList<>();
-        list.addAll(CommandBase.getPlayers((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target).stream().map(MCPlayer::new).collect(Collectors.toList()));
-        return list;
+        return CommandBase.getPlayers((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target)
+                          .stream()
+                          .map(MCPlayer::new)
+                          .collect(Collectors.toList());
     }
 
     @ZenMethod
@@ -52,9 +52,10 @@ public class CommandUtils {
 
     @ZenMethod
     public static List<IEntity> getEntityList(IServer server, ZenUtilsCommandSender sender, String target) throws CommandException {
-        List<IEntity> list = new ArrayList<>();
-        list.addAll(CommandBase.getEntityList((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target).stream().map(CraftTweakerMC::getIEntity).collect(Collectors.toList()));
-        return list;
+        return CommandBase.getEntityList((MinecraftServer) server.getInternal(), (ICommandSender) sender.getInternal(), target)
+                          .stream()
+                          .map(CraftTweakerMC::getIEntity)
+                          .collect(Collectors.toList());
     }
 
     @ZenMethod

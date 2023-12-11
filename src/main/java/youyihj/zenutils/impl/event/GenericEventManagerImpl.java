@@ -65,7 +65,8 @@ public class GenericEventManagerImpl {
                 if (!clazz.isInterface() && clazz.getInterfaces().length == 1 && clazz.getInterfaces()[0] == type) {
                     return (Class<? extends T>) clazz;
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         throw new EventHandlerRegisterException("This event type doesn't have proper implementation class");
     }

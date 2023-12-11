@@ -19,7 +19,7 @@ public @interface ExpandContentTweakerEntry {
 
     /**
      * Mark a method as a representation getter. Used for late get ContentTweaker entries.
-     *
+     * <p>
      * The method should have zero parameters and return a class which extends {@link BlockRepresentation} or {@link ItemRepresentation}.
      * Moreover, the return type is exposed to zenscript.
      */
