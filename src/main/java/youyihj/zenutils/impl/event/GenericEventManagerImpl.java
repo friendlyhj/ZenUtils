@@ -30,7 +30,7 @@ public class GenericEventManagerImpl {
         }
     }
 
-    public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority) throws EventHandlerRegisterException {
+    public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
         Class<T> eventType = getEventType(eventHandler);
         Class<? extends T> implementationClass = findImplementationClass(eventType);
         Constructor<? extends T> constructor = findProperCTEventConstructor(implementationClass);
@@ -42,7 +42,7 @@ public class GenericEventManagerImpl {
             throw new EventHandlerRegisterException("Failed to construct forge event", e);
         }
         try {
-            CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, eventType.getSimpleName()));
+            CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, eventType.getSimpleName()));
         } catch (IllegalAccessException e) {
             throw new EventHandlerRegisterException("Event constructor is not public", e);
         }
@@ -86,16 +86,21 @@ public class GenericEventManagerImpl {
 
         private final IEventHandler<T> handler;
         private final MethodHandle ctEventBuilder;
+        private final boolean receiveCanceled;
 
-        public CTEventHandlerAdapter(IEventHandler<T> handler, Constructor<? extends T> ctEventBuilder) throws IllegalAccessException {
+        public CTEventHandlerAdapter(IEventHandler<T> handler, Constructor<? extends T> ctEventBuilder, boolean receiveCanceled) throws IllegalAccessException {
             this.handler = handler;
             this.ctEventBuilder = LOOKUP.unreflectConstructor(ctEventBuilder);
+            this.receiveCanceled = receiveCanceled;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public void invoke(Event event) {
             try {
+                if (event.isCancelable() && event.isCanceled() && !receiveCanceled) {
+                    return;
+                }
                 T ctEvent = (T) ctEventBuilder.invoke(event);
                 handler.handle(ctEvent);
             } catch (Throwable e) {
