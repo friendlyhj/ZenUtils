@@ -1,5 +1,6 @@
 package youyihj.zenutils.api.event;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.event.IEventHandle;
 import crafttweaker.api.event.IEventManager;
@@ -10,8 +11,11 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.impl.event.EventHandlerRegisterException;
+import youyihj.zenutils.impl.event.GenericEventManagerImpl;
 
 /**
  * @author youyihj
@@ -54,6 +58,20 @@ public class ExpandEventManager {
     @ZenMethod
     public static IEventHandle onWorldSave(IEventManager manager, IEventHandler<WorldSaveEvent> ev) {
         return elWorldSave.add(ev);
+    }
+
+    @ZenMethod
+    public static <T> void register(
+            IEventManager manager,
+            IEventHandler<T> eventHandler,
+            @Optional(methodClass = CTEventPriority.class, methodName = "getDefault") CTEventPriority priority,
+            @Optional boolean receiveCanceled
+    ) {
+        try {
+            GenericEventManagerImpl.register(eventHandler, priority.getPriority(), receiveCanceled);
+        } catch (EventHandlerRegisterException e) {
+            CraftTweakerAPI.logError("Can not register this event handler", e);
+        }
     }
 
     public static void handleEntityItemFallEvent(EntityItem entityItem, float distance) {
