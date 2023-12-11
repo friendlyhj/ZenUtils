@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.IEventListener;
 import youyihj.zenutils.ZenUtils;
-import youyihj.zenutils.api.event.EventHandlerRegisterException;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

@@ -1,4 +1,4 @@
-package youyihj.zenutils.api.event;
+package youyihj.zenutils.impl.event;
 
 /**
  * @author youyihj
