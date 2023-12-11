@@ -31,7 +31,7 @@ public class GenericEventManagerImpl {
 
     public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
         Class<T> eventType = getEventType(eventHandler);
-        Class<? extends T> implementationClass = findImplementationClass(eventType);
+        Class<? extends T> implementationClass = eventType.isInterface() ? findImplementationClass(eventType) : eventType;
         Constructor<? extends T> constructor = findProperCTEventConstructor(implementationClass);
         Class<?> forgeEventClass = constructor.getParameterTypes()[0];
         Event forgeEvent;
