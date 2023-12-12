@@ -13,6 +13,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.Set;
 
 /**
  * @author youyihj
@@ -57,25 +58,36 @@ public class GenericEventManagerImpl {
         throw new EventHandlerRegisterException("The handler doesn't handle an actual event");
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> Class<? extends T> findImplementationClass(Class<T> type) throws EventHandlerRegisterException {
-        for (ASMDataTable.ASMData asmData : ZenUtils.asmDataTable.getAll(type.getTypeName().replace('.', '/'))) {
+        Set<ASMDataTable.ASMData> implementData = ZenUtils.asmDataTable.getAll(type.getTypeName().replace('.', '/'));
+        if (implementData.size() == 1) {
+            String implementClassName = implementData.iterator().next().getClassName().replace('/', '.');
             try {
-                Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
-                if (!clazz.isInterface() && clazz.getInterfaces().length == 1 && clazz.getInterfaces()[0] == type) {
-                    return (Class<? extends T>) clazz;
+                return Class.forName(implementClassName).asSubclass(type);
+            } catch (ClassNotFoundException | ClassCastException e) {
+                throw new EventHandlerRegisterException("Forge said " + implementClassName + " implements " + type + ", but java doesn't think so.");
+            }
+        } else {
+            for (ASMDataTable.ASMData asmData : implementData) {
+                try {
+                    Class<?> clazz = Class.forName(asmData.getClassName().replace('/', '.'));
+                    if (!clazz.isInterface() && clazz.getInterfaces().length == 1 && clazz.getInterfaces()[0] == type) {
+                        return clazz.asSubclass(type);
+                    }
+                } catch (ClassNotFoundException | ClassCastException ignored) {
+
                 }
-            } catch (Exception ignored) {
             }
         }
+
         throw new EventHandlerRegisterException("This event type doesn't have proper implementation class");
     }
 
     @SuppressWarnings("unchecked")
     private static <T> Constructor<T> findProperCTEventConstructor(Class<T> ctEventClass) throws EventHandlerRegisterException {
-        for (Constructor<?> constructor : ctEventClass.getConstructors()) {
+        for (Constructor<T> constructor : (Constructor<T>[]) ctEventClass.getConstructors()) {
             if (constructor.getParameterCount() == 1 && Event.class.isAssignableFrom(constructor.getParameterTypes()[0])) {
-                return (Constructor<T>) constructor;
+                return constructor;
             }
         }
         throw new EventHandlerRegisterException("The implementation class doesn't have proper constructor");
