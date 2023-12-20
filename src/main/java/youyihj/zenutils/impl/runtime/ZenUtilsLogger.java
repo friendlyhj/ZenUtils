@@ -110,6 +110,9 @@ public class ZenUtilsLogger extends MTLogger implements ICleanableLogger {
         if (logOption.isBlock(logLevel, message))
             return;
         loggers.forEach(loggerConsumer);
+        if (logLevel.compareTo(LogLevel.ERROR) >= 0) {
+            hasError = true;
+        }
         if (logLevel.isLogPlayer()) {
             if (playerList.isEmpty()) {
                 messagesToSendPlayer.add(logLevel.getTextFormatting() + getMessageToSendPlayer(message, exception));
