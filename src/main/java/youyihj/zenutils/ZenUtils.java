@@ -33,7 +33,7 @@ import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsFileLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
-import youyihj.zenutils.impl.util.IStatFormatterAdapter;
+import youyihj.zenutils.impl.player.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
@@ -59,7 +59,7 @@ public class ZenUtils {
     public static ZenUtilsTweaker tweaker;
     public static ASMDataTable asmDataTable;
 
-    @SidedProxy(clientSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Client", serverSide = "youyihj.zenutils.impl.util.IStatFormatterAdapter$Server")
+    @SidedProxy(clientSide = "youyihj.zenutils.impl.player.IStatFormatterAdapter$Client", serverSide = "youyihj.zenutils.impl.player.IStatFormatterAdapter$Server")
     public static IStatFormatterAdapter statFormatterAdapter;
 
     @Mod.EventHandler

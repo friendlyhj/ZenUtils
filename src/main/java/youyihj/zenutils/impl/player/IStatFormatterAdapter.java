@@ -1,8 +1,9 @@
-package youyihj.zenutils.impl.util;
+package youyihj.zenutils.impl.player;
 
 import net.minecraft.stats.IStatType;
 import youyihj.zenutils.api.player.DefaultStatFormatters;
 import youyihj.zenutils.api.player.IStatFormatter;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 
 /**
  * @author youyihj
@@ -10,6 +11,7 @@ import youyihj.zenutils.api.player.IStatFormatter;
 public interface IStatFormatterAdapter {
     IStatFormatter adapt(IStatType type);
 
+    @ReflectionInvoked
     class Client implements IStatFormatterAdapter {
 
         @Override
@@ -18,6 +20,7 @@ public interface IStatFormatterAdapter {
         }
     }
 
+    @ReflectionInvoked
     class Server implements IStatFormatterAdapter {
 
         @Override
