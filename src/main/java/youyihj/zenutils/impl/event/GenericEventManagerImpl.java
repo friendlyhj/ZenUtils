@@ -109,14 +109,20 @@ public class GenericEventManagerImpl {
         @Override
         @SuppressWarnings("unchecked")
         public void invoke(Event event) {
+            if (event.isCancelable() && event.isCanceled() && !receiveCanceled) {
+                return;
+            }
+            T ctEvent;
             try {
-                if (event.isCancelable() && event.isCanceled() && !receiveCanceled) {
-                    return;
-                }
-                T ctEvent = (T) ctEventBuilder.invoke(event);
-                handler.handle(ctEvent);
+                ctEvent = (T) ctEventBuilder.invoke(event);
             } catch (Throwable e) {
                 CraftTweakerAPI.logError("Failed to construct crt event", e);
+                return;
+            }
+            try {
+                handler.handle(ctEvent);
+            } catch (Throwable e) {
+                CraftTweakerAPI.logError("Exception occurred in the event handler", e);
             }
         }
     }
