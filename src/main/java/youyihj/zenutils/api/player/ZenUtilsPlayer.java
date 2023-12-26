@@ -62,6 +62,20 @@ public class ZenUtilsPlayer {
     }
 
     @ZenMethod
+    @ZenGetter("xpPoints")
+    public static int getXpPoints(IPlayer player) {
+        return CraftTweakerMC.getPlayer(player).experienceTotal;
+    }
+
+    @ZenMethod
+    @ZenSetter("xpPoints")
+    public static void setXpPoints(IPlayer player, int xpPoints) {
+        EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
+        mcPlayer.addExperienceLevel(-mcPlayer.experienceLevel-1);
+        mcPlayer.addExperience(xpPoints);
+    }
+
+    @ZenMethod
     public static IActionResult<EnumActionResult> simulateRightClickItem(IPlayer player, IItemStack stack, @Optional IEntityEquipmentSlot hand) {
         return PlayerInteractionSimulation.simulateRightClickItem(player, stack, hand);
     }
