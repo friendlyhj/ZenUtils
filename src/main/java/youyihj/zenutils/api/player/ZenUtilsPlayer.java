@@ -71,7 +71,7 @@ public class ZenUtilsPlayer {
     @ZenSetter("xpPoints")
     public static void setXpPoints(IPlayer player, int xpPoints) {
         EntityPlayer mcPlayer = CraftTweakerMC.getPlayer(player);
-        mcPlayer.addExperienceLevel(-mcPlayer.experienceLevel-1);
+        mcPlayer.addExperienceLevel(-mcPlayer.experienceLevel - 1);
         mcPlayer.addExperience(xpPoints);
     }
 
