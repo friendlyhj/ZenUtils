@@ -3,41 +3,27 @@ package youyihj.zenutils.impl.reload;
 import crafttweaker.IAction;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
+import youyihj.zenutils.impl.util.SimpleCache;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author youyihj
  */
 public class AnnotatedActionReloadCallback extends ActionReloadCallback<IAction> {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
-    private static final Map<Class<?>, Optional<MethodHandle>> APPLY_RELOAD_METHOD_CACHE = new HashMap<>();
-    private static final Map<Class<?>, Optional<MethodHandle>> UNDO_METHOD_CACHE = new HashMap<>();
+    private static final SimpleCache<Class<?>, MethodHandle> APPLY_RELOAD_METHOD_CACHE = new SimpleCache<>(AnnotatedActionReloadCallback::findApplyReloadMethod);
+    private static final SimpleCache<Class<?>, MethodHandle> UNDO_METHOD_CACHE = new SimpleCache<>(AnnotatedActionReloadCallback::findUndoMethod);
 
     private final MethodHandle applyReloadMethod;
     private final MethodHandle undoMethod;
 
     public AnnotatedActionReloadCallback(IAction action) {
         super(action);
-        this.applyReloadMethod = APPLY_RELOAD_METHOD_CACHE.computeIfAbsent(action.getClass(), it -> {
-            try {
-                return Optional.of(LOOKUP.findVirtual(action.getClass(), "applyReload", MethodType.methodType(Void.TYPE)));
-            } catch (Exception e) {
-                return Optional.empty();
-            }
-        }).orElse(null);
-        this.undoMethod = UNDO_METHOD_CACHE.computeIfAbsent(action.getClass(), it -> {
-            try {
-                return Optional.of(LOOKUP.findVirtual(action.getClass(), "undo", MethodType.methodType(Void.TYPE)));
-            } catch (Exception e) {
-                return Optional.empty();
-            }
-        }).orElse(null);
+        this.applyReloadMethod = APPLY_RELOAD_METHOD_CACHE.get(action.getClass());
+        this.undoMethod = UNDO_METHOD_CACHE.get(action.getClass());
     }
 
     @Override
@@ -67,5 +53,21 @@ public class AnnotatedActionReloadCallback extends ActionReloadCallback<IAction>
     @Override
     public boolean hasUndoMethod() {
         return undoMethod != null;
+    }
+
+    private static MethodHandle findUndoMethod(Class<?> clazz) {
+        try {
+            return LOOKUP.findVirtual(clazz, "undo", MethodType.methodType(Void.TYPE));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static MethodHandle findApplyReloadMethod(Class<?> clazz) {
+        try {
+            return LOOKUP.findVirtual(clazz, "applyReload", MethodType.methodType(Void.TYPE));
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
