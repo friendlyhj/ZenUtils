@@ -1,6 +1,7 @@
 package youyihj.zenutils.api.reload;
 
 import crafttweaker.IAction;
+import youyihj.zenutils.impl.util.SimpleCache;
 
 
 /**
@@ -10,6 +11,15 @@ import crafttweaker.IAction;
  * @see IActionReloadCallbackFactory
  */
 public abstract class ActionReloadCallback<T extends IAction> {
+    private static final SimpleCache<Class<?>, Boolean> HAS_UNDO_METHOD_CACHE = new SimpleCache<>(it -> {
+        try {
+            it.getDeclaredMethod("undo");
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    });
+
     protected final T action;
 
     public ActionReloadCallback(T action) {
@@ -40,8 +50,11 @@ public abstract class ActionReloadCallback<T extends IAction> {
 
     /**
      * @return If the action requires some cleanup code
+     * @implNote default implementation: if the class declares undo method
      */
-    public abstract boolean hasUndoMethod();
+    public boolean hasUndoMethod() {
+        return HAS_UNDO_METHOD_CACHE.get(this.getClass());
+    }
 
     public String describeAction() {
         return action.describe();
