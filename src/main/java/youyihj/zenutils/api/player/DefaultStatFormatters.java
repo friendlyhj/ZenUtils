@@ -7,7 +7,6 @@ import net.minecraft.stats.StatBase;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.ZenUtils;
-import youyihj.zenutils.api.util.ReflectionInvoked;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -60,10 +59,5 @@ public class DefaultStatFormatters {
     @ZenMethodStatic
     public static IStatFormatter divideByTen() {
         return DIVIDE_BY_TEN.get();
-    }
-
-    @ReflectionInvoked
-    public static IStatFormatter simple(String unused) {
-        return simple();
     }
 }

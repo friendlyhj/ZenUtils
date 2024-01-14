@@ -16,6 +16,7 @@ import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.impl.zenscript.Defaults;
 
 /**
  * @author youyihj
@@ -85,7 +86,7 @@ public class PlayerStat {
     }
 
     @ZenMethod
-    public static PlayerStat create(String id, ITextComponent name, @Optional(methodClass = DefaultStatFormatters.class, methodName = "simple") IStatFormatter formatter) {
+    public static PlayerStat create(String id, ITextComponent name, @Optional(methodClass = Defaults.class, methodName = "statFormatter") IStatFormatter formatter) {
         if (Loader.instance().getLoaderState().compareTo(LoaderState.AVAILABLE) > 0) {
             return java.util.Optional.ofNullable(StatList.getOneShotStat(id))
                     .map(PlayerStat::new)

@@ -4,7 +4,6 @@ import crafttweaker.annotations.ZenRegister;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.api.util.ReflectionInvoked;
 
 /**
  * @author youyihj
@@ -46,11 +45,6 @@ public enum CTEventPriority {
     @ZenMethod
     public static CTEventPriority lowest() {
         return LOWEST;
-    }
-
-    @ReflectionInvoked
-    public static CTEventPriority getDefault(String unused) {
-        return NORMAL;
     }
 
     public EventPriority getPriority() {

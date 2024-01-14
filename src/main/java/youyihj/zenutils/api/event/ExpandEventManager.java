@@ -16,6 +16,7 @@ import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.impl.event.EventHandlerRegisterException;
 import youyihj.zenutils.impl.event.GenericEventManagerImpl;
+import youyihj.zenutils.impl.zenscript.Defaults;
 
 /**
  * @author youyihj
@@ -64,7 +65,7 @@ public class ExpandEventManager {
     public static <T> void register(
             IEventManager manager,
             IEventHandler<T> eventHandler,
-            @Optional(methodClass = CTEventPriority.class, methodName = "getDefault") CTEventPriority priority,
+            @Optional(methodClass = Defaults.class, methodName = "eventPriority") CTEventPriority priority,
             @Optional boolean receiveCanceled
     ) {
         try {
