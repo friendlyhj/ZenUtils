@@ -27,13 +27,13 @@ import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.CleanLogCommand;
 import youyihj.zenutils.impl.command.StatCommand;
+import youyihj.zenutils.impl.player.IStatFormatterAdapter;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsFileLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
-import youyihj.zenutils.impl.player.IStatFormatterAdapter;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
@@ -51,7 +51,7 @@ import java.util.List;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.16.3";
+    public static final String VERSION = "1.16.4";
     public static final String DEPENDENCIES = "required-after:crafttweaker;required-after:mixinbooter;after:contenttweaker;after:ftbquests;";
 
     public static Logger forgeLogger;
