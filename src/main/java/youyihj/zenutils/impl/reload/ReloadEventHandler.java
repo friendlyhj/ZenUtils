@@ -18,6 +18,7 @@ import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.reload.ScriptReloadEvent;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
+import youyihj.zenutils.impl.entity.EntityTickDispatcher;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
@@ -42,6 +43,7 @@ public class ReloadEventHandler {
             event.getRequester().sendMessage(new TextComponentString(reloadActionCount + " actions reloaded."));
         }
         ZenUtils.tweaker.rollbackChanges();
+        EntityTickDispatcher.clearCatenationFactories();
     }
 
     @SubscribeEvent
@@ -50,6 +52,7 @@ public class ReloadEventHandler {
             LateGetContentLookup.refreshFields();
             LateGetContentLookup.clear();
         }
+        EntityTickDispatcher.restartCatenations();
     }
 
     @SuppressWarnings("unchecked")
