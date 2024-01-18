@@ -61,7 +61,14 @@ public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
     }
 
     @Override
-    public boolean isValid(Catenation catenation) {
-        return entity != null && entity.isAlive();
+    public ValidationResult validate(Catenation catenation) {
+        if (entity != null) {
+            if (!entity.isAlive()) {
+                return ValidationResult.INVALID_STOP;
+            } else if (!CraftTweakerMC.getEntity(entity).isAddedToWorld()) {
+                return ValidationResult.INVALID_PAUSE;
+            }
+        }
+        return ValidationResult.VALID;
     }
 }

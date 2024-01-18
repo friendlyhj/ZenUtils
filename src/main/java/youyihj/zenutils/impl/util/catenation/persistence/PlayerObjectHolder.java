@@ -59,8 +59,8 @@ public class PlayerObjectHolder implements ICatenationObjectHolder<IPlayer> {
     }
 
     @Override
-    public boolean isValid(Catenation catenation) {
-        return player != null && CraftTweakerMC.getWorld(catenation.getWorld()).playerEntities.contains(CraftTweakerMC.getPlayer(player));
+    public ValidationResult validate(Catenation catenation) {
+        return player != null && CraftTweakerMC.getWorld(catenation.getWorld()).playerEntities.contains(CraftTweakerMC.getPlayer(player)) ? ValidationResult.VALID : ValidationResult.INVALID_PAUSE;
     }
 
     @Override

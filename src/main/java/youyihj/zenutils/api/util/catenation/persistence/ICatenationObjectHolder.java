@@ -23,8 +23,8 @@ public interface ICatenationObjectHolder<T> {
 
     void setValue(T value);
 
-    default boolean isValid(Catenation catenation) {
-        return getValue() != null;
+    default ValidationResult validate(Catenation catenation) {
+        return getValue() == null ? ValidationResult.INVALID_PAUSE : ValidationResult.VALID;
     }
 
     default void invalidate() {
@@ -87,6 +87,16 @@ public interface ICatenationObjectHolder<T> {
         @Override
         public int hashCode() {
             return Objects.hash(key, type);
+        }
+    }
+
+    enum ValidationResult {
+        VALID,
+        INVALID_PAUSE,
+        INVALID_STOP;
+
+        public boolean isValid() {
+            return this == VALID;
         }
     }
 }

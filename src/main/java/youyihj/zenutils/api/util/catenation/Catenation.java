@@ -9,6 +9,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.util.catenation.persistence.ICatenationObjectHolder;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.Queue;
 
 /**
@@ -123,10 +124,19 @@ public class Catenation {
     }
 
     public boolean isAllObjectsValid() {
-        return !this.getContext().getObjectHolders().values().stream()
-                .filter(holder -> !holder.isValid(this))
-                .peek(ICatenationObjectHolder::invalidate)
-                .findAny()
-                .isPresent();
+        return validateObjectHolders().isValid();
+    }
+
+    public ICatenationObjectHolder.ValidationResult validateObjectHolders() {
+        return this.getContext().getObjectHolders().values().stream()
+                .map(holder -> {
+                    ICatenationObjectHolder.ValidationResult result = holder.validate(this);
+                    if (!result.isValid()) {
+                        holder.invalidate();
+                    }
+                    return result;
+                })
+                .max(Comparator.comparing(Enum::ordinal))
+                .orElse(ICatenationObjectHolder.ValidationResult.VALID);
     }
 }

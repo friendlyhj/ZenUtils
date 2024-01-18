@@ -100,11 +100,11 @@ public class CatenationContext {
     }
 
     public void checkObjectHolders() {
-        boolean isReady = catenation.isAllObjectsValid();
-        if (isReady && getStatus() == CatenationStatus.SERIAL) {
+        ICatenationObjectHolder.ValidationResult result = catenation.validateObjectHolders();
+        if (result.isValid() && getStatus() == CatenationStatus.SERIAL) {
             setStatus(CatenationStatus.WORKING);
-        } else if (!isReady && getStatus() == CatenationStatus.WORKING) {
-            setStatus(CatenationStatus.SERIAL);
+        } else if (!result.isValid() && getStatus() == CatenationStatus.WORKING) {
+            setStatus(result == ICatenationObjectHolder.ValidationResult.INVALID_PAUSE ? CatenationStatus.SERIAL : CatenationStatus.STOP_INTERNAL);
         }
     }
 
