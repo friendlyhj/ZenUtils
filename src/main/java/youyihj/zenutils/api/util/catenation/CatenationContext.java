@@ -108,6 +108,11 @@ public class CatenationContext {
         }
     }
 
+    @ZenGetter("catenation")
+    public Catenation getCatenation() {
+        return catenation;
+    }
+
     @ZenMethod
     public void stop() {
         catenation.stop();
