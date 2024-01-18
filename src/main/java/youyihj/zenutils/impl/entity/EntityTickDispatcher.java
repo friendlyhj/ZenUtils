@@ -29,7 +29,7 @@ import java.util.function.Function;
 @Mod.EventBusSubscriber
 public class EntityTickDispatcher {
     private static final Multimap<Entity, Catenation> catenations = Multimaps.newListMultimap(new WeakHashMap<>(), ArrayList::new);
-    private static final Multimap<Class<? extends Entity>, Mutable<Function<Entity, ICatenationFactory>>> catenationFactories = HashMultimap.create();
+    private static final Multimap<Class<? extends Entity>, Function<Entity, ICatenationFactory>> catenationFactories = HashMultimap.create();
     public static void register(Class<? extends Entity> entityClass, IEntityTick operation, int interval) {
         // starting a catenation requires 1 tick, at least skip 1 tick -> 2 ticks interval
         int actualInterval = Math.max(0, interval - 2);
@@ -40,9 +40,9 @@ public class EntityTickDispatcher {
             if (actualInterval != 0) {
                 builder.sleep(actualInterval);
             }
-            builder.then(((world1, context) -> operation.tick(CraftTweakerMC.getIEntity(entity))));
+            builder.then((world1, context) -> operation.tick(CraftTweakerMC.getIEntity(entity)));
             builder.stopWhen((world1, context) -> !entity.isEntityAlive() || !entity.isAddedToWorld());
-            builder.onStop(((world1, context) -> {
+            builder.onStop((world1, context) -> {
                 switch (context.getStatus()) {
                     case STOP_MANUAL:
                         break;
@@ -51,12 +51,12 @@ public class EntityTickDispatcher {
                     default:
                         catenations.remove(entity, context.getCatenation());
                 }
-            }));
+            });
             Catenation catenation = builder.start();
             catenations.put(entity, catenation);
             return catenation;
         });
-        catenationFactories.put(entityClass, ref);
+        catenationFactories.put(entityClass, ref.getValue());
     }
 
     public static void clearCatenationFactories() {
@@ -78,8 +78,8 @@ public class EntityTickDispatcher {
     }
 
     private static void startCatenation(Entity entity) {
-        for (Mutable<Function<Entity, ICatenationFactory>> factoryFactory : catenationFactories.get(entity.getClass())) {
-            factoryFactory.getValue().apply(entity).get(CraftTweakerMC.getIWorld(entity.world));
+        for (Function<Entity, ICatenationFactory> factoryFactory : catenationFactories.get(entity.getClass())) {
+            factoryFactory.apply(entity).get(CraftTweakerMC.getIWorld(entity.world));
         }
     }
 }
