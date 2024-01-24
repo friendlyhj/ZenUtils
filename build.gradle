@@ -84,6 +84,7 @@ dependencies {
     deobfCompile "curse.maven:item-filters-309674:3003364"
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
     deobfCompile "zone.rong:mixinbooter:7.0"
+    deobfCompile "curse.maven:simple-dimensions-235444:2445577"
 }
 
 repositories {
