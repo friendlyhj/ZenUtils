@@ -112,7 +112,9 @@ public class CatenationPersistenceImpl {
     }
 
     public static void loadCatenations(IWorld world) {
-        IData catenationsData = ZenUtilsWorld.getCustomWorldData(world).memberGet("catenations");
+        IData customWorldData = ZenUtilsWorld.getCustomWorldData(world);
+        if (customWorldData == null) return;
+        IData catenationsData = customWorldData.memberGet("catenations");
         if (catenationsData == null) return;
         for (IData catenationData : catenationsData.asList()) {
             Catenation catenation;

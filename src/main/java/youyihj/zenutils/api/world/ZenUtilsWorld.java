@@ -92,16 +92,22 @@ public class ZenUtilsWorld {
 
     @ZenMethod
     public static IData getCustomWorldData(IWorld world) {
-        return getWorldCap(world).getData();
+        IZenWorldCapability cap = getWorldCap(world);
+        if (cap == null) return null;
+        return cap.getData();
     }
 
     @ZenMethod
     public static void setCustomWorldData(IWorld world, IData data) {
-        getWorldCap(world).setData(data);
+        IZenWorldCapability cap = getWorldCap(world);
+        if (cap == null) return;
+        cap.setData(data);
     }
 
     @ZenMethod
     public static void updateCustomWorldData(IWorld world, IData data) {
+        IZenWorldCapability cap = getWorldCap(world);
+        if (cap == null) return;
         getWorldCap(world).updateData(data);
     }
 
