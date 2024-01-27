@@ -107,7 +107,7 @@ public class ZenUtilsLogger extends MTLogger implements ICleanableLogger {
     }
 
     private void log(LogLevel logLevel, String message, Throwable exception, Consumer<ILogger> loggerConsumer) {
-        if (logOption.isBlock(logLevel, message))
+        if (logOption.isBlock(logLevel, message != null ? message : ""))
             return;
         loggers.forEach(loggerConsumer);
         if (logLevel.compareTo(LogLevel.ERROR) >= 0) {
