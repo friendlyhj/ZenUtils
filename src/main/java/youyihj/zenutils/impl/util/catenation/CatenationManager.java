@@ -1,8 +1,8 @@
 package youyihj.zenutils.impl.util.catenation;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.world.MCWorld;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,6 @@ import youyihj.zenutils.api.util.catenation.CatenationStatus;
 import youyihj.zenutils.impl.util.catenation.persistence.CatenationPersistenceImpl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,8 +25,8 @@ import java.util.List;
  */
 @Mod.EventBusSubscriber
 public class CatenationManager {
-    private static final Multimap<World, Catenation> catenations = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
-    private static final Multimap<World, Catenation> cantenationsToAdd = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
+    private static final Multimap<World, Catenation> catenations = LinkedHashMultimap.create();
+    private static final Multimap<World, Catenation> cantenationsToAdd = LinkedHashMultimap.create();
 
     private static final List<Catenation> clientCatenations = new ArrayList<>();
     private static final List<Catenation> clientCatenationsToAdd = new ArrayList<>();

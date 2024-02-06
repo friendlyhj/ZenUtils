@@ -21,7 +21,7 @@ import java.util.*;
 public class ZenUtilsTweaker implements ITweaker {
     private final ITweaker tweaker;
     private boolean freeze = false;
-    private final Queue<ActionReloadCallback<?>> reloadableActions = new LinkedList<>();
+    private final Queue<ActionReloadCallback<?>> reloadableActions = new ArrayDeque<>();
     private final Map<Class<?>, IActionReloadCallbackFactory<?>> reloadCallbacks = new HashMap<>();
 
     public ZenUtilsTweaker(ITweaker tweaker) {
