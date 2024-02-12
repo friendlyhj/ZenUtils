@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
     private IEntity entity;
-    private UUID serial;
+    private UUID uuid;
 
     @Override
     public Type<IEntity> getType() {
@@ -28,19 +28,18 @@ public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
 
     @Override
     public IData serializeToData() {
-        UUID uuid = CraftTweakerMC.getEntity(entity).getUniqueID();
         return new DataList(Arrays.asList(new DataLong(uuid.getMostSignificantBits()), new DataLong(uuid.getLeastSignificantBits())), true);
     }
 
     @Override
     public void deserializeFromData(IData data) {
         List<IData> list = data.asList();
-        serial = new UUID(list.get(0).asLong(), list.get(1).asLong());
+        uuid = new UUID(list.get(0).asLong(), list.get(1).asLong());
     }
 
     @Override
     public void receiveObject(IEntity object) {
-        if (Objects.equals(serial, CraftTweakerMC.getEntity(object).getUniqueID())) {
+        if (Objects.equals(uuid, CraftTweakerMC.getEntity(object).getUniqueID())) {
             this.entity = object;
         }
     }
@@ -53,6 +52,7 @@ public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
     @Override
     public void setValue(IEntity value) {
         this.entity = value;
+        this.uuid = CraftTweakerMC.getEntity(value).getUniqueID();
     }
 
     @Override
@@ -68,7 +68,9 @@ public class EntityObjectHolder implements ICatenationObjectHolder<IEntity> {
             } else if (!CraftTweakerMC.getEntity(entity).isAddedToWorld()) {
                 return ValidationResult.INVALID_PAUSE;
             }
+            return ValidationResult.VALID;
+        } else {
+            return ValidationResult.INVALID_PAUSE;
         }
-        return ValidationResult.VALID;
     }
 }
