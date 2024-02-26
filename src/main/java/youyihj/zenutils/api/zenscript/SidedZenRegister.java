@@ -2,9 +2,16 @@ package youyihj.zenutils.api.zenscript;
 
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Automatically register a class to zenscript on specific sides with specific mod dependencies.
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 public @interface SidedZenRegister {
     Side[] value() default {Side.CLIENT, Side.SERVER};
 
