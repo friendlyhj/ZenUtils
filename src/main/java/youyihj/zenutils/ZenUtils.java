@@ -55,7 +55,7 @@ import java.util.Map;
 public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.16.9";
+    public static final String VERSION = "1.17.0";
     public static final String DEPENDENCIES = "required-after:crafttweaker;required-after:mixinbooter;before:contenttweaker;after:ftbquests;";
     public static final String MOD_COT = "contenttweaker";
 
