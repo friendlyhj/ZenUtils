@@ -11,6 +11,8 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenSetter;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import javax.annotation.Nonnull;
@@ -18,6 +20,7 @@ import javax.annotation.Nonnull;
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @ZenClass("mods.zenutils.cotx.TileEntityInGame")
 public class TileEntityContent extends TileEntity implements ITickable {
     private final TileData customData = new TileData();

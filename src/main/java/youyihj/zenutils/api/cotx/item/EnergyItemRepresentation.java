@@ -4,10 +4,13 @@ import com.teamacronymcoders.base.registrysystem.ItemRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
 import net.minecraftforge.fml.common.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @ZenClass("mods.zenutils.cotx.EnergyItem")
 public class EnergyItemRepresentation extends ExpandItemRepresentation {
 

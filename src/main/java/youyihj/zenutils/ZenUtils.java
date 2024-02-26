@@ -4,6 +4,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.logger.MTLogger;
 import crafttweaker.api.player.IPlayer;
+import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.mc1120.commands.CTChatCommand;
 import crafttweaker.mc1120.logger.MCLogger;
 import crafttweaker.mc1120.player.expand.ExpandPlayer;
@@ -16,14 +17,16 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
-import youyihj.zenutils.api.cotx.CoTExtension;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.CleanLogCommand;
 import youyihj.zenutils.impl.command.StatCommand;
@@ -42,6 +45,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.FileSystems;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author youyihj
@@ -52,7 +56,8 @@ public class ZenUtils {
     public static final String MODID = "zenutils";
     public static final String NAME = "ZenUtils";
     public static final String VERSION = "1.16.9";
-    public static final String DEPENDENCIES = "required-after:crafttweaker;required-after:mixinbooter;after:contenttweaker;after:ftbquests;";
+    public static final String DEPENDENCIES = "required-after:crafttweaker;required-after:mixinbooter;before:contenttweaker;after:ftbquests;";
+    public static final String MOD_COT = "contenttweaker";
 
     public static Logger forgeLogger;
     public static ZenUtilsLogger crafttweakerLogger;
@@ -88,9 +93,6 @@ public class ZenUtils {
         if (Loader.isModLoaded("ftbquests")) {
             MinecraftForge.EVENT_BUS.register(FTBQEventManager.Handler.class);
         }
-        if (InternalUtils.isContentTweakerInstalled()) {
-            CoTExtension.registerClasses();
-        }
     }
 
     @Mod.EventHandler
@@ -100,6 +102,7 @@ public class ZenUtils {
         PlayerInteractionSimulation.registerNetworkMessage();
         asmDataTable = event.getAsmData();
         forgeLogger = event.getModLog();
+        readSidedZenRegisters(event.getSide());
         try {
             InternalUtils.scanAllEventLists();
         } catch (NoSuchFieldException e) {
@@ -152,5 +155,23 @@ public class ZenUtils {
         printWriter.close();
         crafttweakerLogger.addLogger(new ZenUtilsFileLogger(FileSystems.getDefault().getPath("crafttweaker.log")));
         loggerField.set(null, crafttweakerLogger);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void readSidedZenRegisters(Side side) {
+        asmDataTable.getAll(SidedZenRegister.class.getCanonicalName()).forEach(data -> {
+            Map<String, Object> annotationInfo = data.getAnnotationInfo();
+            List<String> modDeps = (List<String>) annotationInfo.get("modDeps");
+            List<ModAnnotation.EnumHolder> sides = (List<ModAnnotation.EnumHolder>) annotationInfo.get("value");
+            boolean modSatisfied = modDeps == null || modDeps.stream().allMatch(Loader::isModLoaded);
+            boolean sideSatisfied = sides == null || sides.stream().map(ModAnnotation.EnumHolder::getValue).anyMatch(side.name()::equals);
+            if (modSatisfied && sideSatisfied) {
+                try {
+                    CraftTweakerAPI.registerClass(Class.forName(data.getClassName(), false, CraftTweaker.class.getClassLoader()));
+                } catch (ClassNotFoundException e) {
+                    CraftTweaker.LOG.catching(e);
+                }
+            }
+        });
     }
 }

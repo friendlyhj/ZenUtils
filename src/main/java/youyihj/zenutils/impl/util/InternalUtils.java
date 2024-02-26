@@ -54,7 +54,7 @@ public final class InternalUtils {
     }
 
     public static boolean isContentTweakerInstalled() {
-        return Loader.isModLoaded("contenttweaker");
+        return Loader.isModLoaded(ZenUtils.MOD_COT);
     }
 
     @SuppressWarnings("unchecked")

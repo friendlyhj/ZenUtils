@@ -10,10 +10,13 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import stanhebben.zenscript.annotations.ZenClass;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @ZenClass("mods.zenutils.cotx.DirectionalBlock")
 public class DirectionalBlockRepresentation extends ExpandBlockRepresentation {
     private final Directions directions;

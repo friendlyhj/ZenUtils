@@ -7,10 +7,13 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import stanhebben.zenscript.annotations.ZenCaster;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @ZenExpansion("mods.contenttweaker.Hand")
 public class ExpandHand {
     @ZenMethod

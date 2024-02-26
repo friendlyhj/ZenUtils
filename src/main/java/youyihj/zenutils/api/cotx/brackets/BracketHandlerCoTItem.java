@@ -13,7 +13,9 @@ import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
+import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.cotx.annotation.ExpandContentTweakerEntry;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.util.ReflectUtils;
 import youyihj.zenutils.impl.zenscript.ExpressionCallStaticThenCastWithStringArg;
 
@@ -23,6 +25,7 @@ import java.util.List;
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @BracketHandler(priority = 100)
 public class BracketHandlerCoTItem implements IBracketHandler {
     private static final IJavaMethod representationGetter = CraftTweakerAPI.getJavaMethod(BracketHandlerCoTItem.class, "getItemRepresentation", String.class);

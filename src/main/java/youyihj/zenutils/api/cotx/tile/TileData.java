@@ -7,11 +7,14 @@ import net.minecraftforge.common.util.INBTSerializable;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenSetter;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @ZenClass("mods.zenutils.cotx.TileData")
 public class TileData implements INBTSerializable<NBTTagCompound> {
     private final NBTTagCompound nbtTagCompound = new NBTTagCompound();

@@ -6,12 +6,15 @@ import crafttweaker.api.world.IWorld;
 import net.minecraft.tileentity.TileEntity;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.zenscript.SidedZenRegister;
 
 import javax.annotation.Nullable;
 
 /**
  * @author youyihj
  */
+@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
 @ZenExpansion("crafttweaker.world.IWorld")
 public class ExpandWorldForTile {
     @ZenMethod
