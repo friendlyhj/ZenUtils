@@ -9,10 +9,12 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IBlockPos;
 import crafttweaker.api.world.IFacing;
+import crafttweaker.api.world.IVector3d;
 import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -24,6 +26,7 @@ import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.entity.INearbyEntityList;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.liquid.CrTLiquidHandler;
 import youyihj.zenutils.api.util.CrTUUID;
@@ -32,6 +35,7 @@ import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI
 import youyihj.zenutils.api.util.catenation.persistence.PersistedCatenationStarter;
 import youyihj.zenutils.impl.capability.IZenWorldCapability;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
+import youyihj.zenutils.impl.entity.NearbyEntityList;
 import youyihj.zenutils.impl.player.FakePlayerHolder;
 import youyihj.zenutils.impl.util.catenation.CatenationBuilder;
 
@@ -88,6 +92,21 @@ public class ZenUtilsWorld {
     @ZenMethod
     public static List<IPlayer> getPlayers(IWorld iWorld) {
         return CraftTweakerMC.getWorld(iWorld).playerEntities.stream().map(MCPlayer::new).collect(Collectors.toList());
+    }
+
+    @ZenMethod
+    public static INearbyEntityList nearbyEntities(IWorld world, IVector3d pos, double radius, @stanhebben.zenscript.annotations.Optional IEntity exclude) {
+        return new NearbyEntityList(CraftTweakerMC.getWorld(world), pos, radius, exclude);
+    }
+
+    @ZenMethod
+    public static INearbyEntityList nearbyEntities(IWorld world, IEntity entity, double radius, @stanhebben.zenscript.annotations.Optional boolean excludeSelf) {
+        return new NearbyEntityList(
+                CraftTweakerMC.getWorld(world),
+                CraftTweakerMC.getIVector3d(new Vec3d(entity.getPosX(), entity.getPosY(), entity.getPosZ())),
+                radius,
+                excludeSelf ? entity : null
+        );
     }
 
     @ZenMethod
