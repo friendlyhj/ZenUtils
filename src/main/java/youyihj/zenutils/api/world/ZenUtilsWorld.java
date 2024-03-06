@@ -5,6 +5,7 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.entity.IEntity;
 import crafttweaker.api.entity.IEntityItem;
+import crafttweaker.api.game.ITeam;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.api.world.IBlockPos;
@@ -14,6 +15,8 @@ import crafttweaker.api.world.IWorld;
 import crafttweaker.mc1120.entity.MCEntityItem;
 import crafttweaker.mc1120.player.MCPlayer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
@@ -207,6 +210,33 @@ public class ZenUtilsWorld {
             return CraftTweakerMC.getIPlayer(FakePlayerHolder.get(((WorldServer) mcWorld)));
         } else {
             throw new IllegalStateException("Server side only.");
+        }
+    }
+
+    @ZenGetter("teams")
+    public static List<ITeam> getTeams(IWorld world) {
+        return CraftTweakerMC.getWorld(world).getScoreboard().getTeams()
+                .stream()
+                .map(CraftTweakerMC::getITeam)
+                .collect(Collectors.toList());
+    }
+
+    @ZenMethod
+    public static ITeam getTeam(IWorld world, String name) {
+        return CraftTweakerMC.getITeam(CraftTweakerMC.getWorld(world).getScoreboard().getTeam(name));
+    }
+
+    @ZenMethod
+    public static ITeam createTeam(IWorld world, String name) {
+        return CraftTweakerMC.getITeam(CraftTweakerMC.getWorld(world).getScoreboard().createTeam(name));
+    }
+
+    @ZenMethod
+    public static void removeTeam(IWorld world, String name) {
+        Scoreboard scoreboard = CraftTweakerMC.getWorld(world).getScoreboard();
+        ScorePlayerTeam team = scoreboard.getTeam(name);
+        if (team != null) {
+            scoreboard.removeTeam(team);
         }
     }
 
