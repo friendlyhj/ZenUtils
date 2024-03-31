@@ -16,6 +16,8 @@ import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,5 +103,18 @@ public final class InternalUtils {
 
     public static ScriptStatus getScriptStatus() {
         return scriptStatus;
+    }
+
+    public static Object cloneArray(Object array) {
+        Class<?> arrayClass = array.getClass();
+        Preconditions.checkArgument(arrayClass.isArray(), "argument should be an array");
+        try {
+            return MethodHandles.publicLookup()
+                                .findVirtual(arrayClass, "clone", MethodType.methodType(Object.class))
+                                .bindTo(array)
+                                .invokeExact();
+        } catch (Throwable e) {
+            throw new RuntimeException("Failed to clone the array", e);
+        }
     }
 }

@@ -5,8 +5,8 @@ import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.ZenUtils;
-import youyihj.zenutils.impl.reload.ScriptReloader;
 import youyihj.zenutils.api.logger.RegexLogFilter;
+import youyihj.zenutils.impl.reload.ScriptReloader;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Arrays;
@@ -42,7 +42,13 @@ public class ZenUtilsGlobal {
     public static Object[] arrayOf(int length, @Optional Object value) {
         Object[] array = new Object[length];
         if (value != null) {
-            Arrays.fill(array, value);
+            if (!value.getClass().isArray()) {
+                Arrays.fill(array, value);
+            } else {
+                for (int i = 0; i < array.length; i++) {
+                    array[i] = InternalUtils.cloneArray(value);
+                }
+            }
         }
         return array;
     }
