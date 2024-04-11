@@ -162,10 +162,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         }
         Map<String, IData> dataMap = new HashMap<>(data.asMap());
         if (isMap(updateOperation)) {
-            values.forEach((key, value) -> {
-                IData oldValue = dataMap.get(key);
-                dataMap.put(key, deepUpdate(oldValue, value, updateOperation.memberGet(key)));
-            });
+            values.forEach((key, value) ->
+                dataMap.compute(key, (k, oldValue) -> deepUpdate(oldValue, value, updateOperation.memberGet(key)))
+            );
         } else {
             int operator = updateOperation.asInt();
             switch (operator & Operation.SUB_OPERATOR_MASK) {
@@ -175,10 +174,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                     break;
                 case Operation.APPEND:
                 case Operation.MERGE:
-                    values.forEach((key, value) -> {
-                        IData oldValue = dataMap.get(key);
-                        dataMap.put(key, deepUpdate(oldValue, value, new DataInt(operator)));
-                    });
+                    values.forEach((key, value) ->
+                        dataMap.compute(key, (k, oldValue) -> deepUpdate(oldValue, value, new DataInt(operator)))
+                    );
                     break;
                 case Operation.REMOVE:
                     if (values.isEmpty()) {
