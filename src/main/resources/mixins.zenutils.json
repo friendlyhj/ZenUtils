@@ -12,6 +12,7 @@
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
     "MixinPlayerAnvilUpdateEvent",
+    "MixinZenTokener",
     "MixinZenType",
     "MixinZenTypeAssociate"
   ],
