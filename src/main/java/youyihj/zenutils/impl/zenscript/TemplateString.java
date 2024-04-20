@@ -1,13 +1,14 @@
 package youyihj.zenutils.impl.zenscript;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.parser.expression.ParsedExpression;
+import stanhebben.zenscript.parser.expression.ParsedExpressionValue;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.StringUtil;
 import stanhebben.zenscript.util.ZenPosition;
@@ -32,25 +33,26 @@ public class TemplateString {
         value = StringUtil.unescapeString(StringUtils.wrap(value, '"'));
         // remove wrapping `
         value = value.substring(1, value.length() - 1);
-        Pair<String, List<ParsedExpression>> parsed = parse(environment, value);
+        List<ParsedExpression> parsed = parse(position, environment, value);
         return new ParsedExpression(position) {
             @Override
             public IPartialExpression compile(IEnvironmentMethod environment, ZenType predictedType) {
-                return new ExpressionTemplateString(position, parsed.getKey(), parsed.getValue());
+                return new ExpressionTemplateString(position, parsed);
             }
         };
     }
 
-    private static Pair<String, List<ParsedExpression>> parse(IEnvironmentGlobal environment, String value){
-        StringBuilder format = new StringBuilder();
+    private static List<ParsedExpression> parse(ZenPosition position, IEnvironmentGlobal environment, String value){
         List<ParsedExpression> expressions = new ArrayList<>();
         StringBuilder toParseTokens = new StringBuilder();
+        StringBuilder literals = new StringBuilder();
         boolean isInExpression = false;
         boolean frontDollar = false;
         for (char c : value.toCharArray()) {
             if (c == '$') {
+                expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, literals.toString())));
+                literals = new StringBuilder();
                 frontDollar = true;
-                format.append("%s");
                 continue;
             } else if (frontDollar && c == '{') {
                 isInExpression = true;
@@ -67,10 +69,13 @@ public class TemplateString {
                     toParseTokens.append(c);
                 }
             } else {
-                format.append(c);
+                literals.append(c);
             }
             frontDollar = false;
         }
-        return Pair.of(format.toString(), expressions);
+        if (literals.length() > 0) {
+            expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, literals.toString())));
+        }
+        return expressions;
     }
 }
