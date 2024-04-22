@@ -32,14 +32,13 @@ public class ASMParsedExpression extends ClassVisitor {
         @Override
         public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
             Label templateStringCase = new Label();
-            super.visitLookupSwitchInsn(dflt, ArrayUtils.add(keys, TemplateString.TOKEN_ID), ArrayUtils.add(labels, templateStringCase));
+            super.visitLookupSwitchInsn(dflt, ArrayUtils.add(keys, TemplateString.T_BACKQUOTE), ArrayUtils.add(labels, templateStringCase));
             super.visitLabel(templateStringCase);
             super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             super.visitVarInsn(ALOAD, 1);
-            super.visitMethodInsn(INVOKEVIRTUAL, "stanhebben/zenscript/ZenTokener", "next", "()Lstanhebben/zenscript/parser/Token;", false);
             super.visitVarInsn(ALOAD, 0);
             super.visitVarInsn(ALOAD, 2);
-            super.visitMethodInsn(INVOKESTATIC, "youyihj/zenutils/impl/zenscript/TemplateString", "getExpression", "(Lstanhebben/zenscript/parser/Token;Lstanhebben/zenscript/util/ZenPosition;Lstanhebben/zenscript/compiler/IEnvironmentGlobal;)Lstanhebben/zenscript/parser/expression/ParsedExpression;", false);
+            super.visitMethodInsn(INVOKESTATIC, "youyihj/zenutils/impl/zenscript/TemplateString", "getExpression", "(Lstanhebben/zenscript/ZenTokener;Lstanhebben/zenscript/util/ZenPosition;Lstanhebben/zenscript/compiler/IEnvironmentGlobal;)Lstanhebben/zenscript/parser/expression/ParsedExpression;", false);
             super.visitInsn(ARETURN);
         }
     }

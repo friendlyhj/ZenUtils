@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -10,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.CompiledDFA;
 import stanhebben.zenscript.parser.NFA;
-import stanhebben.zenscript.util.ArrayUtil;
 import youyihj.zenutils.impl.zenscript.TemplateString;
 
 /**
@@ -35,8 +35,8 @@ public abstract class MixinZenTokener {
 
     @Inject(method = "<clinit>", at = @At("RETURN"))
     private static void zu$addTemplateStringToken(CallbackInfo ci) {
-        FINALS = ArrayUtil.add(FINALS, TemplateString.TOKEN_ID);
-        REGEXPS = ArrayUtil.add(REGEXPS, TemplateString.TOKEN_REGEX);
+        FINALS = ArrayUtils.addAll(FINALS, TemplateString.T_BACKQUOTE, TemplateString.T_ESCAPE_CHARS);
+        REGEXPS = ArrayUtils.addAll(REGEXPS, "`", "\\\\([\\\\`$ntbfr]|u[0-9a-fA-f]{4})");
         DFA = new NFA(REGEXPS, FINALS).toDFA().optimize().compile();
     }
 }
