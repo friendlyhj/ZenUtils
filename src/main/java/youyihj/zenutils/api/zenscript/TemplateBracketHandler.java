@@ -40,7 +40,7 @@ public class TemplateBracketHandler implements IBracketHandler {
     protected void initBracketHandlerMethods() {
         registerBracketHandlerMethod("item", CraftTweakerAPI.getJavaMethod(TemplateBracketHandler.class, "getItem", String.class));
         registerBracketHandlerMethod("biome", CraftTweakerAPI.getJavaMethod(BracketHandlerBiome.class, "getBiome", String.class));
-        registerBracketHandlerMethod("biomeTypes", CraftTweakerAPI.getJavaMethod(BracketHandlerBiomeType.class, "getBiomeType", String.class));
+        registerBracketHandlerMethod("biometypes", CraftTweakerAPI.getJavaMethod(BracketHandlerBiomeType.class, "getBiomeType", String.class));
         registerBracketHandlerMethod("blockstate", CraftTweakerAPI.getJavaMethod(TemplateBracketHandler.class, "getBlockState", String.class));
         registerBracketHandlerMethod("creativetab", CraftTweakerAPI.getJavaMethod(BracketHandlerCreativeTab.class, "getTabFromString", String.class));
         registerBracketHandlerMethod("damagesource", CraftTweakerAPI.getJavaMethod(BracketHandlerDamageSource.class, "getFromString", String.class));

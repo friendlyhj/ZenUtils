@@ -26,7 +26,7 @@ import youyihj.zenutils.api.zenscript.TemplateBracketHandler;
 public class TemplateBracketHandlerCoT extends TemplateBracketHandler {
     @Override
     protected void initBracketHandlerMethods() {
-        registerBracketHandlerMethod("creativeTab", CraftTweakerAPI.getJavaMethod(CreativeTabBracketHandler.class, "getCreativeTab", String.class));
+        registerBracketHandlerMethod("creativetab", CraftTweakerAPI.getJavaMethod(CreativeTabBracketHandler.class, "getCreativeTab", String.class));
         registerBracketHandlerMethod("item", CraftTweakerAPI.getJavaMethod(TemplateBracketHandlerCoT.class, "getItem", String.class));
         registerBracketHandlerMethod("block", CraftTweakerAPI.getJavaMethod(TemplateBracketHandlerCoT.class, "getBlock", String.class));
         registerBracketHandlerMethod("blockmaterial", CraftTweakerAPI.getJavaMethod(MaterialBracketHandler.class, "getBlockMaterial", String.class));
