@@ -35,7 +35,7 @@ public abstract class MixinZenTokener {
 
     @Inject(method = "<clinit>", at = @At("RETURN"))
     private static void zu$addTemplateStringToken(CallbackInfo ci) {
-        FINALS = ArrayUtils.addAll(FINALS, TemplateString.T_BACKQUOTE, TemplateString.T_ESCAPE_CHARS);
+        FINALS = ArrayUtils.addAll(FINALS, TemplateString.T_BACKQUOTE, TemplateString.T_ESCAPE_CHAR);
         REGEXPS = ArrayUtils.addAll(REGEXPS, "`", "\\\\([\\\\`$ntbfr]|u[0-9a-fA-f]{4})");
         DFA = new NFA(REGEXPS, FINALS).toDFA().optimize().compile();
     }
