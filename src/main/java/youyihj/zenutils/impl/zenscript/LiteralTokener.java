@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author youyihj
  */
-public class LiteralTokener extends ZenTokener {
+public class LiteralTokener extends ZenTokener implements ITokenStreamExtension {
     private final List<Token> tokens;
     private int index = 0;
 
@@ -44,5 +44,10 @@ public class LiteralTokener extends ZenTokener {
 
     public int readTokenCount() {
         return index;
+    }
+
+    @Override
+    public void setAllowWhitespaceChannel(boolean allowWhitespaceChannel) {
+        // NO-OP
     }
 }
