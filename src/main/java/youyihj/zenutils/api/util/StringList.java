@@ -88,6 +88,11 @@ public class StringList implements Iterable<String> {
     }
 
     @ZenMethod
+    public void insert(int index, String s) {
+        inner.add(index, s);
+    }
+
+    @ZenMethod
     public boolean remove(String s) {
         return inner.remove(s);
     }
