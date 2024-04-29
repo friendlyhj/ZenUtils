@@ -9,8 +9,8 @@ import youyihj.zenutils.api.util.StringList;
  * @author youyihj
  */
 @ZenRegister
-@ZenClass("mods.zenutils.ITooltipFunction")
+@ZenClass("mods.zenutils.ITooltipModifier")
 @FunctionalInterface
-public interface ITooltipFunction {
+public interface ITooltipModifier {
     void apply(IItemStack stack, StringList tooltip, boolean shiftPressed, boolean advanced);
 }

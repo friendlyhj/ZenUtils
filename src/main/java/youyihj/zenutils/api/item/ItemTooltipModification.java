@@ -25,11 +25,11 @@ import java.util.Map;
 @ZenExpansion("crafttweaker.item.IIngredient")
 @Mod.EventBusSubscriber
 public class ItemTooltipModification {
-    private static final Map<IIngredient, ITooltipFunction> FUNCTIONS = new LinkedHashMap<>();
+    private static final Map<IIngredient, ITooltipModifier> MODIFIERS = new LinkedHashMap<>();
 
     @ZenMethod
-    public static void modifyTooltip(IIngredient ingredient, ITooltipFunction function) {
-        FUNCTIONS.put(ingredient, function);
+    public static void modifyTooltip(IIngredient ingredient, ITooltipModifier modifier) {
+        MODIFIERS.put(ingredient, modifier);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -37,7 +37,7 @@ public class ItemTooltipModification {
         IItemStack item = null;
         StringList tooltip = null;
         boolean pressed = false;
-        for (Map.Entry<IIngredient, ITooltipFunction> entry : FUNCTIONS.entrySet()) {
+        for (Map.Entry<IIngredient, ITooltipModifier> entry : MODIFIERS.entrySet()) {
             if (!event.getItemStack().isEmpty() && entry.getKey().matches(CraftTweakerMC.getIItemStackForMatching(event.getItemStack()))) {
                 if (tooltip == null) {
                     tooltip = StringList.create(event.getToolTip());
@@ -55,7 +55,7 @@ public class ItemTooltipModification {
 
     @SubscribeEvent
     public static void onReloadPre(ScriptReloadEvent.Pre event) {
-        FUNCTIONS.clear();
+        MODIFIERS.clear();
     }
 
 }
