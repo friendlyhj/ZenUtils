@@ -34,7 +34,7 @@ public class ASMParsedExpression extends ClassVisitor {
             Label templateStringCase = new Label();
             super.visitLookupSwitchInsn(dflt, ArrayUtils.add(keys, TemplateString.T_BACKQUOTE), ArrayUtils.add(labels, templateStringCase));
             super.visitLabel(templateStringCase);
-            super.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+            super.visitFrame(F_SAME, 0, null, 0, null);
             super.visitVarInsn(ALOAD, 1);
             super.visitVarInsn(ALOAD, 0);
             super.visitVarInsn(ALOAD, 2);
