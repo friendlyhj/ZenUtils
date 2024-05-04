@@ -3,7 +3,7 @@ package youyihj.zenutils.api.cotx;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.blockmaterial.IBlockMaterialDefinition;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.block.DirectionalBlockRepresentation;
 import youyihj.zenutils.api.cotx.block.ExpandBlockRepresentation;
 import youyihj.zenutils.api.cotx.function.ITileEntityTick;
@@ -16,7 +16,7 @@ import youyihj.zenutils.api.zenscript.SidedZenRegister;
 /**
  * @author youyihj
  */
-@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
+@SidedZenRegister(modDeps = Reference.MOD_COT)
 @ZenExpansion("mods.contenttweaker.VanillaFactory")
 public class ExpandVanillaFactory {
     @ZenMethodStatic

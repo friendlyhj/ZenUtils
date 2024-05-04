@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
 import stanhebben.zenscript.type.natives.JavaMethod;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
@@ -56,7 +57,7 @@ public final class InternalUtils {
     }
 
     public static boolean isContentTweakerInstalled() {
-        return Loader.isModLoaded(ZenUtils.MOD_COT);
+        return Loader.isModLoaded(Reference.MOD_COT);
     }
 
     @SuppressWarnings("unchecked")

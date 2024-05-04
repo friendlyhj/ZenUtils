@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.MissingModsException;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.common.versioning.InvalidVersionSpecificationException;
 import net.minecraftforge.fml.common.versioning.VersionRange;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 
 /**
  * @author youyihj
@@ -14,7 +14,7 @@ public class InvalidCraftTweakerVersionException extends MissingModsException {
     private final String requiredVersion;
 
     public InvalidCraftTweakerVersionException(String requiredVersion) {
-        super(ZenUtils.MODID, ZenUtils.NAME);
+        super(Reference.MODID, Reference.NAME);
         this.requiredVersion = requiredVersion;
         try {
             this.addMissingMod(

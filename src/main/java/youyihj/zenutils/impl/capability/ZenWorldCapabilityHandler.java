@@ -12,7 +12,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 
 import javax.annotation.Nullable;
 
@@ -21,8 +21,8 @@ import javax.annotation.Nullable;
  */
 @Mod.EventBusSubscriber
 public class ZenWorldCapabilityHandler {
-    private static final ResourceLocation ZEN_WORLD_CAP_RL = new ResourceLocation(ZenUtils.MODID, "zen_world_cap");
-    private static final ResourceLocation ZEN_CHUNK_CAP_RL = new ResourceLocation(ZenUtils.MODID, "zen_chunk_cap");
+    private static final ResourceLocation ZEN_WORLD_CAP_RL = new ResourceLocation(Reference.MODID, "zen_world_cap");
+    private static final ResourceLocation ZEN_CHUNK_CAP_RL = new ResourceLocation(Reference.MODID, "zen_chunk_cap");
 
     @CapabilityInject(IZenWorldCapability.class)
     public static Capability<IZenWorldCapability> ZEN_WORLD_CAPABILITY = null;

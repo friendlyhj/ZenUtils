@@ -27,7 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.annotation.ExpandContentTweakerEntry;
 
 import javax.annotation.Nonnull;
@@ -136,7 +136,7 @@ public class ExpandItemContent extends ItemContent {
     @Override
     public List<IGeneratedModel> getGeneratedModels() {
         if (!expandItemRepresentation.toolClass.isEmpty()) {
-            TemplateFile templateFile = TemplateManager.getTemplateFile(new ResourceLocation(ZenUtils.MODID, "item_tool"));
+            TemplateFile templateFile = TemplateManager.getTemplateFile(new ResourceLocation(Reference.MODID, "item_tool"));
             Map<String, String> replacements = new HashMap<>();
 
             replacements.put("texture", Optional.ofNullable(expandItemRepresentation.getTextureLocation())

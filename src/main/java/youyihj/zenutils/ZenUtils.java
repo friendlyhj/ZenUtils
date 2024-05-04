@@ -50,15 +50,9 @@ import java.util.Map;
 /**
  * @author youyihj
  */
-@Mod(modid = ZenUtils.MODID, name = ZenUtils.NAME, version = ZenUtils.VERSION, dependencies = ZenUtils.DEPENDENCIES)
+@Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, dependencies = Reference.DEPENDENCIES)
 @Mod.EventBusSubscriber
 public class ZenUtils {
-    public static final String MODID = "zenutils";
-    public static final String NAME = "ZenUtils";
-    public static final String VERSION = "1.18.2";
-    public static final String DEPENDENCIES = "required-after:crafttweaker;required-after:mixinbooter;before:contenttweaker;after:ftbquests;";
-    public static final String MOD_COT = "contenttweaker";
-
     public static Logger forgeLogger;
     public static ZenUtilsLogger crafttweakerLogger;
     public static ZenUtilsTweaker tweaker;

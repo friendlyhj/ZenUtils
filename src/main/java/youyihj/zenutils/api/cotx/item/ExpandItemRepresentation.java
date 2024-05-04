@@ -6,7 +6,7 @@ import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemRepresenta
 import crafttweaker.api.item.IIngredient;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.function.IEntityItemUpdate;
 import youyihj.zenutils.api.cotx.function.IGetEntityLifeSpan;
 import youyihj.zenutils.api.zenscript.SidedZenRegister;
@@ -14,7 +14,7 @@ import youyihj.zenutils.api.zenscript.SidedZenRegister;
 /**
  * @author youyihj
  */
-@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
+@SidedZenRegister(modDeps = Reference.MOD_COT)
 @ZenClass("mods.zenutils.cotx.Item")
 public class ExpandItemRepresentation extends ItemRepresentation {
 

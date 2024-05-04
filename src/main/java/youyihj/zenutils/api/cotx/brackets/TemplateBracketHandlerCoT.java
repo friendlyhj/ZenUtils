@@ -13,7 +13,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.BracketHandler;
 import crafttweaker.api.item.IItemStack;
 import net.minecraftforge.oredict.OreDictionary;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.api.zenscript.TemplateBracketHandler;
@@ -21,7 +21,7 @@ import youyihj.zenutils.api.zenscript.TemplateBracketHandler;
 /**
  * @author youyihj
  */
-@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
+@SidedZenRegister(modDeps = Reference.MOD_COT)
 @BracketHandler(priority = 9)
 public class TemplateBracketHandlerCoT extends TemplateBracketHandler {
     @Override

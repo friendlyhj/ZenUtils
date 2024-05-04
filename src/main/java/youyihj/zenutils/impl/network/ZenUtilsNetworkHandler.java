@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import stanhebben.zenscript.ZenModule;
 import stanhebben.zenscript.value.IAny;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.network.IClientMessageHandler;
@@ -26,7 +27,7 @@ import java.util.Objects;
 public enum ZenUtilsNetworkHandler {
     INSTANCE;
 
-    private final SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel(ZenUtils.MODID);
+    private final SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MODID);
     private final Int2ObjectArrayMap<IClientMessageHandler> clientHandlers = new Int2ObjectArrayMap<>();
     private final Int2ObjectArrayMap<IServerMessageHandler> serverHandlers = new Int2ObjectArrayMap<>();
 

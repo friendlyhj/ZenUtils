@@ -9,6 +9,7 @@ import journeymap.client.api.IClientAPI;
 import journeymap.client.api.IClientPlugin;
 import journeymap.client.api.display.Waypoint;
 import journeymap.client.api.event.ClientEvent;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.ZenUtils;
 
 import java.util.Objects;
@@ -24,8 +25,8 @@ public class JourneyMapPlugin implements IClientPlugin {
         if (japi == null) {
             CraftTweakerAPI.logError("JourneyMap API is not built yet!");
         }
-        String id = ZenUtils.MODID + "-" + name + "-" + Objects.hash(pos.getInternal());
-        Waypoint waypoint = new Waypoint(ZenUtils.MODID, id, name, world.getDimension(), CraftTweakerMC.getBlockPos(pos));
+        String id = Reference.MODID + "-" + name + "-" + Objects.hash(pos.getInternal());
+        Waypoint waypoint = new Waypoint(Reference.MODID, id, name, world.getDimension(), CraftTweakerMC.getBlockPos(pos));
         waypoint.setColor(color);
         waypoint.setDirty();
         try {
@@ -42,7 +43,7 @@ public class JourneyMapPlugin implements IClientPlugin {
 
     @Override
     public String getModId() {
-        return ZenUtils.MODID;
+        return Reference.MODID;
     }
 
     @Override

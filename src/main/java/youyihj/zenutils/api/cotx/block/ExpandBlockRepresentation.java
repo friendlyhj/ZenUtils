@@ -6,7 +6,7 @@ import com.teamacronymcoders.contenttweaker.api.ctobjects.blockmaterial.IBlockMa
 import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockRepresentation;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.function.IBlockActivated;
 import youyihj.zenutils.api.cotx.function.IEntityCollided;
 import youyihj.zenutils.api.cotx.function.IEntityWalk;
@@ -17,7 +17,7 @@ import youyihj.zenutils.api.zenscript.SidedZenRegister;
 /**
  * @author youyihj
  */
-@SidedZenRegister(modDeps = ZenUtils.MOD_COT)
+@SidedZenRegister(modDeps = Reference.MOD_COT)
 @ZenClass("mods.zenutils.cotx.Block")
 public class ExpandBlockRepresentation extends BlockRepresentation {
     public ExpandBlockRepresentation(String unlocalizedName, IBlockMaterialDefinition blockMaterial) {

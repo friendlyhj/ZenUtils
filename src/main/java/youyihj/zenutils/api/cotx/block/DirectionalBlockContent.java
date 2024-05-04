@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.annotation.ExpandContentTweakerEntry;
 
 import javax.annotation.Nullable;
@@ -94,7 +94,7 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
     public List<IGeneratedModel> getGeneratedModels() {
         List<IGeneratedModel> models = Lists.newArrayList();
         this.getResourceLocations(Lists.newArrayList()).forEach(resourceLocation ->  {
-            TemplateFile templateFile = TemplateManager.getTemplateFile(new ResourceLocation(ZenUtils.MODID, getDirections().name().toLowerCase(Locale.ENGLISH) + "_directional_block"));
+            TemplateFile templateFile = TemplateManager.getTemplateFile(new ResourceLocation(Reference.MODID, getDirections().name().toLowerCase(Locale.ENGLISH) + "_directional_block"));
             Map<String, String> replacements = Maps.newHashMap();
 
             replacements.put("texture", Optional.ofNullable(representation.getTextureLocation())
