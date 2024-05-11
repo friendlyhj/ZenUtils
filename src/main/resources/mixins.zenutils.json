@@ -11,6 +11,7 @@
     "MixinExpressionMap",
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
+    "MixinParsedExpression",
     "MixinPlayerAnvilUpdateEvent",
     "MixinTokenStream",
     "MixinZenTokener",
