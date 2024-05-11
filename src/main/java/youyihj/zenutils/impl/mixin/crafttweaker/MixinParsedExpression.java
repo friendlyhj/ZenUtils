@@ -14,7 +14,7 @@ import youyihj.zenutils.impl.zenscript.ParsedExpressionDeepNull;
 public abstract class MixinParsedExpression {
     @ModifyReturnValue(
             method = "readPrimaryExpression",
-            at = @At(value = "RETURN"),
+            at = @At("RETURN"),
             slice = @Slice(
                 from = @At(
                         value = "INVOKE",
