@@ -83,7 +83,7 @@ dependencies {
     deobfCompile "curse.maven:ftb-library-legacy-forge-237167:2985811"
     deobfCompile "curse.maven:item-filters-309674:3003364"
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
-    deobfCompile "zone.rong:mixinbooter:8.0"
+    deobfCompile "zone.rong:mixinbooter:8.9"
     deobfCompile "curse.maven:simple-dimensions-235444:2445577"
     compileOnly provided('org.spongepowered:mixin:0.8-SNAPSHOT') {
         exclude module: 'guava'
@@ -113,7 +113,7 @@ repositories {
     }
     maven {
         name = "Cleanroom"
-        url "https://maven.cleanroommc.com"
+        url = 'https://repo.cleanroommc.com/releases'
     }
     maven {
         name = 'sponge'
