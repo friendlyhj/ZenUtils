@@ -17,7 +17,7 @@ import java.util.Map;
 public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] {"youyihj.zenutils.impl.core.ZenUtilsClassTransformer"};
+        return new String[0];
     }
 
     @Override

@@ -31,4 +31,12 @@ public abstract class MixinParsedExpression {
     private static ParsedExpression changeDeepNullExpression(ParsedExpression original) {
         return new ParsedExpressionDeepNull(original.getPosition());
     }
+
+    /*
+    Pseudo Mixin, see CraftTweakerMixinPlugin for implementation code
+    @AddSwitchBranch(method = "readPrimaryExpression", key = TemplateString.T_BACKQUOTE, cancellable = true)
+    private static void readTemplateString(ZenPosition position, ZenTokener parser, IEnvironmentGlobal environment, CallbackInfoReturnable<ParsedExpression> cir) {
+        cir.setReturnValue(TemplateString.getExpression(parser, position, environment));
+    }
+     */
 }
