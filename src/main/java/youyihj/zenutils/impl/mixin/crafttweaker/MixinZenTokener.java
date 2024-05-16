@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.CompiledDFA;
 import stanhebben.zenscript.parser.NFA;
+import youyihj.zenutils.impl.zenscript.TemplateStringTokener;
 import youyihj.zenutils.impl.zenscript.TemplateString;
 
 /**
@@ -35,8 +36,9 @@ public abstract class MixinZenTokener {
 
     @Inject(method = "<clinit>", at = @At("RETURN"))
     private static void zu$addTemplateStringToken(CallbackInfo ci) {
-        FINALS = ArrayUtils.addAll(FINALS, TemplateString.T_BACKQUOTE, TemplateString.T_ESCAPE_CHAR);
-        REGEXPS = ArrayUtils.addAll(REGEXPS, "`", "\\\\([\\\\`$ntbfr]|u[0-9a-fA-f]{4})");
+        FINALS = ArrayUtils.addAll(FINALS, TemplateString.T_TEMPLATE_STRING, TemplateString.T_ESCAPE_CHAR);
+        REGEXPS = ArrayUtils.addAll(REGEXPS, TemplateString.T_TEMPLATE_STRING_REGEX, TemplateString.T_ESCAPE_CHAR_REGEX);
         DFA = new NFA(REGEXPS, FINALS).toDFA().optimize().compile();
+        TemplateStringTokener.setupDFAFromZenTokener(REGEXPS, FINALS);
     }
 }

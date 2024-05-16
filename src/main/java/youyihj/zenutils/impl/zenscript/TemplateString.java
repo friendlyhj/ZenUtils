@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript;
 
+import com.google.common.collect.Iterators;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.expression.Expression;
@@ -9,6 +10,7 @@ import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.parser.expression.ParsedExpression;
 import stanhebben.zenscript.parser.expression.ParsedExpressionValue;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,15 @@ import static stanhebben.zenscript.ZenTokener.*;
  * @author youyihj
  */
 public class TemplateString {
-    public static final int T_BACKQUOTE = 196;
+    public static final int T_TEMPLATE_STRING = 196;
+    public static final String T_TEMPLATE_STRING_REGEX = "`([^`\\\\]|\\\\([\\\\`$bfnrt]|u[0-9a-fA-F]{4}))*`";
     public static final int T_ESCAPE_CHAR = 197;
+    public static final String T_ESCAPE_CHAR_REGEX = "\\\\([\\\\`$ntbfr]|u[0-9a-fA-F]{4})";
 
-    @SuppressWarnings("unused")
+    // TODO: find a way to read both (whitespace, unicode, comment) and nested template string
+    // currently it can not handle nested template string
+    // before the comment, it can handle nested template string, but not the other.
+    @ReflectionInvoked // ASM Invoked actually
     public static ParsedExpression getExpression(ZenTokener tokener, ZenPosition position, IEnvironmentGlobal environment) {
         List<ParsedExpression> parsed = parse(tokener, position, environment);
         return new ParsedExpressionValue(position, new ExpressionTemplateString(position, parsed));
@@ -63,23 +70,23 @@ public class TemplateString {
     }
 
     private static List<ParsedExpression> parse(ZenTokener tokener, ZenPosition position, IEnvironmentGlobal environment) throws ParseException {
-        ((ITokenStreamExtension) tokener).setAllowWhitespaceChannel(true);
-        tokener.next();
+        String content = tokener.next().getValue();
+        content = content.substring(1, content.length() - 1);
         List<ParsedExpression> expressions = new ArrayList<>();
         StringBuilder literals = new StringBuilder();
-        for (Token token = tokener.next(); token.getType() != T_BACKQUOTE; token = tokener.next()) {
+        TemplateStringTokener templateStringTokener = TemplateStringTokener.create(content, position);
+        while (templateStringTokener.hasNext()) {
+            Token token = templateStringTokener.next();
             switch (token.getType()) {
                 case T_ESCAPE_CHAR:
                     handleEscapeChar(token, literals);
                     break;
                 case T_DOLLAR:
-                    if (tokener.optional(T_AOPEN) != null) {
+                    if (templateStringTokener.optional(T_AOPEN) != null) {
                         expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, literals.toString())));
-                        ((ITokenStreamExtension) tokener).setAllowWhitespaceChannel(false);
                         literals = new StringBuilder();
-                        expressions.add(ParsedExpression.read(tokener, environment));
-                        ((ITokenStreamExtension) tokener).setAllowWhitespaceChannel(true);
-                        tokener.required(T_ACLOSE, "} expected");
+                        expressions.add(ParsedExpression.read(templateStringTokener.toLiteral(environment.getEnvironment()), environment));
+                        templateStringTokener.required(T_ACLOSE, "} expected");
                     } else {
                         literals.append('$');
                     }
@@ -95,7 +102,6 @@ public class TemplateString {
         if (expressions.isEmpty()) {
             expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, "")));
         }
-        ((ITokenStreamExtension) tokener).setAllowWhitespaceChannel(false);
         return expressions;
     }
 
@@ -115,7 +121,7 @@ public class TemplateString {
                         expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, literals.toString())));
                         literals = new StringBuilder();
                         cursor++;
-                        LiteralTokener literalTokener = LiteralTokener.create(tokens.subList(cursor, tokens.size()), environment.getEnvironment());
+                        LiteralTokener literalTokener = LiteralTokener.create(Iterators.peekingIterator(tokens.subList(cursor, tokens.size()).iterator()), environment.getEnvironment());
                         expressions.add(ParsedExpression.read(literalTokener, environment));
                         cursor += literalTokener.readTokenCount();
                         nextToken = tokens.get(cursor);

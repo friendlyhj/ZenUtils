@@ -57,7 +57,7 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                 AbstractInsnNode node = iter.next();
                 if (node.getType() == AbstractInsnNode.LOOKUPSWITCH_INSN) {
                     LookupSwitchInsnNode lookupSwitchInsnNode = (LookupSwitchInsnNode) node;
-                    lookupSwitchInsnNode.keys.add(TemplateString.T_BACKQUOTE);
+                    lookupSwitchInsnNode.keys.add(TemplateString.T_TEMPLATE_STRING);
                     LabelNode label = new LabelNode();
                     lookupSwitchInsnNode.labels.add(label);
                     instructions.insert(lookupSwitchInsnNode, label);
@@ -72,6 +72,16 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                     break;
                 }
             }
+        }
+        if (targetClassName.endsWith("TemplateStringTokener")) {
+            targetClass.fields.stream().filter(it -> it.name.equals("startPosition")).findFirst().ifPresent(it -> it.access |= ACC_FINAL);
+            targetClass.methods.stream().filter(it -> it.name.equals("<init>")).findFirst().ifPresent(it -> {
+                InsnList insnList = new InsnList();
+                insnList.add(new VarInsnNode(ALOAD, 0));
+                insnList.add(new VarInsnNode(ALOAD, 2));
+                insnList.add(new FieldInsnNode(PUTFIELD, "youyihj/zenutils/impl/zenscript/TemplateStringTokener", "startPosition", "Lstanhebben/zenscript/util/ZenPosition;"));
+                it.instructions.insert(insnList);
+            });
         }
     }
 

@@ -1,25 +1,25 @@
 package youyihj.zenutils.impl.zenscript;
 
+import com.google.common.collect.PeekingIterator;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.Token;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author youyihj
  */
-public class LiteralTokener extends ZenTokener implements ITokenStreamExtension {
-    private final List<Token> tokens;
-    private int index = 0;
+public class LiteralTokener extends ZenTokener {
+    private final PeekingIterator<Token> tokens;
+    private int readCounter = 0;
 
-    public LiteralTokener(List<Token> tokens, IZenCompileEnvironment environment) throws IOException {
+    public LiteralTokener(PeekingIterator<Token> tokens, IZenCompileEnvironment environment) throws IOException {
         super("", environment, "", false);
         this.tokens = tokens;
     }
 
-    public static LiteralTokener create(List<Token> tokens, IZenCompileEnvironment environment) {
+    public static LiteralTokener create(PeekingIterator<Token> tokens, IZenCompileEnvironment environment) {
         try {
             return new LiteralTokener(tokens, environment);
         } catch (IOException e) {
@@ -29,25 +29,21 @@ public class LiteralTokener extends ZenTokener implements ITokenStreamExtension 
 
     @Override
     public Token peek() {
-        return tokens.get(index);
+        return tokens.peek();
     }
 
     @Override
     public boolean hasNext() {
-        return index < tokens.size();
+        return tokens.hasNext();
     }
 
     @Override
     public Token next() {
-        return tokens.get(index++);
+        readCounter++;
+        return tokens.next();
     }
 
     public int readTokenCount() {
-        return index;
-    }
-
-    @Override
-    public void setAllowWhitespaceChannel(boolean allowWhitespaceChannel) {
-        // NO-OP
+        return readCounter;
     }
 }
