@@ -28,7 +28,7 @@ public class TemplateString {
 
     // TODO: find a way to read both (whitespace, unicode, comment) and nested template string
     // currently it can not handle nested template string
-    // before the comment, it can handle nested template string, but not the other.
+    // before the commit of this comment, it can handle nested template string, but not the other.
     @ReflectionInvoked(asm = true)
     public static ParsedExpression getExpression(ZenTokener tokener, ZenPosition position, IEnvironmentGlobal environment) {
         List<ParsedExpression> parsed = parse(tokener, position, environment);

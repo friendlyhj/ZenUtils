@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class TemplateStringTokener extends TokenStream {
     public static final int T_FALLBACK = Integer.MAX_VALUE;
-    public static final String T_FULLBACK_REGEX = ".";
+    public static final String T_FALLBACK_REGEX = ".";
 
     private static CompiledDFA DFA;
 
@@ -28,7 +28,7 @@ public class TemplateStringTokener extends TokenStream {
         int[] finals = new int[zenFinals.length - 3];
         System.arraycopy(zenRegexps, 4, regexp, 0, zenRegexps.length - 4);
         System.arraycopy(zenFinals, 4, finals, 0, zenFinals.length - 4);
-        regexp[regexp.length - 1] = T_FULLBACK_REGEX;
+        regexp[regexp.length - 1] = T_FALLBACK_REGEX;
         finals[finals.length - 1] = T_FALLBACK;
         DFA = new NFA(regexp, finals).toDFA().optimize().compile();
     }
