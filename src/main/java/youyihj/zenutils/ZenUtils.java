@@ -82,7 +82,6 @@ public class ZenUtils {
             tweakerField.set(null, tweaker);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             CraftTweakerAPI.logWarning("Fail to set crafttweaker tweaker");
-            e.printStackTrace();
         }
         if (Loader.isModLoaded("ftbquests")) {
             MinecraftForge.EVENT_BUS.register(FTBQEventManager.Handler.class);

@@ -31,7 +31,7 @@ public interface ILiquidTankProperties {
     /**
      * Returns true if the tank can be filled at any time (even if it is currently full).
      * It does not consider the contents or capacity of the tank.
-     *
+     * <p>
      * This value is constant. If the tank behavior is more complicated, returns true.
      */
     @ZenGetter("canFill")
@@ -40,7 +40,7 @@ public interface ILiquidTankProperties {
     /**
      * Returns true if the tank can be drained at any time (even if it is currently empty).
      * It does not consider the contents or capacity of the tank.
-     *
+     * <p>
      * This value is constant. If the tank behavior is more complicated, returns true.
      */
     @ZenGetter("canDrain")
@@ -49,7 +49,7 @@ public interface ILiquidTankProperties {
     /**
      * Returns true if the tank can be filled with a specific type of fluid.
      * Used as a filter for fluid types.
-     *
+     * <p>
      * Does not consider the current contents or capacity of the tank,
      * only whether it could ever fill with this type of fluid.
      * {@link ILiquidStack} is used here because fluid properties can depend on NBT, the amount is ignored.
@@ -60,7 +60,7 @@ public interface ILiquidTankProperties {
     /**
      * Returns true if the tank can drain out this a specific of fluid.
      * Used as a filter for fluid types.
-     *
+     * <p>
      * Does not consider the current contents or capacity of the tank,
      * only whether it could ever drain out this type of fluid.
      * {@link ILiquidStack} is used here because fluid properties can depend on NBT, the amount is ignored.

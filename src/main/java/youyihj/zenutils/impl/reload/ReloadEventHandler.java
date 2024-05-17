@@ -55,7 +55,7 @@ public class ReloadEventHandler {
         EntityTickDispatcher.restartCatenations();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "resource"})
     private static void reRegisterInternalEvents() {
         try {
             Field listenLogin = ReflectUtils.removePrivate(CrafttweakerImplementationAPI.class, "LISTEN_LOGIN");
@@ -65,7 +65,7 @@ public class ReloadEventHandler {
             events.onPlayerLoggedOut((IEventHandler<PlayerLoggedOutEvent>) listenLogout.get(null));
             events.onPlayerInteract(CrafttweakerImplementationAPI.LISTEN_BLOCK_INFO);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            ZenUtils.forgeLogger.catching(e);
         }
     }
 

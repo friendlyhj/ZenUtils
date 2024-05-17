@@ -15,7 +15,7 @@ import java.util.List;
 @Deprecated
 public class TabCompletionCase {
 
-    static HashMap<String, List<String>> cases = new HashMap<>();
+    static final HashMap<String, List<String>> cases = new HashMap<>();
 
     @ZenMethod
     public static void add(String key, List<String> value) {

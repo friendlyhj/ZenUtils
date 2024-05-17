@@ -14,9 +14,9 @@ import youyihj.zenutils.api.zenscript.SidedZenRegister;
 @ZenClass("mods.zenutils.cotx.EnergyItem")
 public class EnergyItemRepresentation extends ExpandItemRepresentation {
 
-    int capacity;
-    int maxReceive;
-    int maxExtract;
+    final int capacity;
+    final int maxReceive;
+    final int maxExtract;
 
     public EnergyItemRepresentation(String unlocalizedName, int capacity, int maxReceive, int maxExtract) {
         super(unlocalizedName);

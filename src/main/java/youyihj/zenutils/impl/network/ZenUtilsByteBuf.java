@@ -14,6 +14,7 @@ import youyihj.zenutils.api.network.IByteBuf;
 import youyihj.zenutils.api.util.CrTUUID;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -71,7 +72,7 @@ public class ZenUtilsByteBuf implements IByteBuf {
             buf.writeByte(0);
         }
         ItemStack mcStack = CraftTweakerMC.getItemStack(itemStack);
-        this.writeString(mcStack.getItem().getRegistryName().toString());
+        this.writeString(Objects.requireNonNull(mcStack.getItem().getRegistryName()).toString());
         this.writeInt(mcStack.getCount());
         this.writeInt(mcStack.getItemDamage());
         this.writeData(itemStack.getTag());

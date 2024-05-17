@@ -63,6 +63,7 @@ public class EnergyItemContent extends ExpandItemContent implements IEnergyConta
         return 0;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public int getEnergyStored(ItemStack container) {
         if (container.hasTagCompound() && container.getTagCompound().hasKey("energy")) {
@@ -86,6 +87,7 @@ public class EnergyItemContent extends ExpandItemContent implements IEnergyConta
         return this.maxReceive > 0;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public void setEnergyStored(ItemStack container, int energy) {
         if (container.hasTagCompound()) {
             container.getTagCompound().setInteger("energy", energy);

@@ -119,7 +119,7 @@ public class CatenationPersistenceImpl {
             try {
                 catenation = deserialize(catenationData, world);
             } catch (DeserializationException e) {
-                ZenUtils.forgeLogger.error("Failed to read catenation from data " + catenationData.asString() + ". The catenation format maybe changed?", e);
+                ZenUtils.forgeLogger.error("Failed to read catenation from data {}. The catenation format maybe changed?", catenationData.asString(), e);
                 continue;
             }
             if (catenation.isAllObjectsValid()) {
