@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 /**
  * @author youyihj
  */
-@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ReflectionInvoked {
+    boolean asm() default false;
 }

@@ -20,7 +20,7 @@ public class TemplateStringTokener extends TokenStream {
 
     private static CompiledDFA DFA;
 
-    @ReflectionInvoked
+    @ReflectionInvoked(asm = true)
     private /* final */ ZenPosition startPosition; // written by asm
 
     public static void setupDFAFromZenTokener(String[] zenRegexps, int[] zenFinals) {
@@ -33,7 +33,7 @@ public class TemplateStringTokener extends TokenStream {
         DFA = new NFA(regexp, finals).toDFA().optimize().compile();
     }
 
-    public TemplateStringTokener(String data, @SuppressWarnings("unused") ZenPosition startPosition) throws IOException {
+    public TemplateStringTokener(String data, @ReflectionInvoked(asm = true) ZenPosition startPosition) throws IOException {
         // written by asm
         // this.startPosition = startPosition;
         super(data, DFA);
