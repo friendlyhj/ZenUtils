@@ -8,8 +8,10 @@
   "priority": 0,
   "refmap": "mixins.zenutils.refmap.json",
   "mixins": [
+    "MixinBlockContent",
     "MixinCoTItemBracketHandler",
     "MixinExpressionMap",
+    "MixinItemContent",
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
     "MixinParsedExpression",
