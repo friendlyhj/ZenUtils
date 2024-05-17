@@ -12,6 +12,7 @@ import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.ZenSetter;
 import youyihj.zenutils.Reference;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.util.InternalUtils;
 
@@ -28,6 +29,7 @@ public class TileEntityContent extends TileEntity implements ITickable {
     public static final String TAG_CUSTOM_DATA = "CustomData";
     private int id;
 
+    @ReflectionInvoked
     public TileEntityContent() {}
 
     public TileEntityContent(int id) {
