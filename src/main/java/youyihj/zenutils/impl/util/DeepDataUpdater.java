@@ -295,11 +295,18 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         return data instanceof DataMap;
     }
 
+    // can not replace to Objects.equals, we need to call IData parameter overload
+    @SuppressWarnings("EqualsReplaceableByObjectsCall")
     private static boolean safeEquals(IData a, IData b) {
-        return Objects.equals(a, b);
+        return (a == b) || (a != null && a.equals(b));
     }
 
     private static boolean safeContains(List<IData> data, IData element) {
-        return data.contains(element);
+        for (IData datum : data) {
+            if (safeEquals(datum, element)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
