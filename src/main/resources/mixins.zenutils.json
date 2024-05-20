@@ -7,6 +7,9 @@
   "setSourceFile": true,
   "priority": 0,
   "refmap": "mixins.zenutils.refmap.json",
+  "injectors": {
+    "maxShiftBy": 2
+  },
   "mixins": [
     "MixinBlockContent",
     "MixinCoTItemBracketHandler",
