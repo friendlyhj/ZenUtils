@@ -136,7 +136,7 @@ public class Catenation {
                     }
                     return result;
                 })
-                .max(Comparator.comparing(Enum::ordinal))
+                .max(Comparator.naturalOrder())
                 .orElse(ICatenationObjectHolder.ValidationResult.VALID);
     }
 }
