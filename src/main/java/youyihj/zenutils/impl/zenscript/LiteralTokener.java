@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.zenscript;
 
 import com.google.common.collect.PeekingIterator;
 import stanhebben.zenscript.IZenCompileEnvironment;
+import stanhebben.zenscript.ZenParsedFile;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.Token;
 
@@ -19,9 +20,11 @@ public class LiteralTokener extends ZenTokener {
         this.tokens = tokens;
     }
 
-    public static LiteralTokener create(PeekingIterator<Token> tokens, IZenCompileEnvironment environment) {
+    public static LiteralTokener create(PeekingIterator<Token> tokens, IZenCompileEnvironment environment, ZenParsedFile file) {
         try {
-            return new LiteralTokener(tokens, environment);
+            LiteralTokener tokener = new LiteralTokener(tokens, environment);
+            tokener.setFile(file);
+            return tokener;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

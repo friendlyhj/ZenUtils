@@ -37,6 +37,7 @@ public class TemplateStringTokener extends TokenStream {
         // written by asm
         // this.startPosition = startPosition;
         super(data, DFA);
+        setFile(startPosition.getFile());
     }
 
     public static TemplateStringTokener create(String data, ZenPosition startPosition) {
@@ -51,12 +52,26 @@ public class TemplateStringTokener extends TokenStream {
         return LiteralTokener.create(new PeekingIterator<Token>() {
             @Override
             public Token peek() {
-                return TemplateStringTokener.this.peek();
+                if (TemplateStringTokener.this.hasNext()) {
+                    Token token = TemplateStringTokener.this.peek();
+                    while (TemplateStringTokener.this.hasNext() && isInvalid(token)) {
+                        TemplateStringTokener.this.next();
+                        token = TemplateStringTokener.this.peek();
+                    }
+                    return isInvalid(token) ? null : token;
+                }
+                return null;
             }
 
             @Override
             public Token next() {
-                return TemplateStringTokener.this.next();
+                while (TemplateStringTokener.this.hasNext()) {
+                    Token token = TemplateStringTokener.this.next();
+                    if (!isInvalid(token)) {
+                        return token;
+                    }
+                }
+                return null;
             }
 
             @Override
@@ -66,9 +81,14 @@ public class TemplateStringTokener extends TokenStream {
 
             @Override
             public boolean hasNext() {
-                return TemplateStringTokener.this.hasNext();
+                return peek() != null;
             }
-        }, environment);
+
+            private boolean isInvalid(Token token) {
+                return token.getType() < 0 || token.getType() == T_FALLBACK;
+            }
+
+        }, environment, startPosition.getFile());
     }
 
     @Override

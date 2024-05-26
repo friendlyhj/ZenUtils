@@ -121,7 +121,7 @@ public class TemplateString {
                         expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, literals.toString())));
                         literals = new StringBuilder();
                         cursor++;
-                        LiteralTokener literalTokener = LiteralTokener.create(Iterators.peekingIterator(tokens.subList(cursor, tokens.size()).iterator()), environment.getEnvironment());
+                        LiteralTokener literalTokener = LiteralTokener.create(Iterators.peekingIterator(tokens.subList(cursor, tokens.size()).iterator()), environment.getEnvironment(), position.getFile());
                         expressions.add(ParsedExpression.read(literalTokener, environment));
                         cursor += literalTokener.readTokenCount();
                         nextToken = tokens.get(cursor);
