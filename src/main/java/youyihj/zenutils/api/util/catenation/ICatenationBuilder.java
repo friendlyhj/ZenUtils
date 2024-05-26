@@ -1,6 +1,7 @@
 package youyihj.zenutils.api.util.catenation;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.IData;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -25,10 +26,16 @@ public interface ICatenationBuilder {
     ICatenationBuilder customTimer(long duration, ITimerHandler handler);
 
     @ZenMethod
+    ICatenationBuilder repeat(int times, ICatenationTaskQueueBuilderConsumer builderConsumer);
+
+    @ZenMethod
     ICatenationBuilder stopWhen(IWorldCondition condition);
 
     @ZenMethod
     ICatenationBuilder onStop(IWorldFunction function);
+
+    @ZenMethod
+    ICatenationBuilder data(IData data);
 
     @ZenMethod
     default ICatenationBuilder then(IWorldFunction function) {

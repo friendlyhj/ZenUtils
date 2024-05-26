@@ -1,45 +1,55 @@
 package youyihj.zenutils.impl.util.catenation;
 
+import crafttweaker.api.data.IData;
 import youyihj.zenutils.api.util.catenation.*;
 
 import javax.annotation.Nullable;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 /**
  * @author youyihj
  */
 public abstract class AbstractCatenationBuilder implements ICatenationBuilder {
-    protected final Queue<ICatenationTask> tasks = new ArrayDeque<>();
+    protected final ICatenationTaskQueueBuilder taskQueueBuilder = new CatenationTaskQueueBuilder();
     @Nullable
     protected IWorldCondition stopWhen;
     @Nullable
     protected IWorldFunction onStop;
+    protected IData data;
 
     @Override
     public ICatenationBuilder addTask(ICatenationTask task) {
-        tasks.add(task);
+        taskQueueBuilder.addTask(task);
         return this;
     }
 
     @Override
     public ICatenationBuilder run(IWorldFunction function) {
-        return addTask(new InstantTask(function));
+        taskQueueBuilder.run(function);
+        return this;
     }
 
     @Override
     public ICatenationBuilder sleep(long ticks) {
-        return addTask(new SleepTask(ticks));
+        taskQueueBuilder.sleep(ticks);
+        return this;
     }
 
     @Override
     public ICatenationBuilder sleepUntil(IWorldCondition condition) {
-        return addTask(new SleepUntilTask(condition));
+        taskQueueBuilder.sleepUntil(condition);
+        return this;
     }
 
     @Override
     public ICatenationBuilder customTimer(long duration, ITimerHandler handler) {
-        return addTask(new TimerTask(duration, handler));
+        taskQueueBuilder.customTimer(duration, handler);
+        return this;
+    }
+
+    @Override
+    public ICatenationBuilder repeat(int times, ICatenationTaskQueueBuilderConsumer builderConsumer) {
+        taskQueueBuilder.repeat(times, builderConsumer);
+        return this;
     }
 
     @Override
@@ -54,8 +64,18 @@ public abstract class AbstractCatenationBuilder implements ICatenationBuilder {
         return this;
     }
 
+    @Override
+    public ICatenationBuilder data(IData data) {
+        this.data = data;
+        return this;
+    }
+
     protected Catenation build() {
-        return new Catenation(tasks, stopWhen, onStop);
+        Catenation catenation = new Catenation(taskQueueBuilder.build(), stopWhen, onStop);
+        if (data != null) {
+            catenation.getContext().setData(data);
+        }
+        return catenation;
     }
 
     protected abstract void register(Catenation catenation);
