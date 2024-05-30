@@ -1,15 +1,17 @@
 package youyihj.zenutils.impl.util.catenation;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.PeekingIterator;
 import crafttweaker.api.data.DataIntArray;
+import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.world.IWorld;
 import youyihj.zenutils.api.util.catenation.CatenationContext;
 import youyihj.zenutils.api.util.catenation.ICatenationTask;
 import youyihj.zenutils.api.util.catenation.ICatenationTaskQueueBuilder;
 import youyihj.zenutils.api.util.catenation.ICatenationTaskQueueBuilderConsumer;
+
+import java.util.HashMap;
+import java.util.Queue;
 
 /**
  * @author youyihj
@@ -19,7 +21,7 @@ public class RepeatTask implements ICatenationTask {
     private final int times;
     private int hasRepeated;
     private int currentTaskIndex;
-    private PeekingIterator<ICatenationTask> tasksInThisCycle;
+    private Queue<ICatenationTask> tasksInThisCycle;
 
     public RepeatTask(ICatenationTaskQueueBuilderConsumer taskQueueBuilderConsumer, int times) {
         Preconditions.checkArgument(times > 0, "times must be greater than 0");
@@ -30,12 +32,12 @@ public class RepeatTask implements ICatenationTask {
 
     @Override
     public void run(IWorld world, CatenationContext context) {
-        if (tasksInThisCycle.hasNext()) {
+        if (!tasksInThisCycle.isEmpty()) {
             ICatenationTask task = tasksInThisCycle.peek();
             task.run(world, context);
             if (task.isComplete()) {
                 currentTaskIndex++;
-                tasksInThisCycle.next();
+                tasksInThisCycle.poll();
             }
         } else if (!this.isComplete()) {
             hasRepeated++;
@@ -52,20 +54,32 @@ public class RepeatTask implements ICatenationTask {
 
     @Override
     public IData serializeToData() {
-        return new DataIntArray(new int[]{currentTaskIndex, hasRepeated}, true);
+        DataIntArray state = new DataIntArray(new int[]{currentTaskIndex, hasRepeated}, true);
+        DataMap data = new DataMap(new HashMap<>(), false);
+        if (tasksInThisCycle.peek() != null) {
+            data.memberSet("task", tasksInThisCycle.peek().serializeToData());
+        }
+        data.memberSet("state", state);
+        return data;
     }
 
     @Override
     public void deserializeFromData(IData data) {
-        int[] intArray = data.asIntArray();
-        currentTaskIndex = intArray[0];
-        hasRepeated = intArray[1];
-        Iterators.advance(tasksInThisCycle, currentTaskIndex);
+        int[] state = data.memberGet("state").asIntArray();
+        currentTaskIndex = state[0];
+        hasRepeated = state[1];
+        for (int i = 0; i < currentTaskIndex; i++) {
+            tasksInThisCycle.poll();
+        }
+        IData taskData = data.memberGet("task");
+        if (taskData != null && tasksInThisCycle.peek() != null) {
+            tasksInThisCycle.peek().deserializeFromData(taskData);
+        }
     }
 
     private void initTaskCycle() {
         ICatenationTaskQueueBuilder taskQueueBuilder = new CatenationTaskQueueBuilder();
         taskQueueBuilderConsumer.apply(taskQueueBuilder);
-        tasksInThisCycle = Iterators.peekingIterator(taskQueueBuilder.build().iterator());
+        tasksInThisCycle = taskQueueBuilder.build();
     }
 }
