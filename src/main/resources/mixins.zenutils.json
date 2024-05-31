@@ -18,12 +18,15 @@
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
     "MixinParsedExpression",
+    "MixinPartialType",
     "MixinPlayerAnvilUpdateEvent",
     "MixinTemplateStringTokener",
     "MixinTokenStream",
+    "MixinTypeRegistry",
     "MixinZenTokener",
     "MixinZenType",
-    "MixinZenTypeAssociate"
+    "MixinZenTypeAssociate",
+    "MixinZenTypeNative"
   ],
   "client": [
   ]

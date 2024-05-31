@@ -39,6 +39,7 @@ import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -65,12 +66,14 @@ public class ZenUtils {
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
         registerGlobalMethods();
+        GlobalRegistry.getRoot().put("native", pos -> new PartialJavaNativeClassOrPackage(pos, ""), null);
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(ReloadablePreprocessor.NAME, ReloadablePreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NotReloadablePreprocessor.NAME, NotReloadablePreprocessor::new);
+        preprocessorManager.registerPreprocessorAction(DownloadReobfMappingPreprocessor.NAME, DownloadReobfMappingPreprocessor::new);
         try {
             redirectLogger();
         } catch (Exception e) {
