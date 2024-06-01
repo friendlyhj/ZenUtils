@@ -36,9 +36,13 @@ public class PartialJavaNativeClassOrPackage implements IPartialExpression {
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
         name = prefix.isEmpty() ? name : prefix + "." + name;
         try {
-            // TODO: filter dangerous libs
             Class<?> clazz = Class.forName(name);
-            return new PartialType(position, new ZenTypeJavaNative(clazz));
+            if (NativeClassValidate.isValid(clazz)) {
+                return new PartialType(position, new ZenTypeJavaNative(clazz));
+            } else {
+                environment.error(clazz.getName() + " is not natively accessible");
+                return new ExpressionInvalid(position);
+            }
         } catch (ClassNotFoundException e) {
             return new PartialJavaNativeClassOrPackage(position, name);
         }
