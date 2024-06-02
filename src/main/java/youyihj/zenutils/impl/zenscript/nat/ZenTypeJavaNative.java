@@ -13,6 +13,7 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
+import stanhebben.zenscript.type.casting.ICastingRule;
 import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
@@ -79,6 +80,15 @@ public class ZenTypeJavaNative extends ZenType {
     }
 
     @Override
+    public ICastingRule getCastingRule(ZenType type, IEnvironmentGlobal environment) {
+        ICastingRule castingRule = super.getCastingRule(type, environment);
+        if (castingRule == null) {
+            return new CastingRuleCoerced(this, type);
+        }
+        return castingRule;
+    }
+
+    @Override
     public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
         CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz).ifPresent(it ->
                 rules.registerCastingRule(environment.getType(it.getReturnType()), new CastingRuleStaticMethod(new JavaMethod(it, environment)))
@@ -87,7 +97,6 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public IZenIterator makeIterator(int numValues, IEnvironmentMethod methodOutput) {
-        // TODO: Iterator interface
         return null;
     }
 
