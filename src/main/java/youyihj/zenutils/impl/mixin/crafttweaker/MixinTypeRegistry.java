@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * @author youyihj
  */
-@Mixin(TypeRegistry.class)
+@Mixin(value = TypeRegistry.class, remap = false)
 public abstract class MixinTypeRegistry {
     @Shadow
     @Final

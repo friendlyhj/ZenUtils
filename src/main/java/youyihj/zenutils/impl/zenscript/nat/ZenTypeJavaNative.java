@@ -6,14 +6,20 @@ import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
 import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
 import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
+import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
+
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * @author youyihj
@@ -52,6 +58,12 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
+        if ("wrapper".equals(name)) {
+            Optional<Method> wrapperCaster = CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz);
+            if (wrapperCaster.isPresent()) {
+                return new ExpressionCallStatic(position, environment, new JavaMethod(wrapperCaster.get(), environment), value.eval(environment));
+            }
+        }
         return PartialJavaNativeMember.ofVirtual(position, environment, clazz, name, value);
     }
 
@@ -68,7 +80,9 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
-
+        CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz).ifPresent(it ->
+                rules.registerCastingRule(environment.getType(it.getReturnType()), new CastingRuleStaticMethod(new JavaMethod(it, environment)))
+        );
     }
 
     @Override

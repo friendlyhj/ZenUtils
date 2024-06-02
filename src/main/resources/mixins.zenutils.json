@@ -24,7 +24,8 @@
     "MixinTypeRegistry",
     "MixinZenTokener",
     "MixinZenType",
-    "MixinZenTypeAssociate"
+    "MixinZenTypeAssociate",
+    "MixinZenTypeNative"
   ],
   "client": [
   ]
