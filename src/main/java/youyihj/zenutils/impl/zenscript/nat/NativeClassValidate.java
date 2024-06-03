@@ -32,6 +32,7 @@ public class NativeClassValidate {
                 "java.util.logging",
                 "scala",
                 "kotlin",
+                "crafttweaker",
                 "org.apache.commons.io",
                 "org.apache.http",
                 "org.apache.logging",
