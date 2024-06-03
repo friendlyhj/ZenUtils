@@ -34,7 +34,12 @@ public class NativeClassValidate {
                 "org.apache.commons.io",
                 "org.apache.http",
                 "io.netty",
-                "org.spongepowered.asm"
+                "org.spongepowered.asm",
+                "org.objectweb.asm",
+                "sun",
+                "youyihj.zenutils.impl",
+                "jdk",
+                "javax"
         ).forEach(INativeClassExclude::filterPackage);
     }
 
