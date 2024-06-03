@@ -73,6 +73,7 @@ public class ZenUtils {
         preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(ReloadablePreprocessor.NAME, ReloadablePreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NotReloadablePreprocessor.NAME, NotReloadablePreprocessor::new);
+        preprocessorManager.registerPreprocessorAction(DownloadReobfMappingPreprocessor.NAME, DownloadReobfMappingPreprocessor::new);
         try {
             redirectLogger();
         } catch (Exception e) {

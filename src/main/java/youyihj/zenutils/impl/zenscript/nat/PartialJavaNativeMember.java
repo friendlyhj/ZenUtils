@@ -15,8 +15,8 @@ import stanhebben.zenscript.util.ZenPosition;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -31,23 +31,20 @@ public class PartialJavaNativeMember implements IPartialExpression {
     private final IEnvironmentGlobal environment;
 
     private PartialJavaNativeMember(ZenPosition position, IEnvironmentGlobal environment, Class<?> clazz, String name, IPartialExpression instanceValue) {
-        Field field1 = null;
         this.position = position;
         this.name = name;
         this.instanceValue = instanceValue;
         this.environment = environment;
-        try {
-            Field field = clazz.getField(name);
-            if (Modifier.isStatic(field.getModifiers()) == isStatic()) {
-                field1 = field;
-            }
-        } catch (NoSuchFieldException ignored) {}
-        methods = Arrays.stream(clazz.getMethods())
-                .filter(it -> name.equals(it.getName()))
+        Optional<Field> reobfField = MCPReobfuscation.INSTANCE.reobfField(clazz, name);
+        if (reobfField.isPresent() && Modifier.isStatic(reobfField.get().getModifiers()) == isStatic()) {
+            this.field = reobfField.get();
+        } else {
+            this.field = null;
+        }
+        methods = MCPReobfuscation.INSTANCE.reobfMethod(clazz, name)
                 .filter(it -> Modifier.isStatic(it.getModifiers()) == isStatic())
                 .map(it -> JavaMethod.get(environment, it))
                 .collect(Collectors.toList());
-        this.field = field1;
     }
 
     public static PartialJavaNativeMember ofVirtual(ZenPosition position, IEnvironmentGlobal environment, Class<?> clazz, String name, IPartialExpression instanceValue) {
@@ -114,7 +111,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public ZenType getType() {
-        return environment.getType(field.getType());
+        return field != null ? environment.getType(field.getType()) : ZenType.ANY;
     }
 
     @Override
