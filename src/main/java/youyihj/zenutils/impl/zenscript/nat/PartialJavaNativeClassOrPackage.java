@@ -38,7 +38,7 @@ public class PartialJavaNativeClassOrPackage implements IPartialExpression {
         try {
             Class<?> clazz = Class.forName(name);
             if (NativeClassValidate.isValid(clazz)) {
-                return new PartialType(position, new ZenTypeJavaNative(clazz));
+                return new PartialType(position, environment.getType(clazz));
             } else {
                 environment.error(clazz.getName() + " is not natively accessible");
                 return new ExpressionInvalid(position);

@@ -29,19 +29,21 @@ public class PartialJavaNativeMember implements IPartialExpression {
     private final List<IJavaMethod> methods;
     private final IPartialExpression instanceValue;
     private final IEnvironmentGlobal environment;
+    private final Class<?> owner;
 
-    private PartialJavaNativeMember(ZenPosition position, IEnvironmentGlobal environment, Class<?> clazz, String name, IPartialExpression instanceValue) {
+    private PartialJavaNativeMember(ZenPosition position, IEnvironmentGlobal environment, Class<?> owner, String name, IPartialExpression instanceValue) {
         this.position = position;
         this.name = name;
         this.instanceValue = instanceValue;
         this.environment = environment;
-        Optional<Field> reobfField = MCPReobfuscation.INSTANCE.reobfField(clazz, name);
+        this.owner = owner;
+        Optional<Field> reobfField = MCPReobfuscation.INSTANCE.reobfField(owner, name);
         if (reobfField.isPresent() && Modifier.isStatic(reobfField.get().getModifiers()) == isStatic()) {
             this.field = reobfField.get();
         } else {
             this.field = null;
         }
-        methods = MCPReobfuscation.INSTANCE.reobfMethod(clazz, name)
+        methods = MCPReobfuscation.INSTANCE.reobfMethod(owner, name)
                 .filter(it -> Modifier.isStatic(it.getModifiers()) == isStatic())
                 .map(it -> JavaMethod.get(environment, it))
                 .collect(Collectors.toList());
@@ -116,8 +118,13 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public ZenType toType(IEnvironmentGlobal environment) {
-        environment.error(position, "not a valid type");
-        return ZenType.ANY;
+        try {
+            Class<?> internalClass = Class.forName(owner.getName() + "$" + name);
+            return environment.getType(internalClass);
+        } catch (ClassNotFoundException e) {
+            environment.error(position, "no such nested class");
+            return ZenType.ANY;
+        }
     }
 
     private boolean isStatic() {
