@@ -12,7 +12,11 @@ public interface INativeClassExclude {
         NativeClassValidate.EXCLUDES.add(exclude);
     }
 
-    static void filterPackage(String name) {
-        register(clazz -> clazz.getCanonicalName().startsWith(name));
+    static void filterPrefix(String prefix) {
+        register(clazz -> clazz.getCanonicalName().startsWith(prefix));
+    }
+
+    static void filterClass(Class<?> clazz) {
+        register(clazz::equals);
     }
 }

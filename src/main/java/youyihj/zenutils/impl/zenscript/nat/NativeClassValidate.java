@@ -6,6 +6,8 @@ import youyihj.zenutils.api.zenscript.INativeClassExclude;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  * @author youyihj
@@ -24,23 +26,27 @@ public class NativeClassValidate {
                 "java.rmi",
                 "java.net",
                 "java.lang",
+                "java.security",
                 "java.util.zip",
                 "java.util.concurrent",
                 "java.util.logging",
-                "java.util.Random",
-                "java.util.Scanner",
                 "scala",
                 "kotlin",
                 "org.apache.commons.io",
                 "org.apache.http",
+                "org.apache.logging",
                 "io.netty",
                 "org.spongepowered.asm",
                 "org.objectweb.asm",
-                "sun",
+                "sun.",
                 "youyihj.zenutils.impl",
                 "jdk",
-                "javax"
-        ).forEach(INativeClassExclude::filterPackage);
+                "javax",
+                "groovy",
+                "com.cleanroommc.groovyscript"
+        ).forEach(INativeClassExclude::filterPrefix);
+        INativeClassExclude.filterClass(Scanner.class);
+        INativeClassExclude.filterClass(Random.class);
     }
 
     public static boolean isValid(Class<?> clazz) {
