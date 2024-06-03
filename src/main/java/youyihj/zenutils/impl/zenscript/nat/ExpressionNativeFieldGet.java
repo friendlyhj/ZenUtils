@@ -40,6 +40,6 @@ public class ExpressionNativeFieldGet extends Expression {
 
     @Override
     public ZenType getType() {
-        return environment.getType(field.getType());
+        return environment.getType(field.getGenericType());
     }
 }

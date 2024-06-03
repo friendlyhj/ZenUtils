@@ -27,13 +27,14 @@ public class ExpressionNativeFieldSet extends Expression {
     @Override
     public void compile(boolean result, IEnvironmentMethod environment) {
         MethodOutput output = environment.getOutput();
+        Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(field.getGenericType()));
         if (result) {
             if (instanceValue == null) {
-                toSet.compile(true, environment);
+                toSetCasted.compile(true, environment);
                 output.putStaticField(field.getDeclaringClass(), field);
             } else {
                 instanceValue.eval(environment).compile(true, environment);
-                toSet.compile(true, environment);
+                toSetCasted.compile(true, environment);
                 output.putField(field.getDeclaringClass(), field.getName(), field.getType());
             }
         }

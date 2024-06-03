@@ -113,7 +113,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public ZenType getType() {
-        return field != null ? environment.getType(field.getType()) : ZenType.ANY;
+        return field != null ? environment.getType(field.getGenericType()) : ZenType.ANY;
     }
 
     @Override
