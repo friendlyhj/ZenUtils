@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.zenscript.nat;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -27,22 +28,10 @@ import java.util.stream.Stream;
 public enum MCPReobfuscation {
     INSTANCE;
 
-    private final Multimap<String, String> methodMap = HashMultimap.create();
-    private final Multimap<String, String> fieldMap = HashMultimap.create();
-    private final AtomicInteger initStatus = new AtomicInteger(UNINITIALIZED);
-    private static final int UNINITIALIZED = 0;
-    private static final int INITIALIZING = 1;
-    private static final int INITIALIZED = 2;
-
-    public void init() {
-        if (initStatus.compareAndSet(UNINITIALIZED, INITIALIZING)) {
-            new Thread(this::initLogic).start();
-        }
-    }
+    private final CompletableFuture<Pair<Multimap<String, String>, Multimap<String, String>>> mappers = CompletableFuture.supplyAsync(this::init);
 
     public Optional<Field> reobfField(Class<?> owner, String name) {
-        waitingToInit();
-        Collection<String> possibleNames = fieldMap.get(name);
+        Collection<String> possibleNames = mappers.join().getRight().get(name);
         for (String possibleSrgName : possibleNames) {
             try {
                 return Optional.of(owner.getField(possibleSrgName));
@@ -56,20 +45,15 @@ public enum MCPReobfuscation {
     }
 
     public Stream<Method> reobfMethod(Class<?> owner, String name) {
-        waitingToInit();
-        Collection<String> possibleNames = ImmutableList.<String>builder().addAll(methodMap.get(name)).add(name).build();
+        Collection<String> possibleNames = ImmutableList.<String>builder().addAll(mappers.join().getLeft().get(name)).add(name).build();
         return Arrays.stream(owner.getMethods())
                      .filter(it -> possibleNames.contains(it.getName()));
 
     }
 
-    private void waitingToInit() {
-        while (initStatus.get() != INITIALIZED) {
-            init();
-        }
-    }
-
-    private void initLogic() {
+    private Pair<Multimap<String, String>, Multimap<String, String>> init() {
+        Multimap<String, String> methodMap = HashMultimap.create();
+        Multimap<String, String> fieldMap = HashMultimap.create();
         Path localMapping = Paths.get("config", "mcp_stable-39-1.12.zip");
         String remoteMapping = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp_stable/39-1.12/mcp_stable-39-1.12.zip";
         if (!Files.exists(localMapping)) {
@@ -105,6 +89,6 @@ public enum MCPReobfuscation {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read mcp mapping", e);
         }
-        initStatus.compareAndSet(INITIALIZING, INITIALIZED);
+        return Pair.of(methodMap, fieldMap);
     }
 }

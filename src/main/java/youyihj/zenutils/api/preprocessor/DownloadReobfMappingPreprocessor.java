@@ -16,7 +16,7 @@ public class DownloadReobfMappingPreprocessor extends PreprocessorActionBase {
 
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
-        MCPReobfuscation.INSTANCE.init();
+        MCPReobfuscation.INSTANCE.name();
     }
 
     @Override
