@@ -76,7 +76,7 @@ public enum MCPReobfuscation {
             try (
                     CloseableHttpClient client =
                             HttpClientBuilder.create()
-                                             .setDefaultRequestConfig(RequestConfig.custom().setConnectionRequestTimeout(10000).build())
+                                             .setDefaultRequestConfig(RequestConfig.custom().setConnectionRequestTimeout(30000).build())
                                              .build()
             ) {
                 client.execute(new HttpGet(remoteMapping), response -> {
