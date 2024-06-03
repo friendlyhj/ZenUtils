@@ -8,6 +8,7 @@ import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
+import stanhebben.zenscript.symbols.SymbolJavaClass;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
@@ -108,7 +109,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public IZenSymbol toSymbol() {
-        return null;
+        return position1 -> this;
     }
 
     @Override
