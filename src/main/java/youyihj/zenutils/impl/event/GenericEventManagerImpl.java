@@ -30,9 +30,18 @@ public class GenericEventManagerImpl {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
         Class<T> eventType = getEventType(eventHandler);
-        Class<? extends T> implementationClass = eventType.isInterface() ? findImplementationClass(eventType) : eventType;
+        if (!Event.class.isAssignableFrom(eventType)) {
+            registerCTEventHandler(eventHandler, eventType, priority, receiveCanceled);
+        } else {
+            registerNativeEventHandler((IEventHandler<Event>) eventHandler, eventType.asSubclass(Event.class), priority, receiveCanceled);
+        }
+    }
+
+    private static <T> void registerCTEventHandler(IEventHandler<T> eventHandler, Class<T> typeOfT, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
+        Class<? extends T> implementationClass = typeOfT.isInterface() ? findImplementationClass(typeOfT) : typeOfT;
         Constructor<? extends T> constructor = findProperCTEventConstructor(implementationClass);
         Class<?> forgeEventClass = constructor.getParameterTypes()[0];
         Event forgeEvent;
@@ -42,13 +51,23 @@ public class GenericEventManagerImpl {
             throw new EventHandlerRegisterException("Failed to construct forge event", e);
         }
         try {
-            CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, eventType.getSimpleName()));
+            CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, typeOfT.getSimpleName()));
         } catch (IllegalAccessException e) {
             throw new EventHandlerRegisterException("Event constructor is not public", e);
         }
     }
 
-    @SuppressWarnings("unchecked")
+    private static <T extends Event> void registerNativeEventHandler(IEventHandler<T> eventHandler, Class<T> typeOfT, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
+        Event forgeEvent;
+        try {
+            forgeEvent = typeOfT.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new EventHandlerRegisterException("Failed to construct forge event", e);
+        }
+        CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTNativeEventHandlerAdapter<>(eventHandler, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, typeOfT.getSimpleName()));
+    }
+
+    @SuppressWarnings({"unchecked", "UnstableApiUsage"})
     private static <T> Class<T> getEventType(IEventHandler<T> eventHandler) throws EventHandlerRegisterException {
         TypeToken<?> handlerType = TypeToken.of(eventHandler.getClass()).getSupertype(IEventHandler.class);
         Type tType = handlerType.resolveType(EVENT_HANDLER_TYPE_VARIABLE).getType();
@@ -121,6 +140,29 @@ public class GenericEventManagerImpl {
             }
             try {
                 handler.handle(ctEvent);
+            } catch (Throwable e) {
+                CraftTweakerAPI.logError("Exception occurred in the event handler", e);
+            }
+        }
+    }
+
+    private static class CTNativeEventHandlerAdapter<T extends Event> implements IEventListener {
+        private final IEventHandler<T> handler;
+        private final boolean receiveCanceled;
+
+        public CTNativeEventHandlerAdapter(IEventHandler<T> handler, boolean receiveCanceled) {
+            this.handler = handler;
+            this.receiveCanceled = receiveCanceled;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void invoke(Event event) {
+            if (event.isCancelable() && event.isCanceled() && !receiveCanceled) {
+                return;
+            }
+            try {
+                handler.handle((T) event);
             } catch (Throwable e) {
                 CraftTweakerAPI.logError("Exception occurred in the event handler", e);
             }
