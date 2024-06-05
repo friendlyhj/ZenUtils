@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.annotations.CompareType;
 import stanhebben.zenscript.annotations.OperatorType;
@@ -19,6 +20,7 @@ import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -75,7 +77,14 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public Expression call(ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
-        // TODO: constructor
+        Expression[] actualArguments = receiver == null ? arguments : ArrayUtils.add(arguments, 0, receiver);
+        Constructor<?>[] constructors = clazz.getConstructors();
+        for (Constructor<?> constructor : constructors) {
+            if (canAcceptConstructor(constructor, environment, actualArguments)) {
+                return new ExpressionNativeConstructorCall(position, constructor, environment, arguments);
+            }
+        }
+        environment.error(position, "no such constructor matched");
         return new ExpressionInvalid(position);
     }
 
@@ -138,5 +147,19 @@ public class ZenTypeJavaNative extends ZenType {
     @Override
     public Expression defaultValue(ZenPosition position) {
         return new ExpressionNull(position);
+    }
+
+    private boolean canAcceptConstructor(Constructor<?> constructor, IEnvironmentGlobal environment, Expression[] arguments) {
+        Class<?>[] parameters = constructor.getParameterTypes();
+        if (arguments.length != parameters.length) {
+            return false;
+        }
+
+        for (int i = 0; i < arguments.length; i++) {
+            if (!arguments[i].getType().canCastImplicit(environment.getType(parameters[i]), environment)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

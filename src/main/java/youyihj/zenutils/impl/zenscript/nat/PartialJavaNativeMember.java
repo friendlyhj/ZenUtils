@@ -8,7 +8,6 @@ import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.symbols.SymbolJavaClass;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
@@ -45,9 +44,9 @@ public class PartialJavaNativeMember implements IPartialExpression {
             this.field = null;
         }
         methods = MCPReobfuscation.INSTANCE.reobfMethod(owner, name)
-                .filter(it -> Modifier.isStatic(it.getModifiers()) == isStatic())
-                .map(it -> JavaMethod.get(environment, it))
-                .collect(Collectors.toList());
+                                           .filter(it -> Modifier.isStatic(it.getModifiers()) == isStatic())
+                                           .map(it -> JavaMethod.get(environment, it))
+                                           .collect(Collectors.toList());
     }
 
     public static PartialJavaNativeMember ofVirtual(ZenPosition position, IEnvironmentGlobal environment, Class<?> clazz, String name, IPartialExpression instanceValue) {
@@ -98,8 +97,12 @@ public class PartialJavaNativeMember implements IPartialExpression {
                 return new ExpressionCallVirtual(position, environment, selected, instanceValue.eval(environment), values);
             }
         }
-        environment.error(position, "no such method matched");
-        return new ExpressionInvalid(position);
+        return getNestedZenType(environment)
+                .map(it -> it.call(position, environment, isStatic() ? null : instanceValue.eval(environment), values))
+                .orElseGet(() -> {
+                    environment.error(position, "no such method matched");
+                    return new ExpressionInvalid(position);
+                });
     }
 
     @Override
@@ -119,13 +122,23 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public ZenType toType(IEnvironmentGlobal environment) {
-        try {
-            Class<?> internalClass = Class.forName(owner.getName() + "$" + name);
-            return environment.getType(internalClass);
-        } catch (ClassNotFoundException e) {
+        return getNestedZenType(environment).orElseGet(() -> {
             environment.error(position, "no such nested class");
             return ZenType.ANY;
+        });
+    }
+
+    private Optional<Class<?>> getNestedClass() {
+        try {
+            return Optional.of(Class.forName(owner.getName() + "$" + name));
+        } catch (ClassNotFoundException e) {
+            environment.error(position, "no such nested class");
+            return Optional.empty();
         }
+    }
+
+    private Optional<ZenType> getNestedZenType(IEnvironmentGlobal environment) {
+        return getNestedClass().map(environment::getType);
     }
 
     private boolean isStatic() {
