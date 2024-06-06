@@ -40,7 +40,7 @@ public class PartialJavaNativeClassOrPackage implements IPartialExpression {
             if (NativeClassValidate.isValid(clazz)) {
                 return new PartialType(position, environment.getType(clazz));
             } else {
-                environment.error(clazz.getName() + " is not natively accessible");
+                environment.error(position, clazz.getName() + " is not natively accessible");
                 return new ExpressionInvalid(position);
             }
         } catch (ClassNotFoundException e) {
@@ -50,6 +50,7 @@ public class PartialJavaNativeClassOrPackage implements IPartialExpression {
 
     @Override
     public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+        environment.error(position, "no such class or method");
         return new ExpressionInvalid(position);
     }
 

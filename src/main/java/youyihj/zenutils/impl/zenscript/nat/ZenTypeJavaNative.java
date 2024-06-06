@@ -81,7 +81,7 @@ public class ZenTypeJavaNative extends ZenType {
         Constructor<?>[] constructors = clazz.getConstructors();
         for (Constructor<?> constructor : constructors) {
             if (canAcceptConstructor(constructor, environment, actualArguments)) {
-                return new ExpressionNativeConstructorCall(position, constructor, environment, arguments);
+                return new ExpressionNativeConstructorCall(position, constructor, environment, actualArguments);
             }
         }
         environment.error(position, "no such constructor matched");

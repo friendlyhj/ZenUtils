@@ -18,6 +18,7 @@
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
     "MixinParsedExpression",
+    "MixinPartialType",
     "MixinPlayerAnvilUpdateEvent",
     "MixinTemplateStringTokener",
     "MixinTokenStream",
