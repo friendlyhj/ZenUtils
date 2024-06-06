@@ -132,7 +132,6 @@ public class PartialJavaNativeMember implements IPartialExpression {
         try {
             return Optional.of(Class.forName(owner.getName() + "$" + name));
         } catch (ClassNotFoundException e) {
-            environment.error(position, "no such nested class");
             return Optional.empty();
         }
     }
