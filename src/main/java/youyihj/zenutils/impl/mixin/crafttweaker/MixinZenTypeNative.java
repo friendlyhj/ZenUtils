@@ -21,7 +21,7 @@ import youyihj.zenutils.impl.zenscript.nat.CraftTweakerBridge;
  * @author youyihj
  */
 @Mixin(value = ZenTypeNative.class, remap = false)
-public class MixinZenTypeNative {
+public abstract class MixinZenTypeNative {
     @Shadow @Final private Class<?> cls;
 
     @Inject(method = "constructCastingRules", at = @At("TAIL"))

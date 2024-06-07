@@ -74,7 +74,10 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
             }
         }
         if (targetClassName.endsWith("TemplateStringTokener")) {
-            targetClass.fields.stream().filter(it -> it.name.equals("startPosition")).findFirst().ifPresent(it -> it.access |= ACC_FINAL);
+            targetClass.fields.stream()
+                              .filter(it -> it.name.equals("startPosition"))
+                              .findFirst()
+                              .ifPresent(it -> it.access |= ACC_FINAL);
             targetClass.methods.stream().filter(it -> it.name.equals("<init>")).findFirst().ifPresent(it -> {
                 InsnList insnList = new InsnList();
                 insnList.add(new VarInsnNode(ALOAD, 0));
@@ -82,6 +85,36 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                 insnList.add(new FieldInsnNode(PUTFIELD, "youyihj/zenutils/impl/zenscript/TemplateStringTokener", "startPosition", "Lstanhebben/zenscript/util/ZenPosition;"));
                 it.instructions.insert(insnList);
             });
+        }
+        if (targetClassName.endsWith("ParsedExpressionFunction")) {
+            MethodNode method = targetClass.methods.stream()
+                                                   .filter(it -> it.name.equals("compile"))
+                                                   .findFirst()
+                                                   .orElseThrow(NoSuchMethodError::new);
+            InsnList instructions = method.instructions;
+            ListIterator<AbstractInsnNode> iter = instructions.iterator();
+            while (iter.hasNext()) {
+                AbstractInsnNode node = iter.next();
+                if (node.getType() == AbstractInsnNode.TYPE_INSN) {
+                    TypeInsnNode typeInsnNode = (TypeInsnNode) node;
+                    if (typeInsnNode.getOpcode() == CHECKCAST && "stanhebben/zenscript/type/ZenTypeNative".equals(typeInsnNode.desc)) {
+                        instructions.insert(node, new InsnNode(ACONST_NULL));
+                        instructions.remove(node.getPrevious());
+                        instructions.remove(node);
+                    }
+                }
+                if (node.getType() == AbstractInsnNode.METHOD_INSN) {
+                    MethodInsnNode methodInsnNode = (MethodInsnNode) node;
+                    if (methodInsnNode.name.equals("getNativeClass")) {
+                        InsnList callPredictTypeClass = new InsnList();
+                        callPredictTypeClass.add(new VarInsnNode(ALOAD, 2));
+                        callPredictTypeClass.add(new MethodInsnNode(INVOKEVIRTUAL, "stanhebben/zenscript/type/ZenType", "toJavaClass", "()Ljava/lang/Class;", false));
+                        instructions.insert(node, callPredictTypeClass);
+                        instructions.remove(node.getPrevious());
+                        instructions.remove(node);
+                    }
+                }
+            }
         }
     }
 
