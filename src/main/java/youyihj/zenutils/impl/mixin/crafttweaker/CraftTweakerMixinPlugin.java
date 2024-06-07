@@ -105,7 +105,7 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                 }
                 if (node.getType() == AbstractInsnNode.METHOD_INSN) {
                     MethodInsnNode methodInsnNode = (MethodInsnNode) node;
-                    if (methodInsnNode.name.equals("getNativeClass")) {
+                    if ("getNativeClass".equals(methodInsnNode.name)) {
                         InsnList callPredictTypeClass = new InsnList();
                         callPredictTypeClass.add(new VarInsnNode(ALOAD, 2));
                         callPredictTypeClass.add(new MethodInsnNode(INVOKEVIRTUAL, "stanhebben/zenscript/type/ZenType", "toJavaClass", "()Ljava/lang/Class;", false));
