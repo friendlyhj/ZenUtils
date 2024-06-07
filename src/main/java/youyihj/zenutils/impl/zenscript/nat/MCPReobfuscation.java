@@ -75,7 +75,7 @@ public enum MCPReobfuscation {
                 throw new RuntimeException("Failed to download mcp mapping, try download it manually to `config/mcp_stable-39-1.12.zip`, uri: " + remoteMapping, e);
             }
         }
-        try (FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:file:" + localMapping.toUri().getPath()), Collections.emptyMap())) {
+        try (FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:file:" + localMapping.toUri().getPath().replace(" ", "%20")), Collections.emptyMap())) {
             try (Stream<String> methodStream = Files.lines(zipFs.getPath("methods.csv"))) {
                 methodStream.skip(1)
                             .map(it -> it.split(","))
