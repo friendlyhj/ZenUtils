@@ -100,12 +100,12 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
             replacements.put("texture", Optional.ofNullable(representation.getTextureLocation())
                     .map(CTResourceLocation::getInternal)
                     .map(ResourceLocation::toString)
-                    .orElseGet(() -> new ResourceLocation(resourceLocation.getResourceDomain(),
-                            "blocks/" + resourceLocation.getResourcePath()).toString()));
+                    .orElseGet(() -> new ResourceLocation(resourceLocation.getNamespace(),
+                            "blocks/" + resourceLocation.getPath()).toString()));
 
             templateFile.replaceContents(replacements);
 
-            models.add(new GeneratedModel(resourceLocation.getResourcePath(), ModelType.BLOCKSTATE,
+            models.add(new GeneratedModel(resourceLocation.getPath(), ModelType.BLOCKSTATE,
                     templateFile.getFileContents()));
         });
         return models;

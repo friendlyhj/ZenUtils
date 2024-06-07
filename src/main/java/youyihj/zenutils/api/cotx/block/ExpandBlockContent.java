@@ -57,7 +57,7 @@ public class ExpandBlockContent extends BlockContent {
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
+    public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
         if (Objects.nonNull(expandBlockRepresentation.onEntityCollidedWithBlock)) {
             expandBlockRepresentation.onEntityCollidedWithBlock.call(new MCWorld(worldIn), new MCBlockPos(pos), new MCBlockState(state), EntityHelper.getIEntity(entityIn));
         }

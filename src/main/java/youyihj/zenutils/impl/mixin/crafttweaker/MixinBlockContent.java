@@ -14,7 +14,7 @@ public abstract class MixinBlockContent extends BlockBase {
         super(mat);
     }
 
-    @ModifyArg(method = "setFields", at = @At(value = "INVOKE", target = "Lcom/teamacronymcoders/contenttweaker/modules/vanilla/blocks/BlockContent;setUnlocalizedName(Ljava/lang/String;)Lnet/minecraft/block/Block;", remap = true), index = 0)
+    @ModifyArg(method = "setFields", at = @At(value = "INVOKE", target = "Lcom/teamacronymcoders/contenttweaker/modules/vanilla/blocks/BlockContent;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", remap = true), index = 0)
     private String fixTranslationKey(String original) {
         if (this.getMod() == null || original.contains(this.getMod().getID())) return original;
         return this.getMod().getID() + "." + original;

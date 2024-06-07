@@ -12,7 +12,7 @@ public abstract class MixinItemContent extends ItemBase {
         super(name);
     }
 
-    @ModifyArg(method = "setFields", at = @At(value = "INVOKE", target = "Lcom/teamacronymcoders/contenttweaker/modules/vanilla/items/ItemContent;setUnlocalizedName(Ljava/lang/String;)Lnet/minecraft/item/Item;", remap = true), index = 0)
+    @ModifyArg(method = "setFields", at = @At(value = "INVOKE", target = "Lcom/teamacronymcoders/contenttweaker/modules/vanilla/items/ItemContent;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/item/Item;", remap = true), index = 0)
     private String fixTranslationKey(String original) {
         if (this.getMod() == null || original.contains(this.getMod().getID())) return original;
         return this.getMod().getID() + "." + original;

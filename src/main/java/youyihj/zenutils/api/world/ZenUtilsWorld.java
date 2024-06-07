@@ -249,6 +249,6 @@ public class ZenUtilsWorld {
     }
 
     private static Chunk getChunk(IWorld world, IBlockPos pos) {
-        return CraftTweakerMC.getWorld(world).getChunkFromBlockCoords(CraftTweakerMC.getBlockPos(pos));
+        return CraftTweakerMC.getWorld(world).getChunk(CraftTweakerMC.getBlockPos(pos));
     }
 }
