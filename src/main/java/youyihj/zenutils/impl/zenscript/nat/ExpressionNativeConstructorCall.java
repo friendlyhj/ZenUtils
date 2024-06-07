@@ -40,6 +40,9 @@ public class ExpressionNativeConstructorCall extends Expression {
                                         .map(Type::getDescriptor)
                                         .collect(Collectors.joining("", "(", ")V"));
         output.invokeSpecial(Type.getInternalName(constructor.getDeclaringClass()), "<init>", signatureBuilder);
+        if (!result) {
+            output.pop();
+        }
     }
 
     @Override
