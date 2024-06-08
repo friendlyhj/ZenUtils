@@ -18,7 +18,6 @@ import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -30,25 +29,29 @@ public enum MCPReobfuscation {
 
     private final CompletableFuture<Pair<Multimap<String, String>, Multimap<String, String>>> mappers = CompletableFuture.supplyAsync(this::init);
 
-    public Optional<Field> reobfField(Class<?> owner, String name) {
+    public Field reobfField(Class<?> owner, String name) {
         Collection<String> possibleNames = mappers.join().getRight().get(name);
         for (String possibleSrgName : possibleNames) {
             try {
-                return Optional.of(owner.getField(possibleSrgName));
+                return owner.getField(possibleSrgName);
             } catch (NoSuchFieldException ignored) {}
         }
         try {
-            return Optional.of(owner.getField(name));
+            return owner.getField(name);
         } catch (NoSuchFieldException e) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    public Stream<Method> reobfMethod(Class<?> owner, String name) {
+    public Stream<Method> reobfMethodOverloads(Class<?> owner, String name) {
         Collection<String> possibleNames = ImmutableList.<String>builder().addAll(mappers.join().getLeft().get(name)).add(name).build();
         return Arrays.stream(owner.getMethods())
                      .filter(it -> possibleNames.contains(it.getName()));
 
+    }
+
+    public Method reobfMethod(Class<?> owner, String name) {
+        return reobfMethodOverloads(owner, name).findFirst().orElse(null);
     }
 
     private Pair<Multimap<String, String>, Multimap<String, String>> init() {

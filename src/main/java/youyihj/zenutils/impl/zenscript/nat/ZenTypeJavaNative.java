@@ -22,6 +22,8 @@ import stanhebben.zenscript.util.ZenTypeUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -29,6 +31,7 @@ import java.util.Optional;
  */
 public class ZenTypeJavaNative extends ZenType {
     private final Class<?> clazz;
+    private final Map<String, JavaNativeMemberSymbol> symbols = new HashMap<>();
 
     public ZenTypeJavaNative(Class<?> clazz) {
         this.clazz = clazz;
@@ -67,12 +70,12 @@ public class ZenTypeJavaNative extends ZenType {
                 return new ExpressionCallStatic(position, environment, new JavaMethod(wrapperCaster.get(), environment), value.eval(environment));
             }
         }
-        return PartialJavaNativeMember.ofVirtual(position, environment, clazz, name, value);
+        return getSymbol(name, environment, false).receiver(value).instance(position);
     }
 
     @Override
     public IPartialExpression getStaticMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
-        return PartialJavaNativeMember.ofStatic(position, environment, clazz, name);
+        return getSymbol(name, environment, true).instance(position);
     }
 
     @Override
@@ -161,5 +164,9 @@ public class ZenTypeJavaNative extends ZenType {
             }
         }
         return true;
+    }
+
+    private JavaNativeMemberSymbol getSymbol(String name, IEnvironmentGlobal environment, boolean isStatic) {
+        return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic));
     }
 }

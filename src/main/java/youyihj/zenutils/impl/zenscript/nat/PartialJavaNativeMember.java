@@ -12,8 +12,10 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.util.Either;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
@@ -25,60 +27,32 @@ import java.util.stream.Collectors;
 public class PartialJavaNativeMember implements IPartialExpression {
     private final ZenPosition position;
     private final String name;
-    private final Field field;
     private final List<IJavaMethod> methods;
     private final IPartialExpression instanceValue;
     private final IEnvironmentGlobal environment;
     private final Class<?> owner;
+    private final Either<Method, Field> getter;
+    private final Either<Method, Field> setter;
 
-    private PartialJavaNativeMember(ZenPosition position, IEnvironmentGlobal environment, Class<?> owner, String name, IPartialExpression instanceValue) {
+    public PartialJavaNativeMember(ZenPosition position, String name, List<IJavaMethod> methods, IPartialExpression instanceValue, IEnvironmentGlobal environment, Class<?> owner, Either<Method, Field> getter, Either<Method, Field> setter) {
         this.position = position;
         this.name = name;
+        this.methods = methods;
         this.instanceValue = instanceValue;
         this.environment = environment;
         this.owner = owner;
-        Optional<Field> reobfField = MCPReobfuscation.INSTANCE.reobfField(owner, name);
-        if (reobfField.isPresent() && Modifier.isStatic(reobfField.get().getModifiers()) == isStatic()) {
-            this.field = reobfField.get();
-        } else {
-            this.field = null;
-        }
-        methods = MCPReobfuscation.INSTANCE.reobfMethod(owner, name)
-                                           .filter(it -> Modifier.isStatic(it.getModifiers()) == isStatic())
-                                           .map(it -> JavaMethod.get(environment, it))
-                                           .collect(Collectors.toList());
-    }
-
-    public static PartialJavaNativeMember ofVirtual(ZenPosition position, IEnvironmentGlobal environment, Class<?> clazz, String name, IPartialExpression instanceValue) {
-        return new PartialJavaNativeMember(position, environment, clazz, name, instanceValue);
-    }
-
-    public static PartialJavaNativeMember ofStatic(ZenPosition position, IEnvironmentGlobal environment, Class<?> clazz, String name) {
-        return new PartialJavaNativeMember(position, environment, clazz, name, null);
+        this.getter = getter;
+        this.setter = setter;
     }
 
     @Override
     public Expression eval(IEnvironmentGlobal environment) {
-        if (field != null) {
-            return new ExpressionNativeFieldGet(position, environment, field, instanceValue);
-        } else {
-            environment.error(position, "no such field: " + name);
-            return new ExpressionInvalid(position);
-        }
+        return new ExpressionNativeGetter(position, getter, instanceValue, environment);
     }
 
     @Override
     public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
-        if (field != null) {
-            if (!Modifier.isFinal(field.getModifiers())) {
-                return new ExpressionNativeFieldSet(position, field, other, instanceValue);
-            } else {
-                environment.error(position, "invalid lvalue");
-            }
-        } else {
-            environment.error(position, "no such field: " + name);
-        }
-        return new ExpressionInvalid(position);
+        return new ExpressionNativeSetter(position, setter, other, instanceValue.eval(environment));
     }
 
     @Override
@@ -87,7 +61,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
     }
 
     @Override
-    public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+    public stanhebben.zenscript.expression.Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
         IJavaMethod selected = JavaMethod.select(isStatic(), methods, environment, values);
         if (selected != null) {
             if (isStatic()) {
@@ -117,7 +91,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public ZenType getType() {
-        return field != null ? environment.getType(field.getGenericType()) : ZenType.ANY;
+        return eval(environment).getType();
     }
 
     @Override
