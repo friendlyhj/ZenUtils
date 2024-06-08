@@ -61,7 +61,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
     }
 
     @Override
-    public stanhebben.zenscript.expression.Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+    public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
         IJavaMethod selected = JavaMethod.select(isStatic(), methods, environment, values);
         if (selected != null) {
             if (isStatic()) {
