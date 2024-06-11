@@ -24,7 +24,7 @@ public class TemplateStringTokener extends TokenStream {
     @ReflectionInvoked(asm = true)
     private /* final */ ZenPosition startPosition;
     @ReflectionInvoked(asm = true)
-    private /* final */ boolean constructing;
+    private boolean constructing;
 
     public static void setupDFAFromZenTokener(String[] zenRegexps, int[] zenFinals) {
         String[] regexp = new String[zenRegexps.length - 3];
