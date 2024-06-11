@@ -8,6 +8,7 @@ import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.parser.TokenStream;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.api.util.ReflectionInvoked;
+import youyihj.zenutils.impl.mixin.crafttweaker.TokenStreamAccessor;
 
 import java.io.IOException;
 
@@ -21,7 +22,9 @@ public class TemplateStringTokener extends TokenStream {
     private static CompiledDFA DFA;
 
     @ReflectionInvoked(asm = true)
-    private /* final */ ZenPosition startPosition; // written by asm
+    private /* final */ ZenPosition startPosition;
+    @ReflectionInvoked(asm = true)
+    private /* final */ boolean constructing;
 
     public static void setupDFAFromZenTokener(String[] zenRegexps, int[] zenFinals) {
         String[] regexp = new String[zenRegexps.length - 3];
@@ -36,6 +39,7 @@ public class TemplateStringTokener extends TokenStream {
     public TemplateStringTokener(String data, @ReflectionInvoked(asm = true) ZenPosition startPosition) throws IOException {
         // written by asm
         // this.startPosition = startPosition;
+        // this.constructing = true;
         super(data, DFA);
         setFile(startPosition.getFile());
     }
@@ -93,13 +97,19 @@ public class TemplateStringTokener extends TokenStream {
 
     @Override
     protected Token process(Token token) {
+        if (constructing) {
+            TokenStreamAccessor accessor = (TokenStreamAccessor) this;
+            accessor.setLine(startPosition.getLine());
+            accessor.setLineOffset(startPosition.getLineOffset());
+            constructing = false;
+        }
         if (token == null) {
             return new Token("", -1, startPosition);
         }
         ZenPosition position = token.getPosition();
         int offsetLine = position.getLine() + startPosition.getLine() - 1;
         int offsetLineOffset = position.getLine() == 1 ? position.getLineOffset() : position.getLineOffset() + startPosition.getLineOffset() - 1;
-        ZenPosition offsetPosition = new ZenPosition(position.getFile(), offsetLine, offsetLineOffset, position.getFileName());
+        ZenPosition offsetPosition = new ZenPosition(startPosition.getFile(), offsetLine, offsetLineOffset, position.getFileName());
         return new Token(token.getValue(), token.getType(), offsetPosition);
     }
 }

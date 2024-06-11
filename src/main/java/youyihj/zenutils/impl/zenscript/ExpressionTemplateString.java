@@ -30,7 +30,7 @@ public class ExpressionTemplateString extends Expression {
         for (ParsedExpression expression : expressions) {
             expression.compile(environment, null).eval(environment)
                       .cast(getPosition(), environment, ZenType.STRING)
-                      .compile(result, environment);
+                      .compile(true, environment);
             output.invokeVirtual(StringBuilder.class, "append", StringBuilder.class, String.class);
         }
         output.invokeVirtual(StringBuilder.class, "toString", String.class);

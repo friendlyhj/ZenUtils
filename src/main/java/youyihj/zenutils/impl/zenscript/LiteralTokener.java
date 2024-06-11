@@ -5,6 +5,8 @@ import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.ZenParsedFile;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.Token;
+import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.mixin.crafttweaker.TokenStreamAccessor;
 
 import java.io.IOException;
 
@@ -32,7 +34,7 @@ public class LiteralTokener extends ZenTokener {
 
     @Override
     public Token peek() {
-        return tokens.peek();
+        return process(tokens.peek());
     }
 
     @Override
@@ -43,10 +45,19 @@ public class LiteralTokener extends ZenTokener {
     @Override
     public Token next() {
         readCounter++;
-        return tokens.next();
+        return process(tokens.next());
     }
 
     public int readTokenCount() {
         return readCounter;
+    }
+
+    @Override
+    public Token process(Token token) {
+        TokenStreamAccessor accessor = (TokenStreamAccessor) this;
+        ZenPosition position = token.getPosition();
+        accessor.setLine(position.getLine());
+        accessor.setLineOffset(position.getLineOffset());
+        return super.process(token);
     }
 }

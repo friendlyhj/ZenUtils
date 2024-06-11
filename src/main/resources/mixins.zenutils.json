@@ -23,6 +23,7 @@
     "MixinPlayerAnvilUpdateEvent",
     "MixinTemplateStringTokener",
     "MixinTokenStream",
+    "TokenStreamAccessor",
     "MixinTypeRegistry",
     "MixinZenTokener",
     "MixinZenType",

@@ -83,6 +83,9 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                 insnList.add(new VarInsnNode(ALOAD, 0));
                 insnList.add(new VarInsnNode(ALOAD, 2));
                 insnList.add(new FieldInsnNode(PUTFIELD, "youyihj/zenutils/impl/zenscript/TemplateStringTokener", "startPosition", "Lstanhebben/zenscript/util/ZenPosition;"));
+                insnList.add(new VarInsnNode(ALOAD, 0));
+                insnList.add(new InsnNode(ICONST_1));
+                insnList.add(new FieldInsnNode(PUTFIELD, "youyihj/zenutils/impl/zenscript/TemplateStringTokener", "constructing", "Z"));
                 it.instructions.insert(insnList);
             });
         }
