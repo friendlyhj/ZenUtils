@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,20 +62,12 @@ public enum MCPReobfuscation {
         Path localMapping = Paths.get("config", "mcp_stable-39-1.12.zip");
         String remoteMapping = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp_stable/39-1.12/mcp_stable-39-1.12.zip";
         if (!Files.exists(localMapping)) {
-            try (
-                    CloseableHttpClient client =
-                            HttpClientBuilder.create()
-                                             .setDefaultRequestConfig(RequestConfig.custom().setConnectionRequestTimeout(30000).build())
-                                             .build()
-            ) {
-                client.execute(new HttpGet(remoteMapping), response -> {
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                        Files.copy(response.getEntity().getContent(), localMapping);
-                    } else {
-                        throw new IOException(response.getStatusLine().toString());
-                    }
-                    return null;
-                });
+            try {
+                URL url = new URL(remoteMapping);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.setConnectTimeout(30000);
+                urlConnection.setReadTimeout(30000);
+                Files.copy(url.openStream(), localMapping);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to download mcp mapping, try download it manually to `config/mcp_stable-39-1.12.zip`, uri: " + remoteMapping, e);
             }
