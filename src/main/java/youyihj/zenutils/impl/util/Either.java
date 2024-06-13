@@ -76,4 +76,8 @@ public class Either<L, R> {
             fallback.run();
         }
     }
+
+    public boolean isEmpty() {
+        return left == null && right == null;
+    }
 }

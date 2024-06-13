@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeToken;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
@@ -20,6 +21,7 @@ import youyihj.zenutils.impl.runtime.ScriptStatus;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -117,5 +119,10 @@ public final class InternalUtils {
         } catch (Throwable e) {
             throw new RuntimeException("Failed to clone the array", e);
         }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public static <T extends U, U> Type getSingleItfGenericVariable(Class<T> type, Class<U> itf) {
+        return TypeToken.of(type).getSupertype(itf).resolveType(itf.getTypeParameters()[0]).getType();
     }
 }

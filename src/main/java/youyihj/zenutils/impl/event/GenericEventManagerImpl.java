@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.IEventListener;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -67,10 +68,9 @@ public class GenericEventManagerImpl {
         CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTNativeEventHandlerAdapter<>(eventHandler, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, typeOfT.getSimpleName()));
     }
 
-    @SuppressWarnings({"unchecked", "UnstableApiUsage"})
+    @SuppressWarnings({"unchecked"})
     private static <T> Class<T> getEventType(IEventHandler<T> eventHandler) throws EventHandlerRegisterException {
-        TypeToken<?> handlerType = TypeToken.of(eventHandler.getClass()).getSupertype(IEventHandler.class);
-        Type tType = handlerType.resolveType(EVENT_HANDLER_TYPE_VARIABLE).getType();
+        Type tType = InternalUtils.getSingleItfGenericVariable(eventHandler.getClass(), IEventHandler.class);
         if (tType instanceof Class) {
             return (Class<T>) tType;
         }

@@ -6,24 +6,24 @@ import stanhebben.zenscript.annotations.CompareType;
 import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionCallStatic;
-import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.ExpressionNull;
+import stanhebben.zenscript.expression.*;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
 import stanhebben.zenscript.type.casting.ICastingRule;
 import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
+import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -32,6 +32,8 @@ import java.util.Optional;
 public class ZenTypeJavaNative extends ZenType {
     private final Class<?> clazz;
     private final Map<String, JavaNativeMemberSymbol> symbols = new HashMap<>();
+
+    private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
 
     public ZenTypeJavaNative(Class<?> clazz) {
         this.clazz = clazz;
@@ -57,8 +59,19 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public Expression compare(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, CompareType type) {
-        // TODO: check Comparable interface
-        environment.error(position, "no operator available");
+        if (Comparable.class.isAssignableFrom(clazz)) {
+            ZenType canCompareType = environment.getType(InternalUtils.getSingleItfGenericVariable(clazz.asSubclass(Comparable.class), Comparable.class));
+            if (right.getType().canCastImplicit(canCompareType, environment)) {
+                return new ExpressionCompareGeneric(position, new ExpressionCallVirtual(position, environment, JavaMethod.get(environment, clazz, "compareTo", Object.class), left, right.cast(position, environment, canCompareType)), type);
+            }
+        }
+        if (type == CompareType.EQ) {
+            return new ExpressionCallStatic(position, environment, OBJECTS_EQUALS, left, right);
+        }
+        if (type == CompareType.NE) {
+            return new ExpressionArithmeticUnary(position, OperatorType.NOT, new ExpressionCallStatic(position, environment, OBJECTS_EQUALS, left, right));
+        }
+        environment.error(position, "can not compare " + type + " between " + left.getType().getName() + " and " + right.getType().getName());
         return new ExpressionInvalid(position);
     }
 

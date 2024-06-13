@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.zenscript.nat;
 import org.apache.commons.lang3.StringUtils;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
+import stanhebben.zenscript.expression.partial.PartialType;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
@@ -66,6 +67,13 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     public IPartialExpression instance(ZenPosition position) {
         if (!isStatic && receiver == null) {
             throw new IllegalStateException("missing instance value of virtual symbol");
+        }
+        if (isStatic && getter.isEmpty()) {
+            try {
+                return new PartialType(position, environment.getType(Class.forName(owner.getName() + "$" + name)));
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("no such nested class: " + owner.getName() + "." + name);
+            }
         }
         return new PartialJavaNativeMember(position, name, methods, receiver, environment, owner, getter, setter);
     }
