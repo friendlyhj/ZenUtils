@@ -163,7 +163,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         Map<String, IData> dataMap = new HashMap<>(data.asMap());
         if (isMap(updateOperation)) {
             values.forEach((key, value) ->
-                dataMap.compute(key, (k, oldValue) -> deepUpdate(oldValue, value, updateOperation.memberGet(key)))
+                dataMap.compute(key, (k, oldValue) -> deepUpdate(oldValue, value, updateOperation.memberGet(k)))
             );
         } else {
             int operator = updateOperation.asInt();
