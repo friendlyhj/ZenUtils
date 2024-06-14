@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
@@ -23,15 +24,15 @@ import stanhebben.zenscript.util.ZenTypeUtil;
 /**
  * @author youyihj
  */
-public class ZenTypeIterable extends ZenTypeJavaNative {
+public class ZenTypeJavaNativeIterable extends ZenTypeJavaNative {
 
     private static final IJavaMethod ITERABLE_SIZE = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Iterables.class, "size", Iterable.class);
     private static final IJavaMethod NEW_ARRAY_LIST_FROM_ITERABLE = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Lists.class, "newArrayList", Iterable.class);
 
     private final ZenType baseType;
 
-    public ZenTypeIterable(Class<?> clazz, ZenType baseType) {
-        super(clazz);
+    public ZenTypeJavaNativeIterable(Class<?> clazz, ZenType baseType, ITypeRegistry registry) {
+        super(clazz, registry);
         this.baseType = baseType;
     }
 

@@ -6,6 +6,7 @@ import stanhebben.zenscript.annotations.CompareType;
 import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.expression.*;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
@@ -21,10 +22,9 @@ import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author youyihj
@@ -32,11 +32,17 @@ import java.util.Optional;
 public class ZenTypeJavaNative extends ZenType {
     private final Class<?> clazz;
     private final Map<String, JavaNativeMemberSymbol> symbols = new HashMap<>();
+    private final List<ZenTypeJavaNative> superClasses;
 
     private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
 
-    public ZenTypeJavaNative(Class<?> clazz) {
+    public ZenTypeJavaNative(Class<?> clazz, ITypeRegistry registry) {
         this.clazz = clazz;
+        superClasses = Stream.concat(Stream.of(clazz.getSuperclass()), Arrays.stream(clazz.getInterfaces()))
+                .map(registry::getType)
+                .filter(ZenTypeJavaNative.class::isInstance)
+                .map(ZenTypeJavaNative.class::cast)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -83,7 +89,12 @@ public class ZenTypeJavaNative extends ZenType {
                 return new ExpressionCallStatic(position, environment, new JavaMethod(wrapperCaster.get(), environment), value.eval(environment));
             }
         }
-        return getSymbol(name, environment, false).receiver(value).instance(position);
+        IPartialExpression member = getSymbol(name, environment, false).receiver(value).instance(position);
+        if (member instanceof ExpressionInvalid) {
+            IPartialExpression memberExpansion = memberExpansion(position, environment, value.eval(environment), name);
+            return memberExpansion == null ? member : memberExpansion;
+        }
+        return member;
     }
 
     @Override
@@ -181,5 +192,19 @@ public class ZenTypeJavaNative extends ZenType {
 
     private JavaNativeMemberSymbol getSymbol(String name, IEnvironmentGlobal environment, boolean isStatic) {
         return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic));
+    }
+
+    @Override
+    public IPartialExpression memberExpansion(ZenPosition position, IEnvironmentGlobal environment, Expression value, String member) {
+        IPartialExpression expression = super.memberExpansion(position, environment, value, member);
+        if (expression == null) {
+            for (ZenTypeJavaNative superClass : superClasses) {
+                expression = superClass.memberExpansion(position, environment, value, member);
+                if (expression != null) {
+                    return expression;
+                }
+            }
+        }
+        return expression;
     }
 }

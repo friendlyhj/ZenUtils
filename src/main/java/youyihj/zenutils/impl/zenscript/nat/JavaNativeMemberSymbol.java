@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.zenscript.nat;
 
 import org.apache.commons.lang3.StringUtils;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialType;
 import stanhebben.zenscript.symbols.IZenSymbol;
@@ -68,14 +69,18 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
         if (!isStatic && receiver == null) {
             throw new IllegalStateException("missing instance value of virtual symbol");
         }
-        if (isStatic && getter.isEmpty()) {
-            try {
-                return new PartialType(position, environment.getType(Class.forName(owner.getName() + "$" + name)));
-            } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException("no such nested class: " + owner.getName() + "." + name);
+        if (getter.isEmpty() && setter.isEmpty() && methods.isEmpty()) {
+            if (isStatic) {
+                try {
+                    return new PartialType(position, environment.getType(Class.forName(owner.getName() + "$" + name)));
+                } catch (ClassNotFoundException e) {
+                    environment.error("no such static member or nested class: " + owner.getName() + "." + name);
+                }
             }
+        } else {
+            return new PartialJavaNativeMember(position, name, methods, receiver, environment, owner, getter, setter);
         }
-        return new PartialJavaNativeMember(position, name, methods, receiver, environment, owner, getter, setter);
+        return new ExpressionInvalid(position);
     }
 
 
