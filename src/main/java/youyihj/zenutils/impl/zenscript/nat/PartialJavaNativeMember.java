@@ -3,7 +3,6 @@ package youyihj.zenutils.impl.zenscript.nat;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
@@ -16,10 +15,8 @@ import youyihj.zenutils.impl.util.Either;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author youyihj
@@ -65,8 +62,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
         IJavaMethod selected = JavaMethod.select(isStatic(), methods, environment, values);
         if (selected != null) {
             if (isStatic()) {
-                // TODO: interface static methods should be wrapped with a plain class
-                return new ExpressionCallStatic(position, environment, selected, values);
+                return new DelegatedExpressionCallStatic(position, environment, selected, values);
             } else {
                 return new ExpressionCallVirtual(position, environment, selected, instanceValue.eval(environment), values);
             }
