@@ -42,7 +42,9 @@ public class DelegatedExpressionCallStatic extends ExpressionCallStatic {
             super.compile(result, environment);
         } else {
             interfaceStaticMethodWrapper.compile(result, environment);
-            environment.putClass(wrapperClassName, compileWrapperClass(method));
+            if (!environment.containsClass(wrapperClassName)) {
+                environment.putClass(wrapperClassName, compileWrapperClass(method));
+            }
         }
     }
 
