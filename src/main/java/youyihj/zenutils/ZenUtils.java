@@ -1,5 +1,6 @@
 package youyihj.zenutils;
 
+import com.google.common.io.Files;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.logger.MTLogger;
@@ -12,6 +13,7 @@ import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ILogger;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.command.CommandHandler;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
+import youyihj.zenutils.api.cotx.item.CustomItem;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
 import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
@@ -41,10 +44,13 @@ import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.FileSystems;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -93,6 +99,11 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onPreInit(FMLPreInitializationEvent event) {
+        try {
+            Files.write(new CustomItem("test", Item.class, Collections.emptyList()).compile(), new File("test.class"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         CraftTweakerAPI.logInfo("Hey! Here is ZenUtils.");
         ZenWorldCapabilityHandler.register();
         PlayerInteractionSimulation.registerNetworkMessage();

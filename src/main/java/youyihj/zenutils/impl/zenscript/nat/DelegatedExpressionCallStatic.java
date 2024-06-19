@@ -26,14 +26,24 @@ public class DelegatedExpressionCallStatic extends ExpressionCallStatic {
         super(position, environment, method, arguments);
         if (method instanceof JavaMethod && ((JavaMethod) method).getOwner().isInterface()) {
             this.method = (JavaMethod) method;
-            this.wrapperClassName = getWrapperClassName(this.method);
-            this.interfaceStaticMethodWrapper =
-                    new ExpressionCallStatic(position, environment, JavaMethod.getStatic(this.wrapperClassName, "invoke", method.getReturnType(), method.getParameterTypes()));
+            this.wrapperClassName = getWrapperName(this.method);
+            this.interfaceStaticMethodWrapper = new ExpressionCallStatic(position, environment, JavaMethod.getStatic(this.wrapperClassName, "invoke", method.getReturnType(), method.getParameterTypes()));
         } else {
             this.interfaceStaticMethodWrapper = null;
             this.wrapperClassName = null;
             this.method = null;
         }
+    }
+
+    public static String getWrapperName(JavaMethod method) {
+        StringBuilder sb = new StringBuilder(method.getOwner().getName().replace('.', '_'));
+        sb.append('$');
+        sb.append(method.getMethod().getName());
+        sb.append('$');
+        for (ZenType parameterType : method.getParameterTypes()) {
+            sb.append(parameterType.getNameForInterfaceSignature());
+        }
+        return sb.toString();
     }
 
     @Override
@@ -46,17 +56,6 @@ public class DelegatedExpressionCallStatic extends ExpressionCallStatic {
                 environment.putClass(wrapperClassName, compileWrapperClass(method));
             }
         }
-    }
-
-    private String getWrapperClassName(JavaMethod method) {
-        StringBuilder sb = new StringBuilder(method.getOwner().getName().replace('.', '_'));
-        sb.append('$');
-        sb.append(method.getMethod().getName());
-        sb.append('$');
-        for (ZenType parameterType : method.getParameterTypes()) {
-            sb.append(parameterType.getNameForInterfaceSignature());
-        }
-        return sb.toString();
     }
 
     private byte[] compileWrapperClass(JavaMethod method) {

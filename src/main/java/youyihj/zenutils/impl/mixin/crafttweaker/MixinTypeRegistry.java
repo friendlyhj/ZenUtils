@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
@@ -16,6 +17,7 @@ import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNativeIterable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +38,16 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
             cir.setReturnValue(new ZenTypeJavaNative(cls, this));
             types.put(cls, cir.getReturnValue());
         }
+    }
+
+    @Redirect(method = "getListType", at = @At(value = "INVOKE", target = "Ljava/lang/reflect/ParameterizedType;getRawType()Ljava/lang/reflect/Type;"))
+    private Type alwaysReturnListZenType(ParameterizedType type) {
+        return List.class;
+    }
+
+    @Redirect(method = "getMapType", at = @At(value = "INVOKE", target = "Ljava/lang/reflect/ParameterizedType;getRawType()Ljava/lang/reflect/Type;"))
+    private Type alwaysReturnMapZenType(ParameterizedType type) {
+        return Map.class;
     }
 
     @Inject(
