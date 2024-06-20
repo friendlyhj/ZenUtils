@@ -1,6 +1,7 @@
 package youyihj.zenutils.api.cotx.tile;
 
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import crafttweaker.CraftTweakerAPI;
 import youyihj.zenutils.api.cotx.function.ITileEntityTick;
@@ -19,7 +20,7 @@ public final class TileEntityManager {
             CraftTweakerAPI.logError("Tile Entity ID: " + id + " has been used!");
             return;
         }
-        TICK_FUNCTIONS.put(id, tileEntityRepresentation.onTick);
+        putTickFunction(id, tileEntityRepresentation.onTick);
     }
 
     public static ITileEntityTick getTickFunction(int id) {
@@ -27,6 +28,7 @@ public final class TileEntityManager {
     }
 
     public static void putTickFunction(int id, ITileEntityTick tileEntityTick) {
+        Preconditions.checkArgument(id != -1, "id -1 is reserved");
         TICK_FUNCTIONS.put(id, tileEntityTick);
     }
 }

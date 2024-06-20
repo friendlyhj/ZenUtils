@@ -1,6 +1,7 @@
 package youyihj.zenutils.api.cotx;
 
 import com.teamacronymcoders.contenttweaker.api.ctobjects.blockmaterial.IBlockMaterialDefinition;
+import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethodStatic;
 import youyihj.zenutils.Reference;
@@ -30,8 +31,8 @@ public class ExpandVanillaFactory {
     }
 
     @ZenMethodStatic
-    public static DirectionalBlockRepresentation createDirectionalBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial, String directions) {
-        return new DirectionalBlockRepresentation(unlocalizedName, blockMaterial, DirectionalBlockRepresentation.Directions.valueOf(directions));
+    public static DirectionalBlockRepresentation createDirectionalBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial, String directions, @Optional boolean planeRotatable, @Optional boolean horizontalOpposite) {
+        return new DirectionalBlockRepresentation(unlocalizedName, blockMaterial, DirectionalBlockRepresentation.Directions.valueOf(directions), planeRotatable, horizontalOpposite);
     }
 
     @ZenMethodStatic

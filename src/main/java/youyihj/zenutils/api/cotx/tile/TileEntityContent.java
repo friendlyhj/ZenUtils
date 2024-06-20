@@ -4,9 +4,12 @@ import com.teamacronymcoders.contenttweaker.api.ctobjects.blockpos.MCBlockPos;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
 import crafttweaker.api.data.IData;
 import crafttweaker.mc1120.data.NBTConverter;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -80,5 +83,10 @@ public class TileEntityContent extends TileEntity implements ITickable {
     public void update() {
         TileEntityManager.getTickFunction(id)
                 .tick(this, new MCWorld(world), new MCBlockPos(pos));
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+        return oldState.getBlock() != newSate.getBlock();
     }
 }
