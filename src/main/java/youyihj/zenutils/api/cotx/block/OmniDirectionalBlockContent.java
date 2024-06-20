@@ -54,22 +54,24 @@ public class OmniDirectionalBlockContent extends DirectionalBlockContent {
     }
 
     @Override
-    public void onBlockAdded(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
-        super.onBlockAdded(world, pos, state);
+    public void breakBlock(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
         IWorld ctWorld = CraftTweakerMC.getIWorld(world);
         IBlockPos ctPos = CraftTweakerMC.getIBlockPos(pos);
         TileEntityContent tileEntity = ExpandWorldForTile.getCustomTileEntity(ctWorld, ctPos);
         if (tileEntity != null) {
             IData customData = tileEntity.getCustomData();
             ZenUtilsWorld.catenation(ctWorld)
-                    .then((w, ctx) -> {
-                        TileEntityContent currentTE = ExpandWorldForTile.getCustomTileEntity(w, ctPos);
-                        if (currentTE != null) {
-                            currentTE.setCustomData(customData);
-                        }
-                    })
-                    .start();
+                         .then((w, ctx) -> {
+                             if (CraftTweakerMC.getBlock(w.getBlock(ctPos)) == this) {
+                                 TileEntityContent currentTE = ExpandWorldForTile.getCustomTileEntity(w, ctPos);
+                                 if (currentTE != null) {
+                                     currentTE.setCustomData(customData);
+                                 }
+                             }
+                         })
+                         .start();
         }
+        super.breakBlock(world, pos, state);
     }
 
     @SuppressWarnings("deprecation")
