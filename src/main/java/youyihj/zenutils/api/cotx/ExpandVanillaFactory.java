@@ -31,8 +31,8 @@ public class ExpandVanillaFactory {
     }
 
     @ZenMethodStatic
-    public static DirectionalBlockRepresentation createDirectionalBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial, String directions, @Optional boolean planeRotatable, @Optional boolean horizontalOpposite) {
-        return new DirectionalBlockRepresentation(unlocalizedName, blockMaterial, DirectionalBlockRepresentation.Directions.valueOf(directions), planeRotatable, horizontalOpposite);
+    public static DirectionalBlockRepresentation createDirectionalBlock(String unlocalizedName, IBlockMaterialDefinition blockMaterial, String directions, @Optional boolean planeRotatable, @Optional boolean placingOpposite) {
+        return new DirectionalBlockRepresentation(unlocalizedName, blockMaterial, DirectionalBlockRepresentation.Directions.valueOf(directions), planeRotatable, placingOpposite);
     }
 
     @ZenMethodStatic
