@@ -32,11 +32,9 @@ import java.util.Optional;
 @ExpandContentTweakerEntry
 public abstract class DirectionalBlockContent extends ExpandBlockContent {
     public static final IProperty<DirectionalBlockRepresentation.PlaneRotation> PLANE_ROTATION_PROPERTY = PropertyEnum.create("plane_rot", DirectionalBlockRepresentation.PlaneRotation.class);
-    private final DirectionalBlockRepresentation representation;
 
     protected DirectionalBlockContent(DirectionalBlockRepresentation blockRepresentation) {
         super(blockRepresentation);
-        this.representation = blockRepresentation;
     }
 
     public static DirectionalBlockContent create(DirectionalBlockRepresentation blockRepresentation) {
@@ -95,7 +93,7 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
 
     @Override
     public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
-        if (!representation.isPlaneRotatable()) {
+        if (!getExpandBlockRepresentation().isPlaneRotatable()) {
             return super.rotateBlock(world, pos, axis);
         } else {
             IBlockState state = world.getBlockState(pos);
@@ -110,13 +108,13 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        return getDirections().toMeta(state, representation.isPlaneRotatable());
+        return getDirections().toMeta(state, getExpandBlockRepresentation().isPlaneRotatable());
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDirections().toState(meta, getDefaultState(), representation.isPlaneRotatable());
+        return getDirections().toState(meta, getDefaultState(), getExpandBlockRepresentation().isPlaneRotatable());
     }
 
     @Nullable
@@ -143,7 +141,7 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
             default:
                 return getDefaultState();
         }
-        if (representation.isPlacingOpposite()) {
+        if (getExpandBlockRepresentation().isPlacingOpposite()) {
             blockFacing = blockFacing.getOpposite();
         }
         return getDefaultState().withProperty(property, blockFacing);
@@ -152,11 +150,11 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
     @Override
     public List<IGeneratedModel> getGeneratedModels() {
         List<IGeneratedModel> models = Lists.newArrayList();
-        String templateFileName = (representation.isPlaneRotatable() ? "plane_rotatable_" : "") + getDirections().name().toLowerCase(Locale.ENGLISH) + "_directional_block";
+        String templateFileName = (getExpandBlockRepresentation().isPlaneRotatable() ? "plane_rotatable_" : "") + getDirections().name().toLowerCase(Locale.ENGLISH) + "_directional_block";
         this.getResourceLocations(Lists.newArrayList()).forEach(resourceLocation ->  {
             TemplateFile templateFile = TemplateManager.getTemplateFile(new ResourceLocation(Reference.MODID, templateFileName));
             Map<String, String> replacements = Maps.newHashMap();
-            replacements.put("texture", Optional.ofNullable(representation.getTextureLocation())
+            replacements.put("texture", Optional.ofNullable(getExpandBlockRepresentation().getTextureLocation())
                     .map(CTResourceLocation::getInternal)
                     .map(ResourceLocation::toString)
                     .orElseGet(() -> new ResourceLocation(resourceLocation.getNamespace(),
