@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 /**
  * @author youyihj
  */
-public class OmniDirectionalBlockContent extends DirectionalBlockContent {
+public abstract class OmniDirectionalBlockContent extends DirectionalBlockContent {
     protected OmniDirectionalBlockContent(DirectionalBlockRepresentation blockRepresentation) {
         super(blockRepresentation);
     }

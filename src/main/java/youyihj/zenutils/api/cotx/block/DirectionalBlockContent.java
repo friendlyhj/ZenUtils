@@ -41,7 +41,12 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
 
     public static DirectionalBlockContent create(DirectionalBlockRepresentation blockRepresentation) {
         if (blockRepresentation.isPlaneRotatable() && blockRepresentation.getDirections() == DirectionalBlockRepresentation.Directions.ALL) {
-            return new OmniDirectionalBlockContent(blockRepresentation);
+            return new OmniDirectionalBlockContent(blockRepresentation) {
+                @Override
+                public DirectionalBlockRepresentation getExpandBlockRepresentation() {
+                    return blockRepresentation;
+                }
+            };
         } else {
             return new DirectionalBlockContent(blockRepresentation) {
                 @Override
@@ -52,12 +57,17 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
                         return new BlockStateContainer(this, getDirections().getBlockProperty(), PLANE_ROTATION_PROPERTY);
                     }
                 }
+
+                @Override
+                public DirectionalBlockRepresentation getExpandBlockRepresentation() {
+                    return blockRepresentation;
+                }
             };
         }
     }
 
     public DirectionalBlockRepresentation.Directions getDirections() {
-        return representation.getDirections();
+        return getExpandBlockRepresentation().getDirections();
     }
 
     @Override
@@ -161,7 +171,5 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
     }
 
     @Override
-    public DirectionalBlockRepresentation getExpandBlockRepresentation() {
-        return representation;
-    }
+    public abstract DirectionalBlockRepresentation getExpandBlockRepresentation();
 }
