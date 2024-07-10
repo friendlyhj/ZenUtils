@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 public class OmniDirectionalTileEntityContent extends TileEntityContent {
     private int rotationMeta;
     private static final String TAG_ROTATION = "rot";
+    private boolean updatingExternally;
 
     @ReflectionInvoked
     public OmniDirectionalTileEntityContent() {}
@@ -34,6 +35,11 @@ public class OmniDirectionalTileEntityContent extends TileEntityContent {
     @Override
     public void readFromNBT(@Nonnull NBTTagCompound compound) {
         this.rotationMeta = compound.getInteger(TAG_ROTATION);
+        if (world != null) {
+            updatingExternally = true;
+            IBlockState state = world.getBlockState(pos);
+            world.setBlockState(pos, DirectionalBlockRepresentation.Directions.ALL.toState(rotationMeta, state, true));
+        }
         super.readFromNBT(compound);
     }
 
@@ -56,6 +62,11 @@ public class OmniDirectionalTileEntityContent extends TileEntityContent {
 
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        return oldState != newSate;
+        if (updatingExternally) {
+            updatingExternally = false;
+            return oldState.getBlock() != newSate.getBlock();
+        } else {
+            return oldState != newSate;
+        }
     }
 }
