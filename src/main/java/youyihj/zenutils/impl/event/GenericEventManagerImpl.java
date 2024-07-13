@@ -1,6 +1,5 @@
 package youyihj.zenutils.impl.event;
 
-import com.google.common.reflect.TypeToken;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.util.IEventHandler;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
@@ -20,16 +19,7 @@ import java.util.Set;
  * @author youyihj
  */
 public class GenericEventManagerImpl {
-    private static final Type EVENT_HANDLER_TYPE_VARIABLE;
     private static final int MAIN_EVENT_BUS_ID = 0;
-
-    static {
-        try {
-            EVENT_HANDLER_TYPE_VARIABLE = IEventHandler.class.getMethod("handle", Object.class).getGenericParameterTypes()[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
