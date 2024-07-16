@@ -6,6 +6,7 @@ import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 import stanhebben.zenscript.annotations.IterableSimple;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;
@@ -65,6 +66,11 @@ public class CrTItemHandler implements Iterable<IItemStack> {
     @ZenMethod
     public IItemStack insertItem(int slot, IItemStack stack, boolean simulate) {
         return CraftTweakerMC.getIItemStack(itemHandler.insertItem(slot, CraftTweakerMC.getItemStack(stack), simulate));
+    }
+
+    @ZenMethod
+    public IItemStack insertItem(IItemStack stack, boolean simulate) {
+        return CraftTweakerMC.getIItemStack(ItemHandlerHelper.insertItemStacked(itemHandler, CraftTweakerMC.getItemStack(stack), simulate));
     }
 
     @ZenMethod
