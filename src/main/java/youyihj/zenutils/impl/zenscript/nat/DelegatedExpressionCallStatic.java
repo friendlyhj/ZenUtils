@@ -36,14 +36,7 @@ public class DelegatedExpressionCallStatic extends ExpressionCallStatic {
     }
 
     public static String getWrapperName(JavaMethod method) {
-        StringBuilder sb = new StringBuilder(method.getOwner().getName().replace('.', '_'));
-        sb.append('$');
-        sb.append(method.getMethod().getName());
-        sb.append('$');
-        for (ZenType parameterType : method.getParameterTypes()) {
-            sb.append(parameterType.getNameForInterfaceSignature());
-        }
-        return sb.toString();
+        return WrappedMethodNameGenerator.INSTANCE.get(method.getMethod());
     }
 
     @Override
