@@ -43,5 +43,10 @@ public interface ICatenationBuilder {
     }
 
     @ZenMethod
+    default ICatenationBuilder alwaysUntil(IWorldCondition condition) {
+        return sleepUntil(condition);
+    }
+
+    @ZenMethod
     Catenation start();
 }

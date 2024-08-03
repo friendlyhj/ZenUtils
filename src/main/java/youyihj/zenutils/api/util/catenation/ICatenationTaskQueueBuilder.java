@@ -35,4 +35,9 @@ public interface ICatenationTaskQueueBuilder {
     default ICatenationTaskQueueBuilder then(IWorldFunction function) {
         return run(function);
     }
+
+    @ZenMethod
+    default ICatenationTaskQueueBuilder alwaysUntil(IWorldCondition condition) {
+        return sleepUntil(condition);
+    }
 }
