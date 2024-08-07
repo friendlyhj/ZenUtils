@@ -21,14 +21,15 @@
     "MixinParsedExpressionFunction",
     "MixinPartialType",
     "MixinPlayerAnvilUpdateEvent",
+    "MixinPreprocessorManager",
     "MixinTemplateStringTokener",
     "MixinTokenStream",
-    "TokenStreamAccessor",
     "MixinTypeRegistry",
     "MixinZenTokener",
     "MixinZenType",
     "MixinZenTypeAssociate",
-    "MixinZenTypeNative"
+    "MixinZenTypeNative",
+    "TokenStreamAccessor"
   ],
   "client": [
   ]
