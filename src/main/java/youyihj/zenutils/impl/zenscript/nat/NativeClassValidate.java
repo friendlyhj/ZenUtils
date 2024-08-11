@@ -3,6 +3,7 @@ package youyihj.zenutils.impl.zenscript.nat;
 import com.google.common.collect.Lists;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.api.zenscript.INativeClassExclude;
+import youyihj.zenutils.impl.member.ClassData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class NativeClassValidate {
         INativeClassExclude.filterClass(Random.class);
     }
 
-    public static boolean isValid(Class<?> clazz) {
+    public static boolean isValid(ClassData clazz) {
         return ENABLE && !clazz.isAnnotationPresent(ZenClass.class) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz));
     }
 }

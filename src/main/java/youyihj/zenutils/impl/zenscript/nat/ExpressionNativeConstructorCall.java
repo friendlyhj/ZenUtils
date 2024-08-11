@@ -1,26 +1,25 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
-import org.objectweb.asm.Type;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.compiler.IEnvironmentMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.TypeData;
 
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
  * @author youyihj
  */
 public class ExpressionNativeConstructorCall extends Expression {
-    private final Constructor<?> constructor;
+    private final ExecutableData constructor;
     private final IEnvironmentGlobal environment;
     private final Expression[] arguments;
 
-    public ExpressionNativeConstructorCall(ZenPosition position, Constructor<?> constructor, IEnvironmentGlobal environment, Expression[] arguments) {
+    public ExpressionNativeConstructorCall(ZenPosition position, ExecutableData constructor, IEnvironmentGlobal environment, Expression[] arguments) {
         super(position);
         this.constructor = constructor;
         this.environment = environment;
@@ -34,12 +33,12 @@ public class ExpressionNativeConstructorCall extends Expression {
         output.dup();
         for(int i = 0; i < arguments.length; i++) {
             Expression argument = arguments[i];
-            argument.cast(getPosition(), environment, environment.getType(constructor.getParameterTypes()[i])).compile(true, environment);
+            argument.cast(getPosition(), environment, environment.getType(constructor.parameters().get(i).javaType())).compile(true, environment);
         }
-        String signatureBuilder = Arrays.stream(constructor.getParameterTypes())
-                                        .map(Type::getDescriptor)
+        String signatureBuilder = constructor.parameters().stream()
+                                        .map(TypeData::descriptor)
                                         .collect(Collectors.joining("", "(", ")V"));
-        output.invokeSpecial(Type.getInternalName(constructor.getDeclaringClass()), "<init>", signatureBuilder);
+        output.invokeSpecial(constructor.declaredClass().internalName(), "<init>", signatureBuilder);
         if (!result) {
             output.pop();
         }
@@ -47,6 +46,6 @@ public class ExpressionNativeConstructorCall extends Expression {
 
     @Override
     public ZenType getType() {
-        return environment.getType(constructor.getDeclaringClass());
+        return environment.getType(constructor.declaredClass().javaType());
     }
 }

@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
 import stanhebben.zenscript.type.ZenType;
+import youyihj.zenutils.Reference;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNativeIterable;
@@ -32,8 +35,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
 
     @Inject(method = "getClassType", at = @At(value = "NEW", target = "stanhebben/zenscript/type/ZenTypeNative"), cancellable = true)
     private void redirectToJavaNative(Class<?> cls, CallbackInfoReturnable<ZenType> cir) {
-        if (NativeClassValidate.isValid(cls)) {
-            cir.setReturnValue(new ZenTypeJavaNative(cls, this));
+        ClassData classData = Reference.classDataFetcher.forClass(cls);
+        if (NativeClassValidate.isValid(classData)) {
+            cir.setReturnValue(new ZenTypeJavaNative(classData, this));
             types.put(cls, cir.getReturnValue());
         }
     }
@@ -48,8 +52,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
             cancellable = true
     )
     private void getIterableType(Type type, CallbackInfoReturnable<ZenType> cir, @Local ParameterizedType pType, @Local Class<?> rawClass) {
-        if (Iterable.class.isAssignableFrom(rawClass)) {
-            cir.setReturnValue(new ZenTypeJavaNativeIterable(rawClass, getType(pType.getActualTypeArguments()[0]), this));
+        ClassDataFetcher classDataFetcher = Reference.classDataFetcher;
+        if (classDataFetcher.forClass(Iterable.class).isAssignableFrom(classDataFetcher.forClass(rawClass))) {
+            cir.setReturnValue(new ZenTypeJavaNativeIterable(classDataFetcher.forClass(rawClass), getType(pType.getActualTypeArguments()[0]), this));
         }
     }
 }

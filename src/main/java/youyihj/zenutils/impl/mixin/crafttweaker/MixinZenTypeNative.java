@@ -13,9 +13,11 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenTypeNative;
 import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
 import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.zenscript.nat.CraftTweakerBridge;
+import youyihj.zenutils.impl.zenscript.nat.NativeMethod;
 
 /**
  * @author youyihj
@@ -26,8 +28,10 @@ public abstract class MixinZenTypeNative {
 
     @Inject(method = "constructCastingRules", at = @At("TAIL"))
     private void addToNativeCaster(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters, CallbackInfo ci) {
-        CraftTweakerBridge.INSTANCE.getNativeCaster(cls).ifPresent(it ->
-            rules.registerCastingRule(environment.getType(it.getReturnType()), new CastingRuleStaticMethod(new JavaMethod(it, environment)))
+        ClassData classData = ZenUtils.tweaker.getClassDataFetcher().forClass(cls);
+
+        CraftTweakerBridge.INSTANCE.getNativeCaster(classData).ifPresent(it ->
+            rules.registerCastingRule(environment.getType(it.returnType().javaType()), new CastingRuleStaticMethod(new NativeMethod(it, environment)))
         );
     }
 
@@ -36,9 +40,10 @@ public abstract class MixinZenTypeNative {
     @Inject(method = "getMember", at = @At(value = "HEAD"), cancellable = true)
     private void addToNativeMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name, CallbackInfoReturnable<IPartialExpression> cir) {
         if ("native".equals(name)) {
-            CraftTweakerBridge.INSTANCE.getNativeCaster(cls).ifPresent(it -> {
-                cir.setReturnValue(new ExpressionCallStatic(position, environment, new JavaMethod(it, environment), value.eval(environment)));
-            });
+            ClassData classData = ZenUtils.tweaker.getClassDataFetcher().forClass(cls);
+            CraftTweakerBridge.INSTANCE.getNativeCaster(classData).ifPresent(it ->
+                cir.setReturnValue(new ExpressionCallStatic(position, environment, new NativeMethod(it, environment), value.eval(environment)))
+            );
         }
     }
 }

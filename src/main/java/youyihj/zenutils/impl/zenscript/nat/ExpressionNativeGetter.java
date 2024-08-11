@@ -7,20 +7,19 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.FieldData;
 import youyihj.zenutils.impl.util.Either;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * @author youyihj
  */
 public class ExpressionNativeGetter extends Expression {
-    private final Either<Method, Field> getter;
+    private final Either<ExecutableData, FieldData> getter;
     private final IPartialExpression instanceValue;
     private final IEnvironmentGlobal environment;
 
-    public ExpressionNativeGetter(ZenPosition position, Either<Method, Field> getter, IPartialExpression instanceValue, IEnvironmentGlobal environment) {
+    public ExpressionNativeGetter(ZenPosition position, Either<ExecutableData, FieldData> getter, IPartialExpression instanceValue, IEnvironmentGlobal environment) {
         super(position);
         this.getter = getter;
         this.instanceValue = instanceValue;
@@ -33,17 +32,21 @@ public class ExpressionNativeGetter extends Expression {
         if (result) {
             getter.fold(method -> {
                 if (instanceValue == null) {
-                    output.invokeStatic(method.getDeclaringClass(), method.getName(), method.getReturnType());
+                    output.invokeStatic(method.declaredClass().internalName(), method.name(), method.descriptor());
                 } else {
                     instanceValue.eval(environment).compile(true, environment);
-                    output.invokeVirtual(method.getDeclaringClass(), method.getName(), method.getReturnType());
+                    if (method.declaredClass().isInterface()) {
+                        output.invokeInterface(method.declaredClass().internalName(), method.name(), method.descriptor());
+                    } else {
+                        output.invokeVirtual(method.declaredClass().internalName(), method.name(), method.descriptor());
+                    }
                 }
             }, field -> {
                 if (instanceValue == null) {
-                    output.getStaticField(field.getDeclaringClass(), field);
+                    output.getStaticField(field.declaredClass().internalName(), field.name(), field.type().descriptor());
                 } else {
                     instanceValue.eval(environment).compile(true, environment);
-                    output.getField(field.getDeclaringClass(), field.getName(), field.getType());
+                    output.getField(field.declaredClass().internalName(), field.name(), field.type().descriptor());
                 }
             }, () -> environment.error(getPosition(), "no such getter"));
         }
@@ -51,6 +54,6 @@ public class ExpressionNativeGetter extends Expression {
 
     @Override
     public ZenType getType() {
-        return environment.getType(getter.fold(Method::getGenericReturnType, Field::getGenericType, () -> Object.class));
+        return environment.getType(getter.fold(it -> it.returnType().javaType(), it -> it.type().javaType(), () -> Object.class));
     }
 }
