@@ -32,21 +32,21 @@ public class ExpressionNativeGetter extends Expression {
         if (result) {
             getter.fold(method -> {
                 if (instanceValue == null) {
-                    output.invokeStatic(method.declaredClass().internalName(), method.name(), method.descriptor());
+                    output.invokeStatic(method.declaringClass().internalName(), method.name(), method.descriptor());
                 } else {
                     instanceValue.eval(environment).compile(true, environment);
-                    if (method.declaredClass().isInterface()) {
-                        output.invokeInterface(method.declaredClass().internalName(), method.name(), method.descriptor());
+                    if (method.declaringClass().isInterface()) {
+                        output.invokeInterface(method.declaringClass().internalName(), method.name(), method.descriptor());
                     } else {
-                        output.invokeVirtual(method.declaredClass().internalName(), method.name(), method.descriptor());
+                        output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
                     }
                 }
             }, field -> {
                 if (instanceValue == null) {
-                    output.getStaticField(field.declaredClass().internalName(), field.name(), field.type().descriptor());
+                    output.getStaticField(field.declaringClass().internalName(), field.name(), field.type().descriptor());
                 } else {
                     instanceValue.eval(environment).compile(true, environment);
-                    output.getField(field.declaredClass().internalName(), field.name(), field.type().descriptor());
+                    output.getField(field.declaringClass().internalName(), field.name(), field.type().descriptor());
                 }
             }, () -> environment.error(getPosition(), "no such getter"));
         }

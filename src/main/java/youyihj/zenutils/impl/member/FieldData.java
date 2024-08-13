@@ -4,7 +4,7 @@ package youyihj.zenutils.impl.member;
  * @author youyihj
  */
 public interface FieldData extends AnnotatedMember {
-    ClassData declaredClass();
+    ClassData declaringClass();
 
     String name();
 

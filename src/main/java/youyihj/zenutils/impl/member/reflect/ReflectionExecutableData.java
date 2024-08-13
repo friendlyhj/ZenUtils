@@ -28,7 +28,7 @@ public class ReflectionExecutableData extends ReflectionAnnotatedMember implemen
     }
 
     @Override
-    public ClassData declaredClass() {
+    public ClassData declaringClass() {
         return new ReflectionClassData(executable.getDeclaringClass());
     }
 
@@ -44,7 +44,7 @@ public class ReflectionExecutableData extends ReflectionAnnotatedMember implemen
 
     @Override
     public TypeData returnType() {
-        return executable instanceof Method ? ReflectionClassDataFetcher.type(((Method) executable).getGenericReturnType()) : declaredClass();
+        return executable instanceof Method ? ReflectionClassDataFetcher.type(((Method) executable).getGenericReturnType()) : declaringClass();
     }
 
     @Override

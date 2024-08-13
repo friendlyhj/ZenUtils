@@ -10,11 +10,9 @@ import crafttweaker.runtime.ScriptLoader;
 import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.util.IEventHandler;
-import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
 import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
 import youyihj.zenutils.api.reload.Reloadable;
-import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 import youyihj.zenutils.impl.util.InternalUtils;
 
@@ -210,13 +208,5 @@ public class ZenUtilsTweaker implements ITweaker {
             }
         }
         return null;
-    }
-
-    public void setClassDataFetcher(ClassDataFetcher classDataFetcher) {
-        Reference.classDataFetcher = classDataFetcher;
-    }
-
-    public ClassDataFetcher getClassDataFetcher() {
-        return Reference.classDataFetcher;
     }
 }

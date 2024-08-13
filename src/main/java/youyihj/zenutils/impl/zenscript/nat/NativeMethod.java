@@ -112,10 +112,10 @@ public class NativeMethod implements IJavaMethod {
         if(isStatic()) {
             throw new UnsupportedOperationException("Method is static");
         } else {
-            if(executable.declaredClass().isInterface()) {
-                output.invokeInterface(executable.declaredClass().internalName(), executable.name(), executable.descriptor());
+            if(executable.declaringClass().isInterface()) {
+                output.invokeInterface(executable.declaringClass().internalName(), executable.name(), executable.descriptor());
             } else {
-                output.invokeVirtual(executable.declaredClass().internalName(), executable.name(), executable.descriptor());
+                output.invokeVirtual(executable.declaringClass().internalName(), executable.name(), executable.descriptor());
             }
         }
     }
@@ -125,7 +125,7 @@ public class NativeMethod implements IJavaMethod {
         if(!isStatic()) {
             throw new UnsupportedOperationException("Method is not static");
         } else {
-            output.getVisitor().visitMethodInsn(Opcodes.INVOKESTATIC, executable.declaredClass().internalName(), executable.name(), executable.descriptor(), executable.declaredClass().isInterface());
+            output.getVisitor().visitMethodInsn(Opcodes.INVOKESTATIC, executable.declaringClass().internalName(), executable.name(), executable.descriptor(), executable.declaringClass().isInterface());
         }
     }
 

@@ -1,8 +1,8 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
-import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ public enum CraftTweakerBridge {
 
     CraftTweakerBridge() {
         try {
-            for (ExecutableData method : ZenUtils.tweaker.getClassDataFetcher().forName("crafttweaker.api.minecraft.CraftTweakerMC").methods(true)) {
+            for (ExecutableData method : InternalUtils.getClassDataFetcher().forName("crafttweaker.api.minecraft.CraftTweakerMC").methods(true)) {
                 if (method.name().startsWith("get") && method.parameterCount() == 1) {
                     ClassData toConvert = method.parameters().get(0).asClassData();
                     String toConvertClassName = toConvert.name();

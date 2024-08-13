@@ -8,11 +8,11 @@ import stanhebben.zenscript.expression.partial.PartialType;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
-import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
 import youyihj.zenutils.impl.util.Either;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -73,7 +73,7 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
         if (getter.isEmpty() && setter.isEmpty() && methods.isEmpty()) {
             if (isStatic) {
                 try {
-                    return new PartialType(position, environment.getType(ZenUtils.tweaker.getClassDataFetcher().forName(owner.name() + "$" + name).javaType()));
+                    return new PartialType(position, environment.getType(InternalUtils.getClassDataFetcher().forName(owner.name() + "$" + name).javaType()));
                 } catch (ClassNotFoundException e) {
                     environment.error("no such static member or nested class: " + owner.name() + "." + name);
                 }

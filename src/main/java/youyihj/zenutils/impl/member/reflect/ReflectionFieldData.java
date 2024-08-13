@@ -18,7 +18,7 @@ public class ReflectionFieldData extends ReflectionAnnotatedMember implements Fi
     }
 
     @Override
-    public ClassData declaredClass() {
+    public ClassData declaringClass() {
         return new ReflectionClassData(field.getDeclaringClass());
     }
 

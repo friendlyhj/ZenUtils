@@ -32,25 +32,25 @@ public class ExpressionNativeSetter extends Expression {
             Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(method.parameters().get(0).javaType()));
             if (instanceValue == null) {
                 toSetCasted.compile(true, environment);
-                output.invokeStatic(method.declaredClass().internalName(), method.name(), method.descriptor());
+                output.invokeStatic(method.declaringClass().internalName(), method.name(), method.descriptor());
             } else {
                 instanceValue.eval(environment).compile(true, environment);
                 toSetCasted.compile(true, environment);
-                if (method.declaredClass().isInterface()) {
-                    output.invokeInterface(method.declaredClass().internalName(), method.name(), method.descriptor());
+                if (method.declaringClass().isInterface()) {
+                    output.invokeInterface(method.declaringClass().internalName(), method.name(), method.descriptor());
                 } else {
-                    output.invokeVirtual(method.declaredClass().internalName(), method.name(), method.descriptor());
+                    output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
                 }
             }
         }, field -> {
             Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(field.type().javaType()));
             if (instanceValue == null) {
                 toSetCasted.compile(true, environment);
-                output.putStaticField(field.declaredClass().internalName(), field.name(), field.type().descriptor());
+                output.putStaticField(field.declaringClass().internalName(), field.name(), field.type().descriptor());
             } else {
                 instanceValue.eval(environment).compile(true, environment);
                 toSetCasted.compile(true, environment);
-                output.putField(field.declaredClass().internalName(), field.name(), field.type().descriptor());
+                output.putField(field.declaringClass().internalName(), field.name(), field.type().descriptor());
             }
         }, () -> environment.error(getPosition(), "no such setter"));
     }

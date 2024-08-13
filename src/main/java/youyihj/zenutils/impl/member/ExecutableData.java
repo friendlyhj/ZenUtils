@@ -8,7 +8,7 @@ import java.util.List;
 public interface ExecutableData extends AnnotatedMember {
     String name();
 
-    ClassData declaredClass();
+    ClassData declaringClass();
 
     int parameterCount();
 

@@ -6,14 +6,18 @@ import java.lang.reflect.Type;
  * @author youyihj
  */
 public class StableType implements Type {
-    private final String name;
+    private final TypeData typeData;
 
-    public StableType(String name) {
-        this.name = name;
+    public StableType(TypeData typeData) {
+        this.typeData = typeData;
+    }
+
+    public TypeData getTypeData() {
+        return typeData;
     }
 
     @Override
     public String toString() {
-        return name;
+        return typeData.toString();
     }
 }

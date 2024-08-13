@@ -11,12 +11,12 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
-import youyihj.zenutils.Reference;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
 import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.util.Either;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +103,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     private Optional<ClassData> getNestedClass() {
         try {
-            return Optional.of(Reference.classDataFetcher.forName(owner.name() + "$" + name));
+            return Optional.of(InternalUtils.getClassDataFetcher().forName(owner.name() + "$" + name));
         } catch (ClassNotFoundException e) {
             return Optional.empty();
         }

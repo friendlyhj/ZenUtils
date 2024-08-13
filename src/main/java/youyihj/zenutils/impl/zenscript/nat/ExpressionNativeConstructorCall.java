@@ -38,7 +38,7 @@ public class ExpressionNativeConstructorCall extends Expression {
         String signatureBuilder = constructor.parameters().stream()
                                         .map(TypeData::descriptor)
                                         .collect(Collectors.joining("", "(", ")V"));
-        output.invokeSpecial(constructor.declaredClass().internalName(), "<init>", signatureBuilder);
+        output.invokeSpecial(constructor.declaringClass().internalName(), "<init>", signatureBuilder);
         if (!result) {
             output.pop();
         }
@@ -46,6 +46,6 @@ public class ExpressionNativeConstructorCall extends Expression {
 
     @Override
     public ZenType getType() {
-        return environment.getType(constructor.declaredClass().javaType());
+        return environment.getType(constructor.declaringClass().javaType());
     }
 }
