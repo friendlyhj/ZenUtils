@@ -5,7 +5,7 @@
   "plugin": "youyihj.zenutils.impl.mixin.crafttweaker.CraftTweakerMixinPlugin",
   "minVersion": "0.7.11",
   "setSourceFile": true,
-  "priority": 0,
+  "priority": 1000,
   "refmap": "mixins.zenutils.refmap.json",
   "injectors": {
     "maxShiftBy": 2
@@ -13,6 +13,9 @@
   "mixins": [
     "MixinBlockContent",
     "MixinCoTItemBracketHandler",
+    "MixinCraftTweaker",
+    "MixinCraftTweakerAPI",
+    "MixinCraftTweakerImplementationAPI",
     "MixinExpressionMap",
     "MixinItemContent",
     "MixinMCEntity",

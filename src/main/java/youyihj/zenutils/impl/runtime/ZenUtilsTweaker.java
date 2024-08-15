@@ -9,6 +9,7 @@ import crafttweaker.runtime.ITweaker;
 import crafttweaker.runtime.ScriptLoader;
 import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
+import crafttweaker.runtime.providers.ScriptProviderDirectory;
 import crafttweaker.util.IEventHandler;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
 import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
@@ -16,6 +17,7 @@ import youyihj.zenutils.api.reload.Reloadable;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 import youyihj.zenutils.impl.util.InternalUtils;
 
+import java.io.File;
 import java.util.*;
 
 public class ZenUtilsTweaker implements ITweaker {
@@ -26,6 +28,10 @@ public class ZenUtilsTweaker implements ITweaker {
 
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
+        File globalDir = new File("scripts");
+        if(!globalDir.exists())
+            globalDir.mkdirs();
+        tweaker.setScriptProvider(new ScriptProviderDirectory(globalDir));
     }
 
     @Override
@@ -65,7 +71,7 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public void setScriptProvider(IScriptProvider provider) {
-        tweaker.setScriptProvider(provider);
+        // NO-OP
     }
 
     @Override

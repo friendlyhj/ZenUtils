@@ -119,6 +119,28 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                 }
             }
         }
+        if (targetClassName.endsWith("CraftTweaker")) {
+            MethodNode method = targetClass.methods.stream()
+                    .filter(it -> it.name.equals("onConstruction"))
+                    .findFirst()
+                    .orElseThrow(NoSuchMethodError::new);
+            InsnList instructions = method.instructions;
+            ListIterator<AbstractInsnNode> iter = instructions.iterator();
+            while (iter.hasNext()) {
+                AbstractInsnNode node = iter.next();
+                if (node.getType() == AbstractInsnNode.FIELD_INSN) {
+                    FieldInsnNode fieldInsnNode = (FieldInsnNode) node;
+                    if (fieldInsnNode.getOpcode() == GETSTATIC && fieldInsnNode.name.equals("logger")) {
+                        iter.remove();
+                        for (int i = 0; i < 8; i++) {
+                            iter.next();
+                            iter.remove();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override

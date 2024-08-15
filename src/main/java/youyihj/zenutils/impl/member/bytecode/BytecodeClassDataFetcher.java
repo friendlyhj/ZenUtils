@@ -9,10 +9,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author youyihj
@@ -20,6 +17,7 @@ import java.util.Map;
 public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     private final List<FileSystem> jars = new ArrayList<>();
     private final Map<String, ClassData> cache = new HashMap<>();
+    private final Set<String> absentTries = new HashSet<>();
     private final ClassDataFetcher parent;
 
     public BytecodeClassDataFetcher(ClassDataFetcher parent, List<Path> classpath) {
@@ -54,9 +52,17 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
         if (cache.containsKey(className)) {
             return cache.get(className);
         } else {
-            ClassData classData = findClass(className);
-            cache.put(className, classData);
-            return classData;
+            if (absentTries.contains(className)) {
+                throw new ClassNotFoundException(className);
+            }
+            try {
+                ClassData classData = findClass(className);
+                cache.put(className, classData);
+                return classData;
+            } catch (ClassNotFoundException e) {
+                absentTries.add(className);
+                throw e;
+            }
         }
     }
 
@@ -87,12 +93,16 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     }
 
     private ClassData findClass(String className) throws ClassNotFoundException {
-        for (FileSystem jar : jars) {
-            String[] split = className.split("\\.");
-            String first = split[0];
-            String[] more = new String[split.length - 1];
-            System.arraycopy(split, 1, more, 0, more.length);
+        String[] split = className.split("\\.");
+        String first = split[0];
+        String[] more = new String[split.length - 1];
+        System.arraycopy(split, 1, more, 0, more.length);
+        if (more.length > 0) {
             more[more.length - 1] = more[more.length - 1] + ".class";
+        } else {
+            first += ".class";
+        }
+        for (FileSystem jar : jars) {
             Path classPath = jar.getPath(first, more);
             if (Files.exists(classPath)) {
                 try {

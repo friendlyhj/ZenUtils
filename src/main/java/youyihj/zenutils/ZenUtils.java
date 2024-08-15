@@ -1,16 +1,10 @@
 package youyihj.zenutils;
 
 import crafttweaker.CraftTweakerAPI;
-import crafttweaker.CrafttweakerImplementationAPI;
-import crafttweaker.api.logger.MTLogger;
 import crafttweaker.api.player.IPlayer;
 import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.mc1120.commands.CTChatCommand;
-import crafttweaker.mc1120.logger.MCLogger;
 import crafttweaker.mc1120.player.expand.ExpandPlayer;
-import crafttweaker.preprocessor.PreprocessorManager;
-import crafttweaker.runtime.ILogger;
-import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraft.command.CommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -24,9 +18,6 @@ import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
 import youyihj.zenutils.api.ftbq.FTBQEventManager;
-import youyihj.zenutils.api.preprocessor.*;
-import youyihj.zenutils.api.util.ZenUtilsGlobal;
-import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
 import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.CleanLogCommand;
@@ -35,18 +26,10 @@ import youyihj.zenutils.impl.player.IStatFormatterAdapter;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
-import youyihj.zenutils.impl.runtime.ZenUtilsFileLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
-import youyihj.zenutils.impl.util.ReflectUtils;
-import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
-import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.Map;
 
@@ -67,28 +50,8 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
-        registerGlobalMethods();
-        GlobalRegistry.getRoot().put("native", pos -> new PartialJavaNativeClassOrPackage(pos, ""), null);
-        PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
-        preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
-        preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
-        preprocessorManager.registerPreprocessorAction(HardFailPreprocessor.NAME, HardFailPreprocessor::new);
-        preprocessorManager.registerPreprocessorAction(ReloadablePreprocessor.NAME, ReloadablePreprocessor::new);
-        preprocessorManager.registerPreprocessorAction(NotReloadablePreprocessor.NAME, NotReloadablePreprocessor::new);
-        preprocessorManager.registerPreprocessorAction(DownloadReobfMappingPreprocessor.NAME, DownloadReobfMappingPreprocessor::new);
-        preprocessorManager.registerPreprocessorAction(MixinPreprocessor.NAME, (IMultilinePreprocessorFactory<MixinPreprocessor>) MixinPreprocessor::new);
-        try {
-            redirectLogger();
-        } catch (Exception e) {
-            CraftTweakerAPI.logWarning("Failed to set crafttweaker logger");
-        }
-        try {
-            tweaker = new ZenUtilsTweaker(CraftTweakerAPI.tweaker);
-            final Field tweakerField = ReflectUtils.removePrivateFinal(CraftTweakerAPI.class, "tweaker");
-            tweakerField.set(null, tweaker);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            CraftTweakerAPI.logWarning("Fail to set crafttweaker tweaker");
-        }
+        crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
+        tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;
         if (Loader.isModLoaded("ftbquests")) {
             MinecraftForge.EVENT_BUS.register(FTBQEventManager.Handler.class);
         }
@@ -130,30 +93,6 @@ public class ZenUtils {
     public static void onServerStarted(FMLServerStartedEvent event) {
         CraftTweakerAPI.tweaker.getActions().clear();
         InternalUtils.setScriptStatus(ScriptStatus.STARTED);
-    }
-
-    private static void registerGlobalMethods() {
-        for (Method method : ZenUtilsGlobal.class.getDeclaredMethods()) {
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            String name = method.getName();
-            // skip typeof for primitive types
-            if (name.equals("typeof") && parameterTypes[0].isPrimitive())
-                continue;
-            GlobalRegistry.registerGlobal(name, CraftTweakerAPI.getJavaStaticMethodSymbol(ZenUtilsGlobal.class, name, parameterTypes));
-        }
-    }
-
-    private static void redirectLogger() throws Exception {
-        crafttweakerLogger = new ZenUtilsLogger();
-        final Field loggerField = ReflectUtils.removePrivateFinal(CrafttweakerImplementationAPI.class, "logger");
-        final Field mtLoggerSubLoggerField = ReflectUtils.removePrivate(MTLogger.class, "loggers");
-        final Field mcLoggerWriterField = ReflectUtils.removePrivate(MCLogger.class, "printWriter");
-        @SuppressWarnings("unchecked")
-        List<ILogger> loggerList = (List<ILogger>) mtLoggerSubLoggerField.get(CrafttweakerImplementationAPI.logger);
-        PrintWriter printWriter = (PrintWriter) mcLoggerWriterField.get(loggerList.get(0));
-        printWriter.close();
-        crafttweakerLogger.addLogger(new ZenUtilsFileLogger(FileSystems.getDefault().getPath("crafttweaker.log")));
-        loggerField.set(null, crafttweakerLogger);
     }
 
     @SuppressWarnings("unchecked")
