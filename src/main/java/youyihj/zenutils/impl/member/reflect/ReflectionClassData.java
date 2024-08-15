@@ -119,4 +119,9 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
     public ClassData asClassData() {
         return this;
     }
+
+    @Override
+    public String toString() {
+        return descriptor();
+    }
 }

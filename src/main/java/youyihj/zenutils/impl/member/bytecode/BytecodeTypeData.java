@@ -1,7 +1,7 @@
 package youyihj.zenutils.impl.member.bytecode;
 
 import youyihj.zenutils.impl.member.ClassData;
-import youyihj.zenutils.impl.member.StableType;
+import youyihj.zenutils.impl.member.LiteralType;
 import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 
@@ -24,7 +24,7 @@ public class BytecodeTypeData implements TypeData {
 
     @Override
     public Type javaType() {
-        return new StableType(this);
+        return new LiteralType(this);
     }
 
     @Override

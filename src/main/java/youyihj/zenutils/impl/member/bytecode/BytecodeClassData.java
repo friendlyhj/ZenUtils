@@ -7,7 +7,7 @@ import org.objectweb.asm.tree.MethodNode;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
-import youyihj.zenutils.impl.member.StableType;
+import youyihj.zenutils.impl.member.LiteralType;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
@@ -51,13 +51,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         }
         ClassData superClass = superClass();
         if (superClass != null) {
-            if (publicOnly) {
-                fieldData.addAll(superClass.fields(true));
-            } else {
-                for (FieldData superField : superClass.fields(false)) {
-                    if (Modifier.isProtected(superField.modifiers())) {
-                        fieldData.add(superField);
-                    }
+            for (FieldData superField : superClass.fields(false)) {
+                int modifiers = superField.modifiers();
+                if (Modifier.isPublic(modifiers) || (!publicOnly && Modifier.isProtected(modifiers))) {
+                    fieldData.add(superField);
                 }
             }
         }
@@ -74,13 +71,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         }
         ClassData superClass = superClass();
         if (superClass != null) {
-            if (publicOnly) {
-                methods.addAll(superClass.methods(true));
-            } else {
-                for (ExecutableData superMethod : superClass.methods(false)) {
-                    if (Modifier.isProtected(superMethod.modifiers())) {
-                        methods.add(superMethod);
-                    }
+            for (ExecutableData superMethod : superClass.methods(false)) {
+                int modifiers = superMethod.modifiers();
+                if (Modifier.isPublic(modifiers) || (!publicOnly && Modifier.isProtected(modifiers))) {
+                    methods.add(superMethod);
                 }
             }
         }
@@ -148,7 +142,7 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     @Override
     public Type javaType() {
-        return new StableType(this);
+        return new LiteralType(this);
     }
 
     @Override
@@ -167,6 +161,6 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     @Override
     public String toString() {
-        return name();
+        return descriptor();
     }
 }
