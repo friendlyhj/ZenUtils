@@ -41,7 +41,6 @@ import java.util.Map;
 public final class InternalUtils {
     @SuppressWarnings("rawtypes")
     private static final List<EventList> ALL_EVENT_LISTS = new ArrayList<>();
-    private static final ClassDataFetcher CLASS_DATA_FETCHER = new ModsClassDataFetcher();
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
@@ -137,10 +136,12 @@ public final class InternalUtils {
     }
 
     public static ClassDataFetcher getClassDataFetcher() {
-        return CLASS_DATA_FETCHER;
+        return ModsClassDataFetcher.INSTANCE;
     }
 
-    private static class ModsClassDataFetcher implements ClassDataFetcher {
+    private enum ModsClassDataFetcher implements ClassDataFetcher {
+        INSTANCE;
+
         private final ReflectionClassDataFetcher reflect = new ReflectionClassDataFetcher(Launch.classLoader);
         private BytecodeClassDataFetcher bytecode;
 
