@@ -136,8 +136,8 @@ public class MixinAnnotationTranslator {
             }
         } else if (expectedType == At.class) {
             translate("At", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
-        } else if (expectedType == Redirect.class) {
-            translate("Redirect", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
+        } else if (expectedType == Slice.class) {
+            translate("Slice", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
         } else if (expectedType == Constant.class) {
             translate("Constant", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
         }
