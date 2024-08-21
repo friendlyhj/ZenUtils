@@ -85,8 +85,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                 }
             } else {
                 try {
-                    String genericInfo = name.substring(name.indexOf("<") + 1, name.indexOf(">"));
+                    String genericInfo = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
                     String rawClassName = name.substring(1, name.indexOf("<")).replace('/', '.');
+                    //TODO: handle nested generic type
                     String[] genericTypes = genericInfo.split(",");
                     ClassData rawClassData = classDataFetcher.forName(rawClassName);
                     if (genericTypes.length == 1) {
@@ -99,6 +100,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                             return new ZenTypeAssociative(getType(new LiteralType(genericTypes[1])), getType(new LiteralType(genericTypes[0])));
                         }
                     }
+                    return new ZenTypeJavaNative(rawClassData, this);
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
