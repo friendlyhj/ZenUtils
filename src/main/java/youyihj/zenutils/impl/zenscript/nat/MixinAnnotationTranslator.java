@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.IPreprocessor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -11,6 +12,10 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
+import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
 import java.lang.annotation.Retention;
@@ -97,6 +102,7 @@ public class MixinAnnotationTranslator {
             }
             writeContentToAnnotation(visitor, expectedType, key, value, exceptionFactory);
         }
+        processAnnotation(annotationType, visitor, json.getAsJsonObject(), exceptionFactory);
         visitor.visitEnd();
     }
 
@@ -145,5 +151,50 @@ public class MixinAnnotationTranslator {
 
     private static boolean isVisibleOnRuntime(Class<?> annotationType) {
         return annotationType.getAnnotation(Retention.class).value() == RetentionPolicy.RUNTIME;
+    }
+
+    private static void processAnnotation(Class<?> annotationType, AnnotationVisitor visitor, JsonObject json, Function<String, ParseException> exceptionFactory) throws ParseException {
+        if (InternalUtils.hasMethod(annotationType, "remap")) {
+            visitor.visit("remap", false);
+            if (json.has("remap")) {
+                throw exceptionFactory.apply("remap always is false");
+            }
+        }
+        if (annotationType == Mixin.class) {
+            List<String> targets = new ArrayList<>();
+            if (json.has("targets")) {
+                JsonElement targetsJson = json.get("targets");
+                if (targetsJson.isJsonArray()) {
+                    for (JsonElement target : targetsJson.getAsJsonArray()) {
+                        targets.add(target.getAsString());
+                    }
+                } else {
+                    targets.add(targetsJson.getAsString());
+                }
+            }
+            if (json.has("value")) {
+                JsonElement valueJson = json.get("value");
+                if (valueJson.isJsonArray()) {
+                    for (JsonElement target : valueJson.getAsJsonArray()) {
+                        targets.add(target.getAsString().replace('/', '.'));
+                    }
+                } else {
+                    targets.add(valueJson.getAsString().replace('/', '.'));
+                }
+            }
+            for (String target : targets) {
+                ClassData classData;
+                try {
+                    classData = InternalUtils.getClassDataFetcher().forName(target);
+                } catch (ClassNotFoundException e) {
+                    throw exceptionFactory.apply("class " + target + " does not exist.");
+                }
+                if (classData instanceof ReflectionClassData) {
+                    if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
+                        throw exceptionFactory.apply("Can not mixin class " + target + ". It is a non-mod class or already loaded.");
+                    }
+                }
+            }
+        }
     }
 }
