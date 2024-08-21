@@ -1,25 +1,22 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
-import com.google.common.collect.Lists;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.IPreprocessor;
 import crafttweaker.preprocessor.PreprocessorFactory;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ScriptFile;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.value.IntRange;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessor;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,49 +25,79 @@ import java.util.List;
  */
 @Mixin(value = PreprocessorManager.class, remap = false)
 public abstract class MixinPreprocessorManager {
-    @Shadow private HashMap<String, PreprocessorFactory<?>> registeredPreprocessorActions;
+    @Shadow
+    private HashMap<String, PreprocessorFactory<?>> registeredPreprocessorActions;
 
-    @Shadow protected abstract void addPreprocessorToFileMap(String filename, IPreprocessor preprocessor);
+    @Shadow
+    protected abstract void addPreprocessorToFileMap(String filename, IPreprocessor preprocessor);
 
-    @Inject(
-            method = "checkLine",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcrafttweaker/preprocessor/IPreprocessor;executeActionOnFind(Lcrafttweaker/runtime/ScriptFile;)V"
-            ),
-            cancellable = true
-    )
-    private void denyPreprocessingWhenCheckingSingleLine(ScriptFile scriptFile, String line, int lineIndex, CallbackInfoReturnable<IPreprocessor> cir, @Local IPreprocessor preprocessor) {
-        cir.setReturnValue(preprocessor);
-    }
+    /**
+     * @author youyihj
+     * @reason read multiline processors
+     */
+    @Overwrite
+    public List<IPreprocessor> checkFileForPreprocessors(ScriptFile scriptFile) {
+        List<IPreprocessor> preprocessorList = new ArrayList<>();
+        String filename = scriptFile.getName();
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new InputStreamReader(scriptFile.open(), StandardCharsets.UTF_8));
 
-    @WrapOperation(
-            method = "checkFileForPreprocessors",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcrafttweaker/preprocessor/PreprocessorManager;checkLine(Lcrafttweaker/runtime/ScriptFile;Ljava/lang/String;I)Lcrafttweaker/preprocessor/IPreprocessor;"
-            )
-    )
-    private IPreprocessor readMultilinePreprocessor(PreprocessorManager instance, ScriptFile scriptFile, String line, int lineIndex, Operation<IPreprocessor> original, @Local BufferedReader reader, @Local LocalIntRef mutLineIndex) throws IOException {
-        IPreprocessor preprocessor = original.call(instance, scriptFile, line, lineIndex);
-        if (preprocessor instanceof IMultilinePreprocessor) {
-            List<String> lines = Lists.newArrayList(preprocessor.getPreprocessorLine());
-            String multiline;
+            String line = "";
+            String content = "";
+            int lineIndex = -1;
+            boolean readCurrentLineAgain = false;
+
             while (true) {
-                multiline = reader.readLine();
-                if (multiline == null || !multiline.trim().startsWith("#")) {
-                    break;
+                if (!readCurrentLineAgain) {
+                    line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    lineIndex++;
+                    content = line.trim();
+                } else {
+                    readCurrentLineAgain = false;
                 }
-                mutLineIndex.set(mutLineIndex.get() + 1);
-                lines.add(multiline);
+                if (!content.isEmpty() && content.charAt(0) == '#') {
+                    content = content.substring(1);
+                    String[] splits = content.split(" ");
+                    PreprocessorFactory<?> preprocessorFactory = registeredPreprocessorActions.get(splits[0]);
+                    if (preprocessorFactory instanceof IMultilinePreprocessorFactory) {
+                        IMultilinePreprocessorFactory<?> multilinePreprocessorFactory = (IMultilinePreprocessorFactory<?>) preprocessorFactory;
+                        List<String> multilines = new ArrayList<>();
+                        multilines.add(line);
+                        int startIndex = lineIndex;
+                        while ((line = reader.readLine()) != null) {
+                            lineIndex++;
+                            content = line.trim();
+                            if (!content.isEmpty() && content.charAt(0) == '#') {
+                                splits = content.substring(1).split(" ");
+                                if (registeredPreprocessorActions.containsKey(splits[0])) {
+                                    readCurrentLineAgain = true;
+                                    break;
+                                } else {
+                                    multilines.add(line);
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                        IMultilinePreprocessor preprocessor = multilinePreprocessorFactory.createPreprocessor(scriptFile.getName(), multilines, new IntRange(startIndex, lineIndex - 1));
+                        preprocessor.executeActionOnFind(scriptFile);
+                        preprocessorList.add(preprocessor);
+                        addPreprocessorToFileMap(scriptFile.getName(), preprocessor);
+                    } else if (preprocessorFactory != null) {
+                        IPreprocessor preprocessor = preprocessorFactory.createPreprocessor(scriptFile.getName(), line, lineIndex);
+                        preprocessor.executeActionOnFind(scriptFile);
+                        preprocessorList.add(preprocessor);
+                        addPreprocessorToFileMap(scriptFile.getName(), preprocessor);
+                    }
+                }
             }
-            IMultilinePreprocessorFactory<?> multilinePreprocessorFactory = (IMultilinePreprocessorFactory<?>) registeredPreprocessorActions.get(preprocessor.getPreprocessorName());
-            preprocessor = multilinePreprocessorFactory.createPreprocessor(preprocessor.getFileName(), lines, new IntRange(lineIndex, mutLineIndex.get()));
+        } catch (IOException e) {
+            CraftTweakerAPI.logError("Could not read preprocessor functions in " + filename, e);
         }
-        if (preprocessor != null) {
-            preprocessor.executeActionOnFind(scriptFile);
-            addPreprocessorToFileMap(scriptFile.getName(), preprocessor);
-        }
-        return preprocessor;
+        return preprocessorList;
     }
 }

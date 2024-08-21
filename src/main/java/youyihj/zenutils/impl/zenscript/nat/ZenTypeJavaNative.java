@@ -142,6 +142,7 @@ public class ZenTypeJavaNative extends ZenType {
         if (clazz instanceof ReflectionClassData) {
             return ((Class<?>) clazz.javaType());
         }
+        // TODO: load class from bytecode
         return Object.class;
     }
 
