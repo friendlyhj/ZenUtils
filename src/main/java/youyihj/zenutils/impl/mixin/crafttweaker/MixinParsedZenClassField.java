@@ -43,7 +43,7 @@ public abstract class MixinParsedZenClassField implements IParsedZenClassFieldEx
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             MixinAnnotationTranslator.translate(
                     annotation.getLeft(), annotation.getRight(),
-                    it -> instance.visitAnnotation(it, true),
+                    instance::visitAnnotation,
                     it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
             );
         }

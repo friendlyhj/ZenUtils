@@ -26,15 +26,30 @@ public abstract class MixinParsedZenClass {
     @Final
     public ZenPosition position;
 
+    @Shadow
+    @Final
+    public String className;
+
+    @Shadow
+    public Class<?> thisClass;
+
     @Inject(method = "writeClass", at = @At(value = "INVOKE", target = "Lorg/objectweb/asm/ClassWriter;visitEnd()V"))
     private void applyAnnotation(IEnvironmentGlobal environmentGlobal, CallbackInfo ci, @Local ClassWriter cw) {
         for (MixinPreprocessor mixinPreprocessor : MixinAnnotationTranslator.findAnnotation(position)) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             MixinAnnotationTranslator.translate(
                     annotation.getLeft(), annotation.getRight(),
-                    it -> cw.visitAnnotation(it, true),
+                    cw::visitAnnotation,
                     it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
             );
+        }
+    }
+
+    @Inject(method = "writeClass", at = @At(value = "INVOKE", target = "Lstanhebben/zenscript/compiler/IEnvironmentGlobal;putClass(Ljava/lang/String;[B)V", shift = At.Shift.AFTER), cancellable = true)
+    private void denyLoadMixinClass(IEnvironmentGlobal environmentGlobal, CallbackInfo ci) {
+        if (className.startsWith("youyihj/zenutils/impl/mixin")) {
+            thisClass = Object.class;
+            ci.cancel();
         }
     }
 }

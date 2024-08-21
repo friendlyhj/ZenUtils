@@ -85,11 +85,11 @@ dependencies {
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
     deobfCompile "zone.rong:mixinbooter:8.9"
     deobfCompile "curse.maven:simple-dimensions-235444:2445577"
-    compileOnly provided('org.spongepowered:mixin:0.8-SNAPSHOT') {
-        exclude module: 'guava'
-        exclude module: 'commons-io'
-        exclude module: 'gson'
-    }
+//    compileOnly provided('org.spongepowered:mixin:0.8-SNAPSHOT') {
+//        exclude module: 'guava'
+//        exclude module: 'commons-io'
+//        exclude module: 'gson'
+//    }
 }
 
 repositories {

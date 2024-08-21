@@ -13,10 +13,13 @@ import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -77,12 +80,12 @@ public class MixinAnnotationTranslator {
         return found;
     }
 
-    public static void translate(String type, JsonElement json, Function<String, AnnotationVisitor> visitorPrimer, Function<String, ParseException> exceptionFactory) throws ParseException {
+    public static void translate(String type, JsonElement json, BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer, Function<String, ParseException> exceptionFactory) throws ParseException {
         Class<?> annotationType = SUPPORTED_ANNOTATIONS.get(type);
         if (annotationType == null) {
             throw exceptionFactory.apply("unsupported mixin annotation: " + type);
         }
-        AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(annotationType));
+        AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(annotationType), isVisibleOnRuntime(annotationType));
         for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();
@@ -132,11 +135,15 @@ public class MixinAnnotationTranslator {
                 arrayVisitor.visitEnd();
             }
         } else if (expectedType == At.class) {
-            translate("At", value, it -> visitor.visitAnnotation(key, it), exceptionFactory);
+            translate("At", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
         } else if (expectedType == Redirect.class) {
-            translate("Redirect", value, it -> visitor.visitAnnotation(key, it), exceptionFactory);
+            translate("Redirect", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
         } else if (expectedType == Constant.class) {
-            translate("Constant", value, it -> visitor.visitAnnotation(key, it), exceptionFactory);
+            translate("Constant", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
         }
+    }
+
+    private static boolean isVisibleOnRuntime(Class<?> annotationType) {
+        return annotationType.getAnnotation(Retention.class).value() == RetentionPolicy.RUNTIME;
     }
 }

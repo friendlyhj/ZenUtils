@@ -74,7 +74,7 @@ public abstract class MixinParsedZenClassMethod {
             ZenPosition position = method.getPosition();
             MixinAnnotationTranslator.translate(
                     annotation.getLeft(), annotation.getRight(),
-                    it -> methodOutput.getVisitor().visitAnnotation(it, true),
+                    methodOutput.getVisitor()::visitAnnotation,
                     it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
             );
         }
