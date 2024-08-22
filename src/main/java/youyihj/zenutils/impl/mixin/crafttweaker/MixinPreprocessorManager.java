@@ -86,12 +86,12 @@ public abstract class MixinPreprocessorManager {
                         IMultilinePreprocessor preprocessor = multilinePreprocessorFactory.createPreprocessor(scriptFile.getName(), multilines, new IntRange(startIndex, lineIndex - 1));
                         preprocessor.executeActionOnFind(scriptFile);
                         preprocessorList.add(preprocessor);
-                        addPreprocessorToFileMap(scriptFile.getName(), preprocessor);
+                        addPreprocessorToFileMap(scriptFile.getEffectiveName(), preprocessor);
                     } else if (preprocessorFactory != null) {
                         IPreprocessor preprocessor = preprocessorFactory.createPreprocessor(scriptFile.getName(), line, lineIndex);
                         preprocessor.executeActionOnFind(scriptFile);
                         preprocessorList.add(preprocessor);
-                        addPreprocessorToFileMap(scriptFile.getName(), preprocessor);
+                        addPreprocessorToFileMap(scriptFile.getEffectiveName(), preprocessor);
                     }
                 }
             }
