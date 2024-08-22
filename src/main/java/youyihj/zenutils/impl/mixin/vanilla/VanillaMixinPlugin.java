@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
+import youyihj.zenutils.impl.core.Configuration;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Set;
  * @author youyihj
  */
 @ReflectionInvoked
-public class CleanroomCompatMixinPlugin implements IMixinConfigPlugin {
+public class VanillaMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
@@ -38,7 +39,9 @@ public class CleanroomCompatMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-
+        if (!Configuration.enableMixin) {
+            myTargets.remove("net.minecraftforge.fml.common.LoadController");
+        }
     }
 
     @Override
