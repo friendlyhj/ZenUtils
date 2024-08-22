@@ -11,6 +11,7 @@ import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.runtime.providers.ScriptProviderDirectory;
 import crafttweaker.util.IEventHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
 import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
 import youyihj.zenutils.api.reload.Reloadable;
@@ -121,6 +122,9 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public NetworkSide getNetworkSide() {
+        if (tweaker.getNetworkSide() == NetworkSide.INVALID_SIDE) {
+            tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
+        }
         return tweaker.getNetworkSide();
     }
 
