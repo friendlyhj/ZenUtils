@@ -79,7 +79,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                 String className = name.substring(1, name.length() - 1).replace('/', '.');
                 try {
                     ClassData classData = classDataFetcher.forName(className);
-                    return new ZenTypeJavaNative(classData, this);
+                    return zu$checkNative(classData);
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
@@ -100,7 +100,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                             return new ZenTypeAssociative(getType(new LiteralType(genericTypes[1])), getType(new LiteralType(genericTypes[0])));
                         }
                     }
-                    return new ZenTypeJavaNative(rawClassData, this);
+                    return zu$checkNative(rawClassData);
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
@@ -110,5 +110,14 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
             return new ZenTypeArrayBasic(getType(new LiteralType(name.substring(1))));
         }
         return new ZenTypeNative(Object.class);
+    }
+
+    @Unique
+    private ZenTypeJavaNative zu$checkNative(ClassData classData) {
+        if (NativeClassValidate.isValid(classData)) {
+            return new ZenTypeJavaNative(classData, this);
+        } else {
+            return null;
+        }
     }
 }
