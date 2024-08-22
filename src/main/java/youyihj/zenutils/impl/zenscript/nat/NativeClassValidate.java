@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.api.zenscript.INativeClassExclude;
@@ -15,8 +16,15 @@ import java.util.Scanner;
  */
 public class NativeClassValidate {
     public static final List<INativeClassExclude> EXCLUDES = new ArrayList<>();
-
-    public static final boolean ENABLE = true;
+    private static final List<String> WHITELIST = ImmutableList.of(
+            Integer.class.getName(),
+            Long.class.getName(),
+            Short.class.getName(),
+            Double.class.getName(),
+            Float.class.getName(),
+            Boolean.class.getName(),
+            Byte.class.getName()
+    );
 
     static {
         Lists.newArrayList(
@@ -53,6 +61,6 @@ public class NativeClassValidate {
     }
 
     public static boolean isValid(ClassData clazz) {
-        return ENABLE && !clazz.isAnnotationPresent(ZenClass.class) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz));
+        return WHITELIST.contains(clazz.name()) || (!clazz.isAnnotationPresent(ZenClass.class) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz)));
     }
 }
