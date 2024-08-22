@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassData {
     private final byte[] bytecode;
-    /* package-private */ final BytecodeClassDataFetcher classDataFetcher;
+    private final BytecodeClassDataFetcher classDataFetcher;
     private final ClassNode classNode;
 
     public BytecodeClassData(byte[] bytecode, BytecodeClassDataFetcher classDataFetcher) {
@@ -157,6 +157,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     public byte[] getBytecode() {
         return bytecode;
+    }
+
+    public BytecodeClassDataFetcher getClassDataFetcher() {
+        return classDataFetcher;
     }
 
     @Override

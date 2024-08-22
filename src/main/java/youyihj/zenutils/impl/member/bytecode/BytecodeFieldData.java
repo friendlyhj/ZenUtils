@@ -34,6 +34,6 @@ public class BytecodeFieldData extends BytecodeAnnotatedMember implements FieldD
 
     @Override
     public TypeData type() {
-        return declaringClass.classDataFetcher.type(fieldNode.desc, fieldNode.signature);
+        return declaringClass.getClassDataFetcher().type(fieldNode.desc, fieldNode.signature);
     }
 }

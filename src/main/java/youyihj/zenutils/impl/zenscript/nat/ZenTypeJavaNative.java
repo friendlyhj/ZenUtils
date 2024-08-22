@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
+import net.minecraft.launchwrapper.Launch;
 import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.annotations.CompareType;
@@ -21,9 +22,13 @@ import stanhebben.zenscript.util.ZenTypeUtil;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.TypeData;
+import youyihj.zenutils.impl.member.bytecode.BytecodeClassData;
+import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -142,7 +147,13 @@ public class ZenTypeJavaNative extends ZenType {
         if (clazz instanceof ReflectionClassData) {
             return ((Class<?>) clazz.javaType());
         }
-        // TODO: load class from bytecode
+        if (clazz instanceof BytecodeClassData) {
+            try {
+                return ClassInfoClassLoader.INSTANCE.getClassInfo(((BytecodeClassData) clazz));
+            } catch (ClassNotFoundException e) {
+                return Object.class;
+            }
+        }
         return Object.class;
     }
 
@@ -215,5 +226,43 @@ public class ZenTypeJavaNative extends ZenType {
 
     private static <T> Stream<T> optionalStream(T obj) {
         return obj == null ? Stream.empty() : Stream.of(obj);
+    }
+
+    private static class ClassInfoClassLoader extends ClassLoader {
+        private static final ClassInfoClassLoader INSTANCE = new ClassInfoClassLoader();
+
+        private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
+        private WeakReference<BytecodeClassDataFetcher> classDataFetcherRef;
+
+        private ClassInfoClassLoader() {}
+
+        Class<?> getClassInfo(BytecodeClassData classData) throws ClassNotFoundException {
+            String className = classData.name();
+            if (classes.containsKey(className)) {
+                return classes.get(className);
+            } else {
+                classDataFetcherRef = new WeakReference<>(classData.getClassDataFetcher());
+                Class<?> clazz = findClass(classData.name());
+                classes.put(className, clazz);
+                return clazz;
+            }
+        }
+
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+            BytecodeClassDataFetcher classDataFetcher = classDataFetcherRef.get();
+            if (classDataFetcher == null) {
+                return Launch.classLoader.loadClass(name);
+            }
+            ClassData classData = classDataFetcher.forName(name);
+            if (classData instanceof ReflectionClassData) {
+                return ((Class<?>) classData.javaType());
+            }
+            if (classData instanceof BytecodeClassData) {
+                byte[] bytecode = ((BytecodeClassData) classData).getBytecode();
+                return defineClass(name, bytecode, 0, bytecode.length);
+            }
+            throw new ClassNotFoundException(name);
+        }
     }
 }

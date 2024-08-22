@@ -1,6 +1,8 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import com.google.gson.JsonElement;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassWriter;
@@ -10,9 +12,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import stanhebben.zenscript.compiler.EnvironmentClass;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.definitions.zenclasses.ParsedZenClass;
+import stanhebben.zenscript.expression.ExpressionThis;
 import stanhebben.zenscript.parser.ParseException;
+import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 import youyihj.zenutils.impl.zenscript.nat.MixinAnnotationTranslator;

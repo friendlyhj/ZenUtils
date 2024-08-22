@@ -48,13 +48,13 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
         String signature = methodNode.signature;
         String descriptor = Type.getReturnType(methodNode.desc).getDescriptor();
         if (signature == null) {
-            return declaringClass.classDataFetcher.type(descriptor, null);
+            return declaringClass.getClassDataFetcher().type(descriptor, null);
         } else {
             String returnAndException = signature.substring(signature.indexOf(')') + 1);
             if (returnAndException.contains("^")) {
-                return declaringClass.classDataFetcher.type(descriptor, signature.substring(0, signature.indexOf('^')));
+                return declaringClass.getClassDataFetcher().type(descriptor, signature.substring(0, signature.indexOf('^')));
             } else {
-                return declaringClass.classDataFetcher.type(descriptor, returnAndException);
+                return declaringClass.getClassDataFetcher().type(descriptor, returnAndException);
             }
         }
     }
@@ -64,13 +64,13 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
         List<TypeData> parameters = new ArrayList<>();
         if (methodNode.signature == null) {
             for (Type parameter : Type.getMethodType(methodNode.desc).getArgumentTypes()) {
-                parameters.add(declaringClass.classDataFetcher.type(parameter.getDescriptor(), null));
+                parameters.add(declaringClass.getClassDataFetcher().type(parameter.getDescriptor(), null));
             }
         } else {
             List<String> genericInfos = new MethodParameterParser(methodNode.signature).parse();
             Type[] descriptors = Type.getMethodType(methodNode.desc).getArgumentTypes();
             for (int i = 0; i < descriptors.length; i++) {
-                parameters.add(declaringClass.classDataFetcher.type(descriptors[i].getDescriptor(), genericInfos.get(i)));
+                parameters.add(declaringClass.getClassDataFetcher().type(descriptors[i].getDescriptor(), genericInfos.get(i)));
             }
         }
         return parameters;
