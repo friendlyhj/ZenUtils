@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassWriter;
 import org.spongepowered.asm.mixin.Final;
@@ -19,8 +21,11 @@ import stanhebben.zenscript.expression.ExpressionThis;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.LiteralType;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 import youyihj.zenutils.impl.zenscript.nat.MixinAnnotationTranslator;
+
+import java.util.List;
 
 /**
  * @author youyihj
@@ -38,8 +43,8 @@ public abstract class MixinParsedZenClass {
     @Shadow
     public Class<?> thisClass;
 
-    @Inject(method = "writeClass", at = @At(value = "INVOKE", target = "Lorg/objectweb/asm/ClassWriter;visitEnd()V"))
-    private void applyAnnotation(IEnvironmentGlobal environmentGlobal, CallbackInfo ci, @Local ClassWriter cw) {
+    @Inject(method = "writeClass", at = @At(value = "INVOKE", target = "Lorg/objectweb/asm/ClassWriter;visit(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V", shift = At.Shift.AFTER))
+    private void applyAnnotation(IEnvironmentGlobal environmentGlobal, CallbackInfo ci, @Local ClassWriter cw, @Share("target") LocalRef<String> targetRef) {
         for (MixinPreprocessor mixinPreprocessor : MixinAnnotationTranslator.findAnnotation(position)) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             MixinAnnotationTranslator.translate(
@@ -47,6 +52,12 @@ public abstract class MixinParsedZenClass {
                     cw::visitAnnotation,
                     it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
             );
+            if (annotation.getLeft().equals("Mixin")) {
+                List<String> mixinTargets = MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject());
+                if (mixinTargets.size() == 1) {
+                    targetRef.set(mixinTargets.get(0));
+                }
+            }
         }
     }
 
@@ -55,6 +66,16 @@ public abstract class MixinParsedZenClass {
         if (className.startsWith("youyihj/zenutils/impl/mixin")) {
             thisClass = Object.class;
             ci.cancel();
+        }
+    }
+
+    @WrapOperation(method = "writeClass", at = @At(value = "INVOKE", target = "Lstanhebben/zenscript/compiler/EnvironmentClass;putValue(Ljava/lang/String;Lstanhebben/zenscript/symbols/IZenSymbol;Lstanhebben/zenscript/util/ZenPosition;)V"))
+    private void injectThis0(EnvironmentClass instance, String name, IZenSymbol value, ZenPosition position, Operation<Void> original, @Share("target") LocalRef<String> targetRef) {
+        original.call(instance, name, value, position);
+        String target = targetRef.get();
+        if (target != null) {
+            String targetDesc = "L" + target.replace('.', '/') + ";";
+            instance.putValue("this0", position1 -> new ExpressionThis(position1, instance.getType(new LiteralType(targetDesc))), position);
         }
     }
 }

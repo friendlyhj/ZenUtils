@@ -52,6 +52,11 @@ public abstract class MixinParsedZenClassMethod {
         mixinPreprocessors.set(preprocessors);
     }
 
+    @ModifyArg(method = "writeAll", at = @At(value = "INVOKE", target = "Lstanhebben/zenscript/symbols/SymbolArgument;<init>(ILstanhebben/zenscript/type/ZenType;)V"))
+    private int staticArgId(int id, @Share("isStatic") LocalBooleanRef isStatic) {
+        return isStatic.get() ? id - 1 : id;
+    }
+
     @ModifyConstant(
             method = "writeAll",
             constant = @Constant(intValue = Opcodes.ACC_PUBLIC),
@@ -61,9 +66,9 @@ public abstract class MixinParsedZenClassMethod {
             ))
     private int modifyModifiers(int constant, @Share("isStatic") LocalBooleanRef isStatic) {
         if (isStatic.get()) {
-            return Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC;
+            return Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC;
         } else {
-            return Opcodes.ACC_PRIVATE;
+            return Opcodes.ACC_PUBLIC;
         }
     }
 

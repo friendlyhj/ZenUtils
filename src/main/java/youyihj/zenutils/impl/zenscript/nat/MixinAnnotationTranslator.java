@@ -106,6 +106,31 @@ public class MixinAnnotationTranslator {
         visitor.visitEnd();
     }
 
+    public static List<String> getMixinTargets(JsonObject json) {
+        List<String> targets = new ArrayList<>();
+        if (json.has("targets")) {
+            JsonElement targetsJson = json.get("targets");
+            if (targetsJson.isJsonArray()) {
+                for (JsonElement target : targetsJson.getAsJsonArray()) {
+                    targets.add(target.getAsString());
+                }
+            } else {
+                targets.add(targetsJson.getAsString());
+            }
+        }
+        if (json.has("value")) {
+            JsonElement valueJson = json.get("value");
+            if (valueJson.isJsonArray()) {
+                for (JsonElement target : valueJson.getAsJsonArray()) {
+                    targets.add(target.getAsString().replace('/', '.'));
+                }
+            } else {
+                targets.add(valueJson.getAsString().replace('/', '.'));
+            }
+        }
+        return targets;
+    }
+
     private static void writeContentToAnnotation(AnnotationVisitor visitor, Class<?> expectedType, String key, JsonElement value, Function<String, ParseException> exceptionFactory) {
         if (expectedType == int.class) {
             visitor.visit(key, value.getAsInt());
@@ -161,28 +186,7 @@ public class MixinAnnotationTranslator {
             }
         }
         if (annotationType == Mixin.class) {
-            List<String> targets = new ArrayList<>();
-            if (json.has("targets")) {
-                JsonElement targetsJson = json.get("targets");
-                if (targetsJson.isJsonArray()) {
-                    for (JsonElement target : targetsJson.getAsJsonArray()) {
-                        targets.add(target.getAsString());
-                    }
-                } else {
-                    targets.add(targetsJson.getAsString());
-                }
-            }
-            if (json.has("value")) {
-                JsonElement valueJson = json.get("value");
-                if (valueJson.isJsonArray()) {
-                    for (JsonElement target : valueJson.getAsJsonArray()) {
-                        targets.add(target.getAsString().replace('/', '.'));
-                    }
-                } else {
-                    targets.add(valueJson.getAsString().replace('/', '.'));
-                }
-            }
-            for (String target : targets) {
+            for (String target : getMixinTargets(json)) {
                 ClassData classData;
                 try {
                     classData = InternalUtils.getClassDataFetcher().forName(target);
