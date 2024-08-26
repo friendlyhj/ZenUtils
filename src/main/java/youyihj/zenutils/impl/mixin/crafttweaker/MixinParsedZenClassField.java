@@ -16,7 +16,7 @@ import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.mixin.itf.IParsedZenClassFieldExtension;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
-import youyihj.zenutils.impl.zenscript.nat.MixinAnnotationTranslator;
+import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
 
 /**
  * @author youyihj
@@ -39,6 +39,9 @@ public abstract class MixinParsedZenClassField implements IParsedZenClassFieldEx
 
     @WrapOperation(method = "visit", at = @At(value = "INVOKE", target = "Lorg/objectweb/asm/FieldVisitor;visitEnd()V"))
     private void applyAnnotation(FieldVisitor instance, Operation<Void> original) {
+        if (position == null) {
+            return;
+        }
         for (MixinPreprocessor mixinPreprocessor : MixinAnnotationTranslator.findAnnotation(position)) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             MixinAnnotationTranslator.translate(

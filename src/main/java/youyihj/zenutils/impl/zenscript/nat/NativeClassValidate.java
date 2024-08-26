@@ -8,7 +8,6 @@ import youyihj.zenutils.impl.member.ClassData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -23,7 +22,8 @@ public class NativeClassValidate {
             Double.class.getName(),
             Float.class.getName(),
             Boolean.class.getName(),
-            Byte.class.getName()
+            Byte.class.getName(),
+            Object.class.getName()
     );
 
     static {
@@ -47,8 +47,8 @@ public class NativeClassValidate {
                 "org.apache.http",
                 "org.apache.logging",
                 "io.netty",
-//                "org.spongepowered.asm",
-//                "org.objectweb.asm",
+                "org.spongepowered.asm",
+                "org.objectweb.asm",
                 "sun.",
                 "youyihj.zenutils.impl",
                 "jdk",
@@ -57,7 +57,6 @@ public class NativeClassValidate {
                 "com.cleanroommc.groovyscript"
         ).forEach(INativeClassExclude::filterPrefix);
         INativeClassExclude.filterClass(Scanner.class);
-        INativeClassExclude.filterClass(Random.class);
     }
 
     public static boolean isValid(ClassData clazz) {

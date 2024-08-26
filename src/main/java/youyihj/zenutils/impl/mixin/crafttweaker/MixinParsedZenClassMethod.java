@@ -20,7 +20,7 @@ import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
-import youyihj.zenutils.impl.zenscript.nat.MixinAnnotationTranslator;
+import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
 
 import java.util.List;
 
@@ -64,12 +64,19 @@ public abstract class MixinParsedZenClassMethod {
                     from = @At("HEAD"),
                     to = @At(value = "NEW", target = "(Lstanhebben/zenscript/util/MethodOutput;Lstanhebben/zenscript/compiler/IEnvironmentClass;)Lstanhebben/zenscript/compiler/EnvironmentMethod;")
             ))
-    private int modifyModifiers(int constant, @Share("isStatic") LocalBooleanRef isStatic) {
+    private int modifyModifiers(int constant, @Share("isStatic") LocalBooleanRef isStatic, @Share("preprocessors") LocalRef<List<MixinPreprocessor>> mixinPreprocessors) {
+        int accessModifier = Opcodes.ACC_PUBLIC;
+        int staticModifier = 0;
         if (isStatic.get()) {
-            return Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC;
-        } else {
-            return Opcodes.ACC_PUBLIC;
+            staticModifier = Opcodes.ACC_STATIC;
         }
+        for (MixinPreprocessor mixinPreprocessor : mixinPreprocessors.get()) {
+            String type = mixinPreprocessor.getAnnotation().getLeft();
+            if (type.equals("Inject") || type.equals("Redirect") || type.startsWith("Modify")) {
+                accessModifier = Opcodes.ACC_PRIVATE;
+            }
+        }
+        return accessModifier | staticModifier;
     }
 
     @Inject(method = "writeAll", at = @At(value = "INVOKE", target = "Lstanhebben/zenscript/util/MethodOutput;end()V"))

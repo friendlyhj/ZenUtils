@@ -11,14 +11,16 @@ import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.runtime.providers.ScriptProviderDirectory;
 import crafttweaker.util.IEventHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import stanhebben.zenscript.type.ZenType;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
 import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
 import youyihj.zenutils.api.reload.Reloadable;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class ZenUtilsTweaker implements ITweaker {
@@ -82,6 +84,11 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public boolean loadScript(boolean isSyntaxCommand, String loaderName) {
+        try {
+            resetPrimitiveCastingRules();
+        } catch (Exception e) {
+            CraftTweakerAPI.logError("Failed to reset primitive casting rules", e);
+        }
         ScriptStatus origin = InternalUtils.getScriptStatus();
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(ScriptStatus.SYNTAX);
@@ -122,9 +129,6 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public NetworkSide getNetworkSide() {
-        if (tweaker.getNetworkSide() == NetworkSide.INVALID_SIDE) {
-            tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
-        }
         return tweaker.getNetworkSide();
     }
 
@@ -218,5 +222,14 @@ public class ZenUtilsTweaker implements ITweaker {
             }
         }
         return null;
+    }
+
+    private static void resetPrimitiveCastingRules() throws Exception {
+        List<ZenType> primitiveTypes = ReflectUtils.getAllFieldsWithClass(ZenType.class, ZenType.class, null);
+        Field castingRulesField = ZenType.class.getDeclaredField("castingRules");
+        castingRulesField.setAccessible(true);
+        for (ZenType primitiveType : primitiveTypes) {
+            castingRulesField.set(primitiveType, null);
+        }
     }
 }

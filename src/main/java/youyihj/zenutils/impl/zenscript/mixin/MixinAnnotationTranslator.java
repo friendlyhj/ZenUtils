@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.zenscript.nat;
+package youyihj.zenutils.impl.zenscript.mixin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -66,6 +66,9 @@ public class MixinAnnotationTranslator {
     public static List<MixinPreprocessor> findAnnotation(ZenPosition position) {
         List<IPreprocessor> filePreprocessors = CraftTweakerAPI.tweaker.getPreprocessorManager().preprocessorActionsPerFile.get(position.getFileName());
         List<MixinPreprocessor> found = new ArrayList<>();
+        if (filePreprocessors == null) {
+            return found;
+        }
         Int2ObjectMap<MixinPreprocessor> mixinPreprocessors = new Int2ObjectOpenHashMap<>();
         for (IPreprocessor preprocessor : filePreprocessors) {
             if (preprocessor instanceof MixinPreprocessor) {
@@ -112,20 +115,20 @@ public class MixinAnnotationTranslator {
             JsonElement targetsJson = json.get("targets");
             if (targetsJson.isJsonArray()) {
                 for (JsonElement target : targetsJson.getAsJsonArray()) {
-                    targets.add(target.getAsString());
+                    targets.add(target.getAsString().replace('.', '/'));
                 }
             } else {
-                targets.add(targetsJson.getAsString());
+                targets.add(targetsJson.getAsString().replace('.', '/'));
             }
         }
         if (json.has("value")) {
             JsonElement valueJson = json.get("value");
             if (valueJson.isJsonArray()) {
                 for (JsonElement target : valueJson.getAsJsonArray()) {
-                    targets.add(target.getAsString().replace('/', '.'));
+                    targets.add(target.getAsString());
                 }
             } else {
-                targets.add(valueJson.getAsString().replace('/', '.'));
+                targets.add(valueJson.getAsString());
             }
         }
         return targets;

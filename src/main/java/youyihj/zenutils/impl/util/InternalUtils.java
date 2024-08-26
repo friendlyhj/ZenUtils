@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author youyihj
@@ -133,6 +134,11 @@ public final class InternalUtils {
     @SuppressWarnings("UnstableApiUsage")
     public static <T extends U, U> Type getSingleItfGenericVariable(Class<T> type, Class<U> itf) {
         return TypeToken.of(type).getSupertype(itf).resolveType(itf.getTypeParameters()[0]).getType();
+    }
+
+    public static <T> T make(T origin, Consumer<T> consumer) {
+        consumer.accept(origin);
+        return origin;
     }
 
     public static ClassDataFetcher getClassDataFetcher() {

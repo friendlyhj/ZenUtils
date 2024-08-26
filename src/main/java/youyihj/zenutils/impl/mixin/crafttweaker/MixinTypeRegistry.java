@@ -10,7 +10,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
-import stanhebben.zenscript.type.*;
+import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.ZenTypeArrayBasic;
+import stanhebben.zenscript.type.ZenTypeArrayList;
+import stanhebben.zenscript.type.ZenTypeAssociative;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.LiteralType;
@@ -21,6 +24,7 @@ import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNativeIterable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,15 +38,21 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     @Final
     private Map<Class<?>, ZenType> types;
 
-    private final Map<String, ZenType> literalTypes = new HashMap<>();
+    private final Map<String, ZenType> literalTypes = InternalUtils.make(new HashMap<>(), map -> {
+        map.put("Ljava/lang/Object;", ZenTypeJavaNative.OBJECT);
+        map.put("Ljava/lang/String;", ZenType.STRING);
+    });
 
     @Shadow
     public abstract ZenType getType(Type type);
 
     @Inject(method = "getType", at = @At(value = "HEAD"), cancellable = true)
-    private void handleLiteralType(Type type, CallbackInfoReturnable<ZenType> cir) {
+    private void handleLiteralTypeAndTypeVariable(Type type, CallbackInfoReturnable<ZenType> cir) {
         if (type instanceof LiteralType) {
             cir.setReturnValue(literalTypes.computeIfAbsent(type.toString(), this::zu$handleLiteralType));
+        }
+        if (type instanceof TypeVariable) {
+            cir.setReturnValue(getType(((TypeVariable<?>) type).getBounds()[0]));
         }
     }
 
@@ -81,7 +91,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                     ClassData classData = classDataFetcher.forName(className);
                     return zu$checkNative(classData);
                 } catch (ClassNotFoundException e) {
-                    return null;
+                    return ZenTypeJavaNative.OBJECT;
                 }
             } else {
                 try {
@@ -102,14 +112,14 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                     }
                     return zu$checkNative(rawClassData);
                 } catch (ClassNotFoundException e) {
-                    return null;
+                    return ZenTypeJavaNative.OBJECT;
                 }
             }
         }
         if (name.startsWith("[")) {
             return new ZenTypeArrayBasic(getType(new LiteralType(name.substring(1))));
         }
-        return new ZenTypeNative(Object.class);
+        return ZenTypeJavaNative.OBJECT;
     }
 
     @Unique
@@ -117,7 +127,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
         if (NativeClassValidate.isValid(classData)) {
             return new ZenTypeJavaNative(classData, this);
         } else {
-            return null;
+            return ZenTypeJavaNative.OBJECT;
         }
     }
 }

@@ -13,7 +13,9 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author youyihj
@@ -64,9 +66,12 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     @Override
     public List<ExecutableData> methods(boolean publicOnly) {
         List<ExecutableData> methods = new ArrayList<>();
+        Set<String> usedDescriptions = new HashSet<>();
         for (MethodNode method : classNode.methods) {
             if (!method.name.startsWith("<") && (!publicOnly || Modifier.isPublic(method.access))) {
-                methods.add(new BytecodeMethodData(method, this));
+                BytecodeMethodData methodData = new BytecodeMethodData(method, this);
+                methods.add(methodData);
+                usedDescriptions.add(methodData.name() + methodData.descriptor());
             }
         }
         ClassData superClass = superClass();
@@ -74,12 +79,19 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
             for (ExecutableData superMethod : superClass.methods(false)) {
                 int modifiers = superMethod.modifiers();
                 if (Modifier.isPublic(modifiers) || (!publicOnly && Modifier.isProtected(modifiers))) {
-                    methods.add(superMethod);
+                    if (usedDescriptions.add(superMethod.name() + superMethod.descriptor())) {
+                        methods.add(superMethod);
+                    }
                 }
             }
         }
         for (ClassData anInterface : interfaces()) {
-            methods.addAll(anInterface.methods(true));
+            List<ExecutableData> interfaceMethods = anInterface.methods(true);
+            for (ExecutableData interfaceMethod : interfaceMethods) {
+                if (usedDescriptions.add(interfaceMethod.name() + interfaceMethod.descriptor())) {
+                    methods.add(interfaceMethod);
+                }
+            }
         }
         return methods;
     }

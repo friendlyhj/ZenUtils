@@ -8,9 +8,13 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import stanhebben.zenscript.expression.partial.PartialType;
 import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
+import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
+import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfo;
+import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfoReturnable;
 import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
 import java.lang.reflect.Method;
@@ -30,6 +34,10 @@ public abstract class MixinCraftTweakerAPI {
         tweaker = new ZenUtilsTweaker(tweaker);
         zu$registerGlobalMethods();
         GlobalRegistry.getRoot().put("native", pos -> new PartialJavaNativeClassOrPackage(pos, ""), null);
+        if (Configuration.enableMixin) {
+            GlobalRegistry.getRoot().put("mixin.CallbackInfo", pos -> new PartialType(pos, ZenTypeMixinCallbackInfo.INSTANCE), null);
+            GlobalRegistry.getRoot().put("mixin.CallbackInfoReturnable", pos -> new PartialType(pos, ZenTypeMixinCallbackInfoReturnable.INSTANCE), null);
+        }
         PreprocessorManager preprocessorManager = tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);

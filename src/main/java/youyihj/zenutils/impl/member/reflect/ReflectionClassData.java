@@ -42,7 +42,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
             List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
             for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
                 Arrays.stream(superclass.getDeclaredFields())
-                        .filter(it -> Modifier.isProtected(it.getModifiers()))
+                        .filter(it -> Modifier.isProtected(it.getModifiers()) || Modifier.isPublic(it.getModifiers()))
                         .forEach(fields::add);
             }
             return fields.stream()

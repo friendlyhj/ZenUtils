@@ -30,6 +30,7 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
         cache.put("S", new ReflectionClassData(short.class));
         cache.put("B", new ReflectionClassData(byte.class));
         cache.put("C", new ReflectionClassData(char.class));
+        cache.put("V", new ReflectionClassData(void.class));
         try {
             for (Path path : classpath) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

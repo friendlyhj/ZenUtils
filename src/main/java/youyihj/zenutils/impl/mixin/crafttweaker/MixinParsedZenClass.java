@@ -17,13 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import stanhebben.zenscript.compiler.EnvironmentClass;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.definitions.zenclasses.ParsedZenClass;
-import stanhebben.zenscript.expression.ExpressionThis;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.util.ZenPosition;
-import youyihj.zenutils.impl.member.LiteralType;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
-import youyihj.zenutils.impl.zenscript.nat.MixinAnnotationTranslator;
+import youyihj.zenutils.impl.zenscript.mixin.ExpressionMixinThis;
+import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
 
 import java.util.List;
 
@@ -74,8 +73,7 @@ public abstract class MixinParsedZenClass {
         original.call(instance, name, value, position);
         String target = targetRef.get();
         if (target != null) {
-            String targetDesc = "L" + target.replace('.', '/') + ";";
-            instance.putValue("this0", position1 -> new ExpressionThis(position1, instance.getType(new LiteralType(targetDesc))), position);
+            instance.putValue("this0", position1 -> new ExpressionMixinThis(position1, target, instance), position);
         }
     }
 }

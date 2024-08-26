@@ -1,9 +1,6 @@
 package youyihj.zenutils.impl.zenscript;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import crafttweaker.runtime.ScriptFile;
 import org.apache.commons.lang3.tuple.Pair;
 import stanhebben.zenscript.value.IntRange;
@@ -54,7 +51,11 @@ public class MixinPreprocessor implements IMultilinePreprocessor {
                 .map(it -> it.trim().substring(1))
                 .collect(Collectors.joining());
         if (!annotationContent.isEmpty()) {
-            annotation = Pair.of(annotationType, GSON.fromJson(annotationContent, JsonElement.class));
+            try {
+                annotation = Pair.of(annotationType, GSON.fromJson(annotationContent, JsonElement.class));
+            } catch (JsonSyntaxException e) {
+                throw new IllegalArgumentException(String.format("mixin annotation json is malformed, file: %s, line: [%d, %d]", scriptFile.getEffectiveName(), lineRange.getFrom(), lineRange.getTo()), e);
+            }
         } else {
             annotation = Pair.of(annotationType, new JsonObject());
         }
