@@ -13,6 +13,7 @@
   "mixins": [
     "ContainerRepairAccessor",
     "MixinAnvilUpdateEvent",
+    "MixinCleanroomLoadController",
     "MixinEntityItem",
     "MixinForgeHooks",
     "MixinForgeLoadController"

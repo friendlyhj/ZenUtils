@@ -251,6 +251,11 @@ public class ZenTypeJavaNative extends ZenType {
         }
 
         @Override
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            return findClass(name);
+        }
+
+        @Override
         protected Class<?> findClass(String name) throws ClassNotFoundException {
             BytecodeClassDataFetcher classDataFetcher = classDataFetcherRef.get();
             if (classDataFetcher == null) {

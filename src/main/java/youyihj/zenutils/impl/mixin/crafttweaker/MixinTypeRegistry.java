@@ -49,7 +49,13 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     @Inject(method = "getType", at = @At(value = "HEAD"), cancellable = true)
     private void handleLiteralTypeAndTypeVariable(Type type, CallbackInfoReturnable<ZenType> cir) {
         if (type instanceof LiteralType) {
-            cir.setReturnValue(literalTypes.computeIfAbsent(type.toString(), this::zu$handleLiteralType));
+            if (literalTypes.containsKey(type.toString())) {
+                cir.setReturnValue(literalTypes.get(type.toString()));
+            } else {
+                ZenType zenLiteralType = zu$handleLiteralType(type.toString());
+                literalTypes.put(type.toString(), zenLiteralType);
+                cir.setReturnValue(zenLiteralType);
+            }
         }
         if (type instanceof TypeVariable) {
             cir.setReturnValue(getType(((TypeVariable<?>) type).getBounds()[0]));
