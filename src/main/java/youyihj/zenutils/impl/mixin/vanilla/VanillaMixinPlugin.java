@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
+import youyihj.zenutils.impl.core.Configuration;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Set;
  * @author youyihj
  */
 @ReflectionInvoked
-public class CleanroomCompatMixinPlugin implements IMixinConfigPlugin {
+public class VanillaMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
@@ -29,16 +30,23 @@ public class CleanroomCompatMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return !Reference.IS_CLEANROOM || !(ArrayUtils.contains(new String[]{
-                "youyihj.zenutils.impl.mixin.vanilla.MixinAnvilUpdateEvent",
-                "youyihj.zenutils.impl.mixin.vanilla.ContainerRepairAccessor",
-                "youyihj.zenutils.impl.mixin.vanilla.MixinForgeHooks"
-        }, mixinClassName));
+        if (Reference.IS_CLEANROOM) {
+            return !(ArrayUtils.contains(new String[]{
+                    "youyihj.zenutils.impl.mixin.vanilla.MixinAnvilUpdateEvent",
+                    "youyihj.zenutils.impl.mixin.vanilla.ContainerRepairAccessor",
+                    "youyihj.zenutils.impl.mixin.vanilla.MixinForgeHooks",
+                    "youyihj.zenutils.impl.mixin.vanilla.MixinForgeLoadController"
+            }, mixinClassName));
+        } else {
+            return !"youyihj.zenutils.impl.mixin.vanilla.MixinCleanroomLoadController".equals(mixinClassName);
+        }
     }
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-
+        if (!Configuration.enableMixin) {
+            myTargets.remove("net.minecraftforge.fml.common.LoadController");
+        }
     }
 
     @Override

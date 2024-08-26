@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "youyihj.zenutils.impl.mixin.custom",
+  "plugin": "youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin",
+  "minVersion": "0.8",
+  "priority": 1000,
+  "refmap": "mixins.zenutils.refmap.json",
+  "injectors": {
+    "maxShiftBy": 3
+  },
+  "mixins": [
+  ],
+  "client": [
+  ]
+}

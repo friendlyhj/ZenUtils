@@ -4,17 +4,18 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.tuple.Pair;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.FieldData;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -26,29 +27,39 @@ public enum MCPReobfuscation {
 
     private final CompletableFuture<Pair<Multimap<String, String>, Multimap<String, String>>> mappers = CompletableFuture.supplyAsync(this::init);
 
-    public Field reobfField(Class<?> owner, String name) {
+    public FieldData reobfField(ClassData owner, String name) {
         Collection<String> possibleNames = mappers.join().getRight().get(name);
+        List<FieldData> fields = owner.fields(true);
         for (String possibleSrgName : possibleNames) {
             try {
-                return owner.getField(possibleSrgName);
+                return findField(fields, possibleSrgName);
             } catch (NoSuchFieldException ignored) {}
         }
         try {
-            return owner.getField(name);
+            return findField(fields, name);
         } catch (NoSuchFieldException e) {
             return null;
         }
     }
 
-    public Stream<Method> reobfMethodOverloads(Class<?> owner, String name) {
+    public Stream<ExecutableData> reobfMethodOverloads(ClassData owner, String name) {
         Collection<String> possibleNames = ImmutableList.<String>builder().addAll(mappers.join().getLeft().get(name)).add(name).build();
-        return Arrays.stream(owner.getMethods())
-                     .filter(it -> possibleNames.contains(it.getName()));
+        return owner.methods(true).stream()
+                     .filter(it -> possibleNames.contains(it.name()));
 
     }
 
-    public Method reobfMethod(Class<?> owner, String name) {
+    public ExecutableData reobfMethod(ClassData owner, String name) {
         return reobfMethodOverloads(owner, name).findFirst().orElse(null);
+    }
+
+    private FieldData findField(List<FieldData> fields, String name) throws NoSuchFieldException {
+        for (FieldData field : fields) {
+            if (field.name().equals(name)) {
+                return field;
+            }
+        }
+        throw new NoSuchFieldException(name);
     }
 
     private Pair<Multimap<String, String>, Multimap<String, String>> init() {

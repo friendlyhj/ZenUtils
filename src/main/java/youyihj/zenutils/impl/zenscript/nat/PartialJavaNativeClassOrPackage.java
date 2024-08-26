@@ -9,6 +9,8 @@ import stanhebben.zenscript.expression.partial.PartialType;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 /**
  * @author youyihj
@@ -36,11 +38,11 @@ public class PartialJavaNativeClassOrPackage implements IPartialExpression {
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
         name = prefix.isEmpty() ? name : prefix + "." + name;
         try {
-            Class<?> clazz = Class.forName(name);
+            ClassData clazz = InternalUtils.getClassDataFetcher().forName(name);
             if (NativeClassValidate.isValid(clazz)) {
-                return new PartialType(position, environment.getType(clazz));
+                return new PartialType(position, environment.getType(clazz.javaType()));
             } else {
-                environment.error(position, clazz.getName() + " is not natively accessible");
+                environment.error(position, clazz.name() + " is not natively accessible");
                 return new ExpressionInvalid(position);
             }
         } catch (ClassNotFoundException e) {

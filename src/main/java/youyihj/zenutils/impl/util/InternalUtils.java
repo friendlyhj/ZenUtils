@@ -9,22 +9,32 @@ import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
 import crafttweaker.util.EventList;
 import crafttweaker.zenscript.GlobalRegistry;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.ClassDataFetcher;
+import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
+import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author youyihj
@@ -124,5 +134,60 @@ public final class InternalUtils {
     @SuppressWarnings("UnstableApiUsage")
     public static <T extends U, U> Type getSingleItfGenericVariable(Class<T> type, Class<U> itf) {
         return TypeToken.of(type).getSupertype(itf).resolveType(itf.getTypeParameters()[0]).getType();
+    }
+
+    public static <T> T make(T origin, Consumer<T> consumer) {
+        consumer.accept(origin);
+        return origin;
+    }
+
+    public static ClassDataFetcher getClassDataFetcher() {
+        return ModsClassDataFetcher.INSTANCE;
+    }
+
+    private enum ModsClassDataFetcher implements ClassDataFetcher {
+        INSTANCE;
+
+        private final ReflectionClassDataFetcher reflect = new ReflectionClassDataFetcher(Launch.classLoader);
+        private BytecodeClassDataFetcher bytecode;
+
+        @Override
+        public ClassData forName(String className) throws ClassNotFoundException {
+            if (Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
+                if (bytecode != null) {
+                    try {
+                        bytecode.close();
+                        bytecode = null;
+                    } catch (IOException ignored) {
+
+                    }
+                }
+                return reflect.forName(className);
+            } else {
+                if (bytecode == null) {
+                    bytecode = new BytecodeClassDataFetcher(reflect, Collections.singletonList(Paths.get("mods")));
+                }
+                return bytecode.forName(className);
+            }
+        }
+
+        @Override
+        public ClassData forClass(Class<?> clazz) {
+            if (Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
+                if (bytecode != null) {
+                    try {
+                        bytecode.close();
+                    } catch (IOException ignored) {
+
+                    }
+                }
+                return reflect.forClass(clazz);
+            } else {
+                if (bytecode == null) {
+                    bytecode = new BytecodeClassDataFetcher(reflect, Collections.singletonList(Paths.get("mods")));
+                }
+                return bytecode.forClass(clazz);
+            }
+        }
     }
 }

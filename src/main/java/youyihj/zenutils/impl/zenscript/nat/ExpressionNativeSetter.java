@@ -6,20 +6,19 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.FieldData;
 import youyihj.zenutils.impl.util.Either;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * @author youyihj
  */
 public class ExpressionNativeSetter extends Expression {
-    private final Either<Method, Field> setter;
+    private final Either<ExecutableData, FieldData> setter;
     private final Expression toSet;
     private final IPartialExpression instanceValue;
 
-    public ExpressionNativeSetter(ZenPosition position, Either<Method, Field> setter, Expression toSet, IPartialExpression instanceValue) {
+    public ExpressionNativeSetter(ZenPosition position, Either<ExecutableData, FieldData> setter, Expression toSet, IPartialExpression instanceValue) {
         super(position);
         this.setter = setter;
         this.toSet = toSet;
@@ -30,24 +29,28 @@ public class ExpressionNativeSetter extends Expression {
     public void compile(boolean result, IEnvironmentMethod environment) {
         MethodOutput output = environment.getOutput();
         setter.fold(method -> {
-            Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(method.getParameterTypes()[0]));
+            Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(method.parameters().get(0).javaType()));
             if (instanceValue == null) {
                 toSetCasted.compile(true, environment);
-                output.invokeStatic(method.getDeclaringClass(), method.getName(), method.getReturnType(), method.getParameterTypes());
+                output.invokeStatic(method.declaringClass().internalName(), method.name(), method.descriptor());
             } else {
                 instanceValue.eval(environment).compile(true, environment);
                 toSetCasted.compile(true, environment);
-                output.invokeVirtual(method.getDeclaringClass(), method.getName(), method.getReturnType(), method.getParameterTypes());
+                if (method.declaringClass().isInterface()) {
+                    output.invokeInterface(method.declaringClass().internalName(), method.name(), method.descriptor());
+                } else {
+                    output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
+                }
             }
         }, field -> {
-            Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(field.getGenericType()));
+            Expression toSetCasted = toSet.cast(getPosition(), environment, environment.getType(field.type().javaType()));
             if (instanceValue == null) {
                 toSetCasted.compile(true, environment);
-                output.putStaticField(field.getDeclaringClass(), field);
+                output.putStaticField(field.declaringClass().internalName(), field.name(), field.type().descriptor());
             } else {
                 instanceValue.eval(environment).compile(true, environment);
                 toSetCasted.compile(true, environment);
-                output.putField(field.getDeclaringClass(), field.getName(), field.getType());
+                output.putField(field.declaringClass().internalName(), field.name(), field.type().descriptor());
             }
         }, () -> environment.error(getPosition(), "no such setter"));
     }

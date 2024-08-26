@@ -11,10 +11,13 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.FieldData;
+import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.util.Either;
+import youyihj.zenutils.impl.util.InternalUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,11 +30,11 @@ public class PartialJavaNativeMember implements IPartialExpression {
     private final List<IJavaMethod> methods;
     private final IPartialExpression instanceValue;
     private final IEnvironmentGlobal environment;
-    private final Class<?> owner;
-    private final Either<Method, Field> getter;
-    private final Either<Method, Field> setter;
+    private final ClassData owner;
+    private final Either<ExecutableData, FieldData> getter;
+    private final Either<ExecutableData, FieldData> setter;
 
-    public PartialJavaNativeMember(ZenPosition position, String name, List<IJavaMethod> methods, IPartialExpression instanceValue, IEnvironmentGlobal environment, Class<?> owner, Either<Method, Field> getter, Either<Method, Field> setter) {
+    public PartialJavaNativeMember(ZenPosition position, String name, List<IJavaMethod> methods, IPartialExpression instanceValue, IEnvironmentGlobal environment, ClassData owner, Either<ExecutableData, FieldData> getter, Either<ExecutableData, FieldData> setter) {
         this.position = position;
         this.name = name;
         this.methods = methods;
@@ -98,16 +101,16 @@ public class PartialJavaNativeMember implements IPartialExpression {
         });
     }
 
-    private Optional<Class<?>> getNestedClass() {
+    private Optional<ClassData> getNestedClass() {
         try {
-            return Optional.of(Class.forName(owner.getName() + "$" + name));
+            return Optional.of(InternalUtils.getClassDataFetcher().forName(owner.name() + "$" + name));
         } catch (ClassNotFoundException e) {
             return Optional.empty();
         }
     }
 
     private Optional<ZenType> getNestedZenType(IEnvironmentGlobal environment) {
-        return getNestedClass().map(environment::getType);
+        return getNestedClass().map(TypeData::javaType).map(environment::getType);
     }
 
     private boolean isStatic() {
