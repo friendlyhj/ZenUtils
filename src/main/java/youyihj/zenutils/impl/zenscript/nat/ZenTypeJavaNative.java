@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
+import net.minecraft.launchwrapper.Launch;
 import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.annotations.CompareType;
@@ -18,11 +19,16 @@ import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
-import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.TypeData;
+import youyihj.zenutils.impl.member.bytecode.BytecodeClassData;
+import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
+import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,16 +36,18 @@ import java.util.stream.Stream;
  * @author youyihj
  */
 public class ZenTypeJavaNative extends ZenType {
-    private final Class<?> clazz;
+    public static final ZenTypeJavaNative OBJECT = new ZenTypeJavaNative(new ReflectionClassData(Object.class), ZenTypeUtil.EMPTY_REGISTRY);
+
+    private final ClassData clazz;
     private final Map<String, JavaNativeMemberSymbol> symbols = new HashMap<>();
     private final List<ZenTypeJavaNative> superClasses;
 
     private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
 
-    public ZenTypeJavaNative(Class<?> clazz, ITypeRegistry registry) {
+    public ZenTypeJavaNative(ClassData clazz, ITypeRegistry registry) {
         this.clazz = clazz;
-        superClasses = Stream.concat(Stream.of(clazz.getSuperclass()), Arrays.stream(clazz.getInterfaces()))
-                .map(registry::getType)
+        superClasses = Stream.concat(optionalStream(clazz.superClass()), clazz.interfaces().stream())
+                .map(it -> registry.getType(it.javaType()))
                 .filter(ZenTypeJavaNative.class::isInstance)
                 .map(ZenTypeJavaNative.class::cast)
                 .collect(Collectors.toList());
@@ -65,12 +73,12 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public Expression compare(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, CompareType type) {
-        if (Comparable.class.isAssignableFrom(clazz)) {
-            ZenType canCompareType = environment.getType(InternalUtils.getSingleItfGenericVariable(clazz.asSubclass(Comparable.class), Comparable.class));
-            if (right.getType().canCastImplicit(canCompareType, environment)) {
-                return new ExpressionCompareGeneric(position, new ExpressionCallVirtual(position, environment, JavaMethod.get(environment, clazz, "compareTo", Object.class), left, right.cast(position, environment, canCompareType)), type);
-            }
-        }
+//        if (Comparable.class.isAssignableFrom(clazz)) {
+//            ZenType canCompareType = environment.getType(InternalUtils.getSingleItfGenericVariable(clazz.asSubclass(Comparable.class), Comparable.class));
+//            if (right.getType().canCastImplicit(canCompareType, environment)) {
+//                return new ExpressionCompareGeneric(position, new ExpressionCallVirtual(position, environment, JavaMethod.get(environment, clazz, "compareTo", Object.class), left, right.cast(position, environment, canCompareType)), type);
+//            }
+//        }
         if (type == CompareType.EQ) {
             return new ExpressionCallStatic(position, environment, OBJECTS_EQUALS, left, right);
         }
@@ -84,9 +92,9 @@ public class ZenTypeJavaNative extends ZenType {
     @Override
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
         if ("wrapper".equals(name)) {
-            Optional<Method> wrapperCaster = CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz);
+            Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz);
             if (wrapperCaster.isPresent()) {
-                return new ExpressionCallStatic(position, environment, new JavaMethod(wrapperCaster.get(), environment), value.eval(environment));
+                return new ExpressionCallStatic(position, environment, new NativeMethod(wrapperCaster.get(), environment), value.eval(environment));
             }
         }
         IPartialExpression member = getSymbol(name, environment, false).receiver(value).instance(position);
@@ -105,8 +113,8 @@ public class ZenTypeJavaNative extends ZenType {
     @Override
     public Expression call(ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
         Expression[] actualArguments = receiver == null ? arguments : ArrayUtils.add(arguments, 0, receiver);
-        Constructor<?>[] constructors = clazz.getConstructors();
-        for (Constructor<?> constructor : constructors) {
+        List<ExecutableData> constructors = clazz.constructors(true);
+        for (ExecutableData constructor : constructors) {
             if (canAcceptConstructor(constructor, environment, actualArguments)) {
                 return new ExpressionNativeConstructorCall(position, constructor, environment, actualArguments);
             }
@@ -127,7 +135,7 @@ public class ZenTypeJavaNative extends ZenType {
     @Override
     public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
         CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz).ifPresent(it ->
-                rules.registerCastingRule(environment.getType(it.getReturnType()), new CastingRuleStaticMethod(new JavaMethod(it, environment)))
+                rules.registerCastingRule(environment.getType(it.returnType().javaType()), new CastingRuleStaticMethod(new NativeMethod(it, environment)))
         );
     }
 
@@ -138,12 +146,22 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public Class<?> toJavaClass() {
-        return clazz;
+        if (clazz instanceof ReflectionClassData) {
+            return ((Class<?>) clazz.javaType());
+        }
+        if (clazz instanceof BytecodeClassData) {
+            try {
+                return ClassInfoClassLoader.INSTANCE.getClassInfo(((BytecodeClassData) clazz));
+            } catch (ClassNotFoundException e) {
+                return Object.class;
+            }
+        }
+        return Object.class;
     }
 
     @Override
     public Type toASMType() {
-        return Type.getType(clazz);
+        return Type.getType(clazz.descriptor());
     }
 
     @Override
@@ -153,7 +171,7 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public String getSignature() {
-        return ZenTypeUtil.signature(clazz);
+        return clazz.descriptor();
     }
 
     @Override
@@ -168,7 +186,7 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public String getName() {
-        return "native." + clazz.getCanonicalName();
+        return "native." + clazz.name();
     }
 
     @Override
@@ -176,14 +194,14 @@ public class ZenTypeJavaNative extends ZenType {
         return new ExpressionNull(position);
     }
 
-    private boolean canAcceptConstructor(Constructor<?> constructor, IEnvironmentGlobal environment, Expression[] arguments) {
-        Class<?>[] parameters = constructor.getParameterTypes();
-        if (arguments.length != parameters.length) {
+    private boolean canAcceptConstructor(ExecutableData constructor, IEnvironmentGlobal environment, Expression[] arguments) {
+        List<TypeData> parameters = constructor.parameters();
+        if (arguments.length != parameters.size()) {
             return false;
         }
 
         for (int i = 0; i < arguments.length; i++) {
-            if (!arguments[i].getType().canCastImplicit(environment.getType(parameters[i]), environment)) {
+            if (!arguments[i].getType().canCastImplicit(environment.getType(parameters.get(i).javaType()), environment)) {
                 return false;
             }
         }
@@ -206,5 +224,52 @@ public class ZenTypeJavaNative extends ZenType {
             }
         }
         return expression;
+    }
+
+    private static <T> Stream<T> optionalStream(T obj) {
+        return obj == null ? Stream.empty() : Stream.of(obj);
+    }
+
+    private static class ClassInfoClassLoader extends ClassLoader {
+        private static final ClassInfoClassLoader INSTANCE = new ClassInfoClassLoader();
+
+        private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
+        private WeakReference<BytecodeClassDataFetcher> classDataFetcherRef;
+
+        private ClassInfoClassLoader() {}
+
+        Class<?> getClassInfo(BytecodeClassData classData) throws ClassNotFoundException {
+            String className = classData.name();
+            if (classes.containsKey(className)) {
+                return classes.get(className);
+            } else {
+                classDataFetcherRef = new WeakReference<>(classData.getClassDataFetcher());
+                Class<?> clazz = findClass(classData.name());
+                classes.put(className, clazz);
+                return clazz;
+            }
+        }
+
+        @Override
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            return findClass(name);
+        }
+
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+            BytecodeClassDataFetcher classDataFetcher = classDataFetcherRef.get();
+            if (classDataFetcher == null) {
+                return Launch.classLoader.loadClass(name);
+            }
+            ClassData classData = classDataFetcher.forName(name);
+            if (classData instanceof ReflectionClassData) {
+                return ((Class<?>) classData.javaType());
+            }
+            if (classData instanceof BytecodeClassData) {
+                byte[] bytecode = ((BytecodeClassData) classData).getBytecode();
+                return defineClass(name, bytecode, 0, bytecode.length);
+            }
+            throw new ClassNotFoundException(name);
+        }
     }
 }

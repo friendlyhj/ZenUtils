@@ -7,12 +7,13 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialType;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.FieldData;
 import youyihj.zenutils.impl.util.Either;
+import youyihj.zenutils.impl.util.InternalUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,37 +23,37 @@ import java.util.stream.Collectors;
  */
 public class JavaNativeMemberSymbol implements IZenSymbol {
     private final String name;
-    private final Class<?> owner;
+    private final ClassData owner;
     private final IEnvironmentGlobal environment;
     private final boolean isStatic;
     private final List<IJavaMethod> methods;
-    private final Either<Method, Field> getter;
-    private final Either<Method, Field> setter;
+    private final Either<ExecutableData, FieldData> getter;
+    private final Either<ExecutableData, FieldData> setter;
     private final IPartialExpression receiver;
 
-    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, Class<?> owner, String name, boolean isStatic, IPartialExpression receiver) {
+    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, IPartialExpression receiver) {
         this.name = name;
         this.environment = environment;
         this.owner = owner;
         this.isStatic = isStatic;
         this.receiver = receiver;
         this.methods = MCPReobfuscation.INSTANCE.reobfMethodOverloads(owner, name)
-                                                .filter(it -> validateModifier(it.getModifiers()))
-                                                .map(it -> JavaMethod.get(environment, it))
+                                                .filter(it -> validateModifier(it.modifiers()))
+                                                .map(it -> new NativeMethod(it, environment))
                                                 .collect(Collectors.toList());
-        this.getter = Either.<Method, Field>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name)))
+        this.getter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name)))
                 .validateLeft(this::validateGetter)
                 .orElseLeft(() -> MCPReobfuscation.INSTANCE.reobfMethod(owner, "is" + StringUtils.capitalize(name)))
                 .validateLeft(this::validateGetter)
                 .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name))
                 .validateRight(this::validateFieldGet);
-        this.setter = Either.<Method, Field>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "set" + StringUtils.capitalize(name)))
+        this.setter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "set" + StringUtils.capitalize(name)))
                             .validateLeft(this::validateSetter)
                             .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name))
                             .validateRight(this::validateFieldSet);
     }
 
-    public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, Class<?> owner, String name, boolean isStatic) {
+    public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic) {
         return new JavaNativeMemberSymbol(environment, owner, name, isStatic, null);
     }
 
@@ -72,9 +73,9 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
         if (getter.isEmpty() && setter.isEmpty() && methods.isEmpty()) {
             if (isStatic) {
                 try {
-                    return new PartialType(position, environment.getType(Class.forName(owner.getName() + "$" + name)));
+                    return new PartialType(position, environment.getType(InternalUtils.getClassDataFetcher().forName(owner.name() + "$" + name).javaType()));
                 } catch (ClassNotFoundException e) {
-                    environment.error("no such static member or nested class: " + owner.getName() + "." + name);
+                    environment.error("no such static member or nested class: " + owner.name() + "." + name);
                 }
             }
         } else {
@@ -84,20 +85,20 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     }
 
 
-    private boolean validateGetter(Method method) {
-        return method.getParameterCount() == 0 && validateModifier(method.getModifiers());
+    private boolean validateGetter(ExecutableData method) {
+        return method.parameterCount() == 0 && validateModifier(method.modifiers());
     }
 
-    private boolean validateSetter(Method method) {
-        return method.getParameterCount() == 1 && validateModifier(method.getModifiers());
+    private boolean validateSetter(ExecutableData method) {
+        return method.parameterCount() == 1 && validateModifier(method.modifiers());
     }
 
-    private boolean validateFieldGet(Field field) {
-        return validateModifier(field.getModifiers());
+    private boolean validateFieldGet(FieldData field) {
+        return validateModifier(field.modifiers());
     }
 
-    private boolean validateFieldSet(Field field) {
-        return validateModifier(field.getModifiers()) && !Modifier.isFinal(field.getModifiers());
+    private boolean validateFieldSet(FieldData field) {
+        return validateModifier(field.modifiers()) && !Modifier.isFinal(field.modifiers());
     }
 
     private boolean validateModifier(int modifier) {

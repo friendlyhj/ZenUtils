@@ -20,6 +20,7 @@ import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
+import youyihj.zenutils.impl.member.ClassData;
 
 /**
  * @author youyihj
@@ -31,7 +32,7 @@ public class ZenTypeJavaNativeIterable extends ZenTypeJavaNative {
 
     private final ZenType baseType;
 
-    public ZenTypeJavaNativeIterable(Class<?> clazz, ZenType baseType, ITypeRegistry registry) {
+    public ZenTypeJavaNativeIterable(ClassData clazz, ZenType baseType, ITypeRegistry registry) {
         super(clazz, registry);
         this.baseType = baseType;
     }
