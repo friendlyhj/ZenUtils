@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinProcessor;
-import org.spongepowered.asm.mixin.transformer.IMixinTransformer;
+import org.spongepowered.asm.mixin.transformer.MixinTransformer;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.Reference;
@@ -49,7 +49,9 @@ public class ZenMixin {
         });
         Mixins.addConfiguration("mixins.zenutils.custom.json");
 
-        IMixinProcessor processor = ((IMixinTransformer) Proxy.transformer).getProcessor();
+        Field processorField = MixinTransformer.class.getDeclaredField("processor");
+        processorField.setAccessible(true);
+        IMixinProcessor processor = (IMixinProcessor) processorField.get(Proxy.transformer);
         Method selectMethod = processor.getClass().getDeclaredMethod("select", MixinEnvironment.class);
         selectMethod.setAccessible(true);
         selectMethod.invoke(processor, MixinEnvironment.getCurrentEnvironment());
