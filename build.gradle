@@ -16,7 +16,7 @@ apply plugin: 'org.spongepowered.mixin'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.20.0"
+version = "1.20.1"
 group = "youyihj.zenutils" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "zenutils"
 
@@ -83,7 +83,7 @@ dependencies {
     deobfCompile "curse.maven:ftb-library-legacy-forge-237167:2985811"
     deobfCompile "curse.maven:item-filters-309674:3003364"
     deobfCompile "curse.maven:ftb-quests-forge-289412:3156637"
-    deobfCompile "zone.rong:mixinbooter:8.9"
+    deobfCompile "zone.rong:mixinbooter:9.3"
     deobfCompile "curse.maven:simple-dimensions-235444:2445577"
     deobfCompile "com.cleanroommc:configanytime:3.0"
 //    compileOnly provided('org.spongepowered:mixin:0.8-SNAPSHOT') {
