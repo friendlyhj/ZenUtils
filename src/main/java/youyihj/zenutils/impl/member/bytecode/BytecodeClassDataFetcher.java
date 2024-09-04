@@ -19,6 +19,7 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     private final Map<String, ClassData> cache = new HashMap<>();
     private final Set<String> absentTries = new HashSet<>();
     private final ClassDataFetcher parent;
+    private boolean closed;
 
     public BytecodeClassDataFetcher(ClassDataFetcher parent, List<Path> classpath) {
         this.parent = parent;
@@ -78,6 +79,7 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
 
     @Override
     public void close() throws IOException {
+        closed = true;
         for (FileSystem jar : jars) {
             jar.close();
         }
@@ -94,21 +96,23 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     }
 
     private ClassData findClass(String className) throws ClassNotFoundException {
-        String[] split = className.split("\\.");
-        String first = split[0];
-        String[] more = new String[split.length - 1];
-        System.arraycopy(split, 1, more, 0, more.length);
-        if (more.length > 0) {
-            more[more.length - 1] = more[more.length - 1] + ".class";
-        } else {
-            first += ".class";
-        }
-        for (FileSystem jar : jars) {
-            Path classPath = jar.getPath(first, more);
-            if (Files.exists(classPath)) {
-                try {
-                    return new BytecodeClassData(Files.readAllBytes(classPath), this);
-                } catch (IOException ignored) {
+        if (!closed) {
+            String[] split = className.split("\\.");
+            String first = split[0];
+            String[] more = new String[split.length - 1];
+            System.arraycopy(split, 1, more, 0, more.length);
+            if (more.length > 0) {
+                more[more.length - 1] = more[more.length - 1] + ".class";
+            } else {
+                first += ".class";
+            }
+            for (FileSystem jar : jars) {
+                Path classPath = jar.getPath(first, more);
+                if (Files.exists(classPath)) {
+                    try {
+                        return new BytecodeClassData(Files.readAllBytes(classPath), this);
+                    } catch (IOException ignored) {
+                    }
                 }
             }
         }
