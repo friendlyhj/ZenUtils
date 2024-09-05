@@ -115,20 +115,20 @@ public class MixinAnnotationTranslator {
             JsonElement targetsJson = json.get("targets");
             if (targetsJson.isJsonArray()) {
                 for (JsonElement target : targetsJson.getAsJsonArray()) {
-                    targets.add(target.getAsString().replace('.', '/'));
+                    targets.add(target.getAsString());
                 }
             } else {
-                targets.add(targetsJson.getAsString().replace('.', '/'));
+                targets.add(targetsJson.getAsString());
             }
         }
         if (json.has("value")) {
             JsonElement valueJson = json.get("value");
             if (valueJson.isJsonArray()) {
                 for (JsonElement target : valueJson.getAsJsonArray()) {
-                    targets.add(target.getAsString());
+                    targets.add(target.getAsString().replace('/', '.'));
                 }
             } else {
-                targets.add(valueJson.getAsString());
+                targets.add(valueJson.getAsString().replace('/', '.'));
             }
         }
         return targets;
