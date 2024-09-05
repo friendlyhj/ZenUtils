@@ -21,6 +21,7 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
         this.methodNode = methodNode;
         this.declaringClass = declaringClass;
         setAnnotationNodes(methodNode.visibleAnnotations);
+        setAnnotationNodes(methodNode.invisibleAnnotations);
     }
 
     @Override

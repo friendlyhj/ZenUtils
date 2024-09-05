@@ -7,6 +7,7 @@ import youyihj.zenutils.impl.member.AnnotatedMember;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,22 +17,22 @@ import static org.objectweb.asm.Type.*;
  * @author youyihj
  */
 public class BytecodeAnnotatedMember implements AnnotatedMember {
-    private List<AnnotationNode> annotationNodes;
+    private final List<AnnotationNode> annotationNodes = new ArrayList<>();
 
     protected BytecodeAnnotatedMember() {
     }
 
     protected void setAnnotationNodes(List<AnnotationNode> annotationNodes) {
-        this.annotationNodes = annotationNodes;
+        if (annotationNodes != null) {
+            this.annotationNodes.addAll(annotationNodes);
+        }
     }
 
     @Override
     public <A extends Annotation> boolean isAnnotationPresent(Class<A> annotationClass) {
-        if (annotationNodes != null) {
-            for (AnnotationNode annotation : annotationNodes) {
-                if (Objects.equals(annotation.desc, Type.getDescriptor(annotationClass))) {
-                    return true;
-                }
+        for (AnnotationNode annotation : annotationNodes) {
+            if (Objects.equals(annotation.desc, Type.getDescriptor(annotationClass))) {
+                return true;
             }
         }
         return false;
@@ -40,25 +41,23 @@ public class BytecodeAnnotatedMember implements AnnotatedMember {
     @Override
     @SuppressWarnings("unchecked")
     public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-        if (annotationNodes != null) {
-            for (AnnotationNode annotation : annotationNodes) {
-                if (Objects.equals(annotation.desc, Type.getDescriptor(annotationClass))) {
-                    ClassLoader annotationClassLoader = annotationClass.getClassLoader();
-                    return (A) Proxy.newProxyInstance(annotationClassLoader, new Class[]{annotationClass}, ((proxy, method, args) -> {
-                        List<Object> values = annotation.values;
-                        if (values != null) {
-                            for (int i = 0; i < values.size(); i += 2) {
-                                if (Objects.equals(values.get(i), method.getName())) {
-                                    return parseAnnotationValue(values.get(i + 1), annotationClassLoader);
-                                }
+        for (AnnotationNode annotation : annotationNodes) {
+            if (Objects.equals(annotation.desc, Type.getDescriptor(annotationClass))) {
+                ClassLoader annotationClassLoader = annotationClass.getClassLoader();
+                return (A) Proxy.newProxyInstance(annotationClassLoader, new Class[]{annotationClass}, ((proxy, method, args) -> {
+                    List<Object> values = annotation.values;
+                    if (values != null) {
+                        for (int i = 0; i < values.size(); i += 2) {
+                            if (Objects.equals(values.get(i), method.getName())) {
+                                return parseAnnotationValue(values.get(i + 1), annotationClassLoader);
                             }
                         }
-                        if (method.getName().equals("annotationType")) {
-                            return annotationClass;
-                        }
-                        return method.getDefaultValue();
-                    }));
-                }
+                    }
+                    if (method.getName().equals("annotationType")) {
+                        return annotationClass;
+                    }
+                    return method.getDefaultValue();
+                }));
             }
         }
         return null;

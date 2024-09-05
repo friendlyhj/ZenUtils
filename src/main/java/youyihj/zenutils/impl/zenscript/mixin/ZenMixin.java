@@ -45,6 +45,8 @@ public class ZenMixin {
                 String classSimpleName = name.substring("youyihj/zenutils/impl/mixin/custom/".length());
                 CustomMixinPlugin.addMixinClass(classSimpleName);
                 LOGGER.info("Loaded {}", classSimpleName);
+            } else {
+                resourceCache.put(name, bytecode);
             }
         });
         Mixins.addConfiguration("mixins.zenutils.custom.json");

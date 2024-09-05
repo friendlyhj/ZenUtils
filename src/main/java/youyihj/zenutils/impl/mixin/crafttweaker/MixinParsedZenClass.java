@@ -8,13 +8,12 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassWriter;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import stanhebben.zenscript.compiler.EnvironmentClass;
+import stanhebben.zenscript.compiler.EnvironmentScript;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.definitions.zenclasses.ParsedZenClass;
 import stanhebben.zenscript.parser.ParseException;
@@ -37,14 +36,29 @@ public abstract class MixinParsedZenClass {
 
     @Shadow
     @Final
+    @Mutable
     public String className;
 
     @Shadow
     public Class<?> thisClass;
 
+    @Unique
+    List<MixinPreprocessor> preprocessors;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void initAnnotation(ZenPosition position, String name, String className, EnvironmentScript classEnvironment, CallbackInfo ci) {
+        this.preprocessors = MixinAnnotationTranslator.findAnnotation(position);
+        for (MixinPreprocessor preprocessor : preprocessors) {
+            if (preprocessor.getAnnotation().getLeft().equals("Mixin")) {
+                this.className = "youyihj/zenutils/impl/mixin/custom/" + name;
+                break;
+            }
+        }
+    }
+
     @Inject(method = "writeClass", at = @At(value = "INVOKE", target = "Lorg/objectweb/asm/ClassWriter;visit(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void applyAnnotation(IEnvironmentGlobal environmentGlobal, CallbackInfo ci, @Local ClassWriter cw, @Share("target") LocalRef<String> targetRef) {
-        for (MixinPreprocessor mixinPreprocessor : MixinAnnotationTranslator.findAnnotation(position)) {
+        for (MixinPreprocessor mixinPreprocessor : preprocessors) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             MixinAnnotationTranslator.translate(
                     annotation.getLeft(), annotation.getRight(),

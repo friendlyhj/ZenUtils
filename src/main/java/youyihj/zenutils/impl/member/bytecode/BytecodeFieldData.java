@@ -15,6 +15,8 @@ public class BytecodeFieldData extends BytecodeAnnotatedMember implements FieldD
     public BytecodeFieldData(FieldNode fieldNode, BytecodeClassData declaringClass) {
         this.fieldNode = fieldNode;
         this.declaringClass = declaringClass;
+        setAnnotationNodes(fieldNode.visibleAnnotations);
+        setAnnotationNodes(fieldNode.invisibleAnnotations);
     }
 
     @Override
