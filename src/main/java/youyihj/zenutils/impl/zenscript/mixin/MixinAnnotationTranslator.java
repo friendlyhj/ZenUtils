@@ -56,6 +56,7 @@ public class MixinAnnotationTranslator {
                 ModifyVariable.class,
                 Redirect.class,
                 Surrogate.class,
+                Desc.class,
 
                 At.class,
                 Slice.class,
