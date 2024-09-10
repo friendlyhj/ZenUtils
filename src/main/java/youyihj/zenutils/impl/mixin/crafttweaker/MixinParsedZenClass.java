@@ -68,7 +68,7 @@ public abstract class MixinParsedZenClass {
             if (annotation.getLeft().equals("Mixin")) {
                 List<String> mixinTargets = MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject());
                 if (mixinTargets.size() == 1) {
-                    targetRef.set(mixinTargets.get(0));
+                    targetRef.set(mixinTargets.get(0).replace('.', '/'));
                 }
             }
         }
