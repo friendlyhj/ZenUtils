@@ -26,7 +26,6 @@ public class ExpressionMixinThis extends Expression {
         if (result) {
             MethodOutput output = environment.getOutput();
             output.loadObject(0);
-            output.checkCast("java/lang/Object");
             output.checkCast(mixinTarget);
         }
     }

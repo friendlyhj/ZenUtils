@@ -19,6 +19,7 @@ import stanhebben.zenscript.definitions.zenclasses.ParsedZenClass;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.mixin.itf.IMixinTargetEnvironment;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 import youyihj.zenutils.impl.zenscript.mixin.ExpressionMixinThis;
 import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
@@ -42,6 +43,10 @@ public abstract class MixinParsedZenClass {
     @Shadow
     public Class<?> thisClass;
 
+    @Shadow
+    @Final
+    private EnvironmentScript classEnvironment;
+
     @Unique
     List<MixinPreprocessor> preprocessors;
 
@@ -49,8 +54,10 @@ public abstract class MixinParsedZenClass {
     private void initAnnotation(ZenPosition position, String name, String className, EnvironmentScript classEnvironment, CallbackInfo ci) {
         this.preprocessors = MixinAnnotationTranslator.findAnnotation(position);
         for (MixinPreprocessor preprocessor : preprocessors) {
-            if (preprocessor.getAnnotation().getLeft().equals("Mixin")) {
+            Pair<String, JsonElement> annotation = preprocessor.getAnnotation();
+            if (annotation.getLeft().equals("Mixin")) {
                 this.className = "youyihj/zenutils/impl/mixin/custom/" + name;
+                ((IMixinTargetEnvironment) classEnvironment).setTargets(MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject()));
                 break;
             }
         }
@@ -66,7 +73,7 @@ public abstract class MixinParsedZenClass {
                     it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
             );
             if (annotation.getLeft().equals("Mixin")) {
-                List<String> mixinTargets = MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject());
+                List<String> mixinTargets = ((IMixinTargetEnvironment) classEnvironment).getTargets();
                 if (mixinTargets.size() == 1) {
                     targetRef.set(mixinTargets.get(0).replace('.', '/'));
                 }

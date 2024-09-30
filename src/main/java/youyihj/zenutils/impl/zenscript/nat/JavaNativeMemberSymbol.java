@@ -26,40 +26,42 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     private final ClassData owner;
     private final IEnvironmentGlobal environment;
     private final boolean isStatic;
+    private final boolean publicOnly;
     private final List<IJavaMethod> methods;
     private final Either<ExecutableData, FieldData> getter;
     private final Either<ExecutableData, FieldData> setter;
     private final IPartialExpression receiver;
 
-    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, IPartialExpression receiver) {
+    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, boolean publicOnly, IPartialExpression receiver) {
         this.name = name;
         this.environment = environment;
         this.owner = owner;
         this.isStatic = isStatic;
         this.receiver = receiver;
-        this.methods = MCPReobfuscation.INSTANCE.reobfMethodOverloads(owner, name)
+        this.publicOnly = publicOnly;
+        this.methods = MCPReobfuscation.INSTANCE.reobfMethodOverloads(owner, name, publicOnly)
                                                 .filter(it -> validateModifier(it.modifiers()))
                                                 .map(it -> new NativeMethod(it, environment))
                                                 .collect(Collectors.toList());
-        this.getter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name)))
+        this.getter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name), publicOnly))
                 .validateLeft(this::validateGetter)
-                .orElseLeft(() -> MCPReobfuscation.INSTANCE.reobfMethod(owner, "is" + StringUtils.capitalize(name)))
+                .orElseLeft(() -> MCPReobfuscation.INSTANCE.reobfMethod(owner, "is" + StringUtils.capitalize(name), publicOnly))
                 .validateLeft(this::validateGetter)
-                .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name))
+                .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name, publicOnly))
                 .validateRight(this::validateFieldGet);
-        this.setter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "set" + StringUtils.capitalize(name)))
+        this.setter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "set" + StringUtils.capitalize(name), publicOnly))
                             .validateLeft(this::validateSetter)
-                            .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name))
+                            .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name, publicOnly))
                             .validateRight(this::validateFieldSet);
     }
 
-    public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic) {
-        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, null);
+    public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, boolean publicOnly) {
+        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, publicOnly,null);
     }
 
     public JavaNativeMemberSymbol receiver(IPartialExpression instanceValue) {
         if (!isStatic) {
-            return new JavaNativeMemberSymbol(environment, owner, name, false, instanceValue);
+            return new JavaNativeMemberSymbol(environment, owner, name, false, publicOnly, instanceValue);
         } else {
             throw new IllegalStateException("set instance to static symbol");
         }

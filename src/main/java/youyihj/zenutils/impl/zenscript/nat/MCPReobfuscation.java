@@ -27,9 +27,9 @@ public enum MCPReobfuscation {
 
     private final CompletableFuture<Pair<Multimap<String, String>, Multimap<String, String>>> mappers = CompletableFuture.supplyAsync(this::init);
 
-    public FieldData reobfField(ClassData owner, String name) {
+    public FieldData reobfField(ClassData owner, String name, boolean publicOnly) {
         Collection<String> possibleNames = mappers.join().getRight().get(name);
-        List<FieldData> fields = owner.fields(true);
+        List<FieldData> fields = owner.fields(publicOnly);
         for (String possibleSrgName : possibleNames) {
             try {
                 return findField(fields, possibleSrgName);
@@ -42,15 +42,14 @@ public enum MCPReobfuscation {
         }
     }
 
-    public Stream<ExecutableData> reobfMethodOverloads(ClassData owner, String name) {
+    public Stream<ExecutableData> reobfMethodOverloads(ClassData owner, String name, boolean publicOnly) {
         Collection<String> possibleNames = ImmutableList.<String>builder().addAll(mappers.join().getLeft().get(name)).add(name).build();
-        return owner.methods(true).stream()
+        return owner.methods(publicOnly).stream()
                      .filter(it -> possibleNames.contains(it.name()));
-
     }
 
-    public ExecutableData reobfMethod(ClassData owner, String name) {
-        return reobfMethodOverloads(owner, name).findFirst().orElse(null);
+    public ExecutableData reobfMethod(ClassData owner, String name, boolean publicOnly) {
+        return reobfMethodOverloads(owner, name, publicOnly).findFirst().orElse(null);
     }
 
     private FieldData findField(List<FieldData> fields, String name) throws NoSuchFieldException {

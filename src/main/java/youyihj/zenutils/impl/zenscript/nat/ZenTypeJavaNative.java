@@ -5,9 +5,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.annotations.CompareType;
 import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.compiler.ITypeRegistry;
+import stanhebben.zenscript.compiler.*;
 import stanhebben.zenscript.expression.*;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
@@ -25,8 +23,11 @@ import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassData;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
+import youyihj.zenutils.impl.mixin.itf.IMixinTargetEnvironment;
+import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -43,6 +44,18 @@ public class ZenTypeJavaNative extends ZenType {
     private final List<ZenTypeJavaNative> superClasses;
 
     private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
+
+    private static final Field METHOD_ENVIRONMENT_PARENT;
+    private static final Field CLASS_ENVIRONMENT_PARENT;
+
+    static {
+        try {
+            METHOD_ENVIRONMENT_PARENT = ReflectUtils.removePrivate(EnvironmentMethod.class, "environment");
+            CLASS_ENVIRONMENT_PARENT = ReflectUtils.removePrivate(EnvironmentClass.class, "global");
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public ZenTypeJavaNative(ClassData clazz, ITypeRegistry registry) {
         this.clazz = clazz;
@@ -209,7 +222,7 @@ public class ZenTypeJavaNative extends ZenType {
     }
 
     private JavaNativeMemberSymbol getSymbol(String name, IEnvironmentGlobal environment, boolean isStatic) {
-        return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic));
+        return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic, !isInMixinMethodEnvironment(environment)));
     }
 
     @Override
@@ -228,6 +241,22 @@ public class ZenTypeJavaNative extends ZenType {
 
     private static <T> Stream<T> optionalStream(T obj) {
         return obj == null ? Stream.empty() : Stream.of(obj);
+    }
+
+    private boolean isInMixinMethodEnvironment(IEnvironmentGlobal environment) {
+        try {
+            if (environment instanceof EnvironmentMethod) {
+                Object methodEnvParent = METHOD_ENVIRONMENT_PARENT.get(environment);
+                if (methodEnvParent instanceof EnvironmentClass) {
+                    Object classEnvParent = CLASS_ENVIRONMENT_PARENT.get(methodEnvParent);
+                    if (classEnvParent instanceof IMixinTargetEnvironment) {
+                        return ((IMixinTargetEnvironment) classEnvParent).getTargets().contains(clazz.name());
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 
     private static class ClassInfoClassLoader extends ClassLoader {
