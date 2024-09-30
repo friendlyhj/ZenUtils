@@ -113,14 +113,22 @@ public class ZenTypeJavaNative extends ZenType {
         IPartialExpression member = getSymbol(name, environment, false).receiver(value).instance(position);
         if (member instanceof ExpressionInvalid) {
             IPartialExpression memberExpansion = memberExpansion(position, environment, value.eval(environment), name);
-            return memberExpansion == null ? member : memberExpansion;
+            if (memberExpansion == null) {
+                environment.error("no such member " + name + " in " + clazz.name());
+                return member;
+            }
+            return memberExpansion;
         }
         return member;
     }
 
     @Override
     public IPartialExpression getStaticMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
-        return getSymbol(name, environment, true).instance(position);
+        IPartialExpression expression = getSymbol(name, environment, true).instance(position);
+        if (expression instanceof ExpressionInvalid) {
+            environment.error("no such static member " + name + " in " + clazz.name());
+        }
+        return expression;
     }
 
     @Override
