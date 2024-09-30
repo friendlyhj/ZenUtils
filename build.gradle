@@ -86,6 +86,7 @@ dependencies {
     deobfCompile "zone.rong:mixinbooter:9.3"
     deobfCompile "curse.maven:simple-dimensions-235444:2445577"
     deobfCompile "com.cleanroommc:configanytime:3.0"
+    deobfCompile "curse.maven:resource-mod-loader-945917:5768125"
 //    compileOnly provided('org.spongepowered:mixin:0.8-SNAPSHOT') {
 //        exclude module: 'guava'
 //        exclude module: 'commons-io'
