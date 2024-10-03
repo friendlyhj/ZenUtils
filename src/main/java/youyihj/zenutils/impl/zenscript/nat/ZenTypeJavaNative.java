@@ -11,7 +11,6 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
-import stanhebben.zenscript.type.casting.ICastingRule;
 import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
@@ -142,15 +141,6 @@ public class ZenTypeJavaNative extends ZenType {
         }
         environment.error(position, "no such constructor matched");
         return new ExpressionInvalid(position);
-    }
-
-    @Override
-    public ICastingRule getCastingRule(ZenType type, IEnvironmentGlobal environment) {
-        ICastingRule castingRule = super.getCastingRule(type, environment);
-        if (castingRule == null) {
-            return new CastingRuleCoerced(this, type);
-        }
-        return castingRule;
     }
 
     @Override
