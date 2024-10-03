@@ -11,7 +11,7 @@ import java.util.List;
  * @author youyihj
  */
 @Mixin(EnvironmentScript.class)
-public class MixinEnvironmentScript implements IMixinTargetEnvironment {
+public abstract class MixinEnvironmentScript implements IMixinTargetEnvironment {
     private List<String> targets;
 
     @Override

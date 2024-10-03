@@ -30,7 +30,7 @@ public abstract class MixinZenTypeNative {
     private void addToNativeCaster(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters, CallbackInfo ci) {
         ClassData classData = InternalUtils.getClassDataFetcher().forClass(cls);
 
-        CraftTweakerBridge.INSTANCE.getNativeCaster(classData).ifPresent(it ->
+        CraftTweakerBridge.INSTANCE.getCaster(classData).ifPresent(it ->
             rules.registerCastingRule(environment.getType(it.returnType().javaType()), new CastingRuleStaticMethod(new NativeMethod(it, environment)))
         );
     }
@@ -39,7 +39,7 @@ public abstract class MixinZenTypeNative {
     private void addToNativeMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name, CallbackInfoReturnable<IPartialExpression> cir) {
         if ("native".equals(name)) {
             ClassData classData = InternalUtils.getClassDataFetcher().forClass(cls);
-            CraftTweakerBridge.INSTANCE.getNativeCaster(classData).ifPresent(it ->
+            CraftTweakerBridge.INSTANCE.getCaster(classData).ifPresent(it ->
                 cir.setReturnValue(new ExpressionCallStatic(position, environment, new NativeMethod(it, environment), value.eval(environment)))
             );
         }

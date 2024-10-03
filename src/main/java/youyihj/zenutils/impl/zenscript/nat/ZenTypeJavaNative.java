@@ -105,7 +105,7 @@ public class ZenTypeJavaNative extends ZenType {
     @Override
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
         if ("wrapper".equals(name)) {
-            Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz);
+            Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getCaster(clazz);
             if (wrapperCaster.isPresent()) {
                 return new ExpressionCallStatic(position, environment, new NativeMethod(wrapperCaster.get(), environment), value.eval(environment));
             }
@@ -155,7 +155,7 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
-        CraftTweakerBridge.INSTANCE.getWrapperCaster(clazz).ifPresent(it ->
+        CraftTweakerBridge.INSTANCE.getCaster(clazz).ifPresent(it ->
                 rules.registerCastingRule(environment.getType(it.returnType().javaType()), new CastingRuleStaticMethod(new NativeMethod(it, environment)))
         );
     }
