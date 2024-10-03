@@ -12,9 +12,6 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.util.ZenPosition;
-import youyihj.zenutils.impl.member.ClassData;
-import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
-import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
@@ -187,21 +184,6 @@ public class MixinAnnotationTranslator {
             visitor.visit("remap", false);
             if (json.has("remap")) {
                 throw exceptionFactory.apply("remap always is false");
-            }
-        }
-        if (annotationType == Mixin.class) {
-            for (String target : getMixinTargets(json)) {
-                ClassData classData;
-                try {
-                    classData = InternalUtils.getClassDataFetcher().forName(target);
-                } catch (ClassNotFoundException e) {
-                    throw exceptionFactory.apply("class " + target + " does not exist.");
-                }
-                if (classData instanceof ReflectionClassData) {
-                    if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
-                        throw exceptionFactory.apply("Can not mixin class " + target + ". It is a non-mod class or already loaded.");
-                    }
-                }
             }
         }
     }

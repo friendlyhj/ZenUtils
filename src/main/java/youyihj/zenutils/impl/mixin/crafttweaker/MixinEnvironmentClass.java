@@ -1,7 +1,7 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import org.spongepowered.asm.mixin.Mixin;
-import stanhebben.zenscript.compiler.EnvironmentScript;
+import stanhebben.zenscript.compiler.EnvironmentClass;
 import youyihj.zenutils.impl.mixin.itf.IMixinTargetEnvironment;
 
 import java.util.Collections;
@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * @author youyihj
  */
-@Mixin(EnvironmentScript.class)
-public abstract class MixinEnvironmentScript implements IMixinTargetEnvironment {
+@Mixin(EnvironmentClass.class)
+public abstract class MixinEnvironmentClass implements IMixinTargetEnvironment {
     private List<String> targets;
 
     @Override

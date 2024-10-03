@@ -45,12 +45,10 @@ public class ZenTypeJavaNative extends ZenType {
     private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
 
     private static final Field METHOD_ENVIRONMENT_PARENT;
-    private static final Field CLASS_ENVIRONMENT_PARENT;
 
     static {
         try {
             METHOD_ENVIRONMENT_PARENT = ReflectUtils.removePrivate(EnvironmentMethod.class, "environment");
-            CLASS_ENVIRONMENT_PARENT = ReflectUtils.removePrivate(EnvironmentClass.class, "global");
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -245,11 +243,8 @@ public class ZenTypeJavaNative extends ZenType {
         try {
             if (environment instanceof EnvironmentMethod) {
                 Object methodEnvParent = METHOD_ENVIRONMENT_PARENT.get(environment);
-                if (methodEnvParent instanceof EnvironmentClass) {
-                    Object classEnvParent = CLASS_ENVIRONMENT_PARENT.get(methodEnvParent);
-                    if (classEnvParent instanceof IMixinTargetEnvironment) {
-                        return ((IMixinTargetEnvironment) classEnvParent).getTargets().contains(clazz.name());
-                    }
+                if (methodEnvParent instanceof IMixinTargetEnvironment) {
+                    return ((IMixinTargetEnvironment) methodEnvParent).getTargets().contains(clazz.name());
                 }
             }
         } catch (Exception ignored) {
@@ -263,7 +258,8 @@ public class ZenTypeJavaNative extends ZenType {
         private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
         private WeakReference<BytecodeClassDataFetcher> classDataFetcherRef;
 
-        private ClassInfoClassLoader() {}
+        private ClassInfoClassLoader() {
+        }
 
         Class<?> getClassInfo(BytecodeClassData classData) throws ClassNotFoundException {
             String className = classData.name();
