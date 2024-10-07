@@ -9,9 +9,11 @@ import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.file.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,7 +79,7 @@ public enum MCPReobfuscation {
                 throw new RuntimeException("Failed to download mcp mapping, try download it manually to `config/mcp_stable-39-1.12.zip`, uri: " + remoteMapping, e);
             }
         }
-        try (FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:file:" + localMapping.toUri().getPath().replace(" ", "%20")), Collections.emptyMap())) {
+        try (FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:file:" + encodeFilePath(localMapping.toUri().getPath())), Collections.emptyMap())) {
             try (Stream<String> methodStream = Files.lines(zipFs.getPath("methods.csv"))) {
                 methodStream.skip(1)
                             .map(it -> it.split(","))
@@ -92,5 +94,16 @@ public enum MCPReobfuscation {
             throw new RuntimeException("Failed to read mcp mapping", e);
         }
         return Pair.of(methodMap, fieldMap);
+    }
+
+    private static String encodeFilePath(String filePath) throws UnsupportedEncodingException {
+        String encodedPath = filePath.replace("\\", "/");
+
+        encodedPath = URLEncoder.encode(encodedPath, "UTF-8")
+                .replace("+", "%20")
+                .replace("%2F", "/")
+                .replace("%3A", ":");
+
+        return encodedPath;
     }
 }
