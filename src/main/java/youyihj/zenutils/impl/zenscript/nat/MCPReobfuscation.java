@@ -79,7 +79,7 @@ public enum MCPReobfuscation {
                 throw new RuntimeException("Failed to download mcp mapping, try download it manually to `config/mcp_stable-39-1.12.zip`, uri: " + remoteMapping, e);
             }
         }
-        try (FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:file:" + encodeFilePath(localMapping.toUri().getPath())), Collections.emptyMap())) {
+        try (FileSystem zipFs = FileSystems.newFileSystem(URI.create("jar:" + localMapping.toUri().toASCIIString()), Collections.emptyMap())) {
             try (Stream<String> methodStream = Files.lines(zipFs.getPath("methods.csv"))) {
                 methodStream.skip(1)
                             .map(it -> it.split(","))
@@ -96,14 +96,4 @@ public enum MCPReobfuscation {
         return Pair.of(methodMap, fieldMap);
     }
 
-    private static String encodeFilePath(String filePath) throws UnsupportedEncodingException {
-        String encodedPath = filePath.replace("\\", "/");
-
-        encodedPath = URLEncoder.encode(encodedPath, "UTF-8")
-                .replace("+", "%20")
-                .replace("%2F", "/")
-                .replace("%3A", ":");
-
-        return encodedPath;
-    }
 }
