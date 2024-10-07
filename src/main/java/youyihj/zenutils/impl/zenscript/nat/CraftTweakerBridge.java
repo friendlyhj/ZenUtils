@@ -41,15 +41,15 @@ public enum CraftTweakerBridge {
                 }
             }
             // There are many overloads in ItemStack, Ingredient conversations, specify additionally
-            MCPReobfuscation.INSTANCE.reobfMethodOverloads(craftTweakerMC, "getItemStack", true).forEach(it -> {
+            craftTweakerMC.methods("getItemStack", true).forEach(it -> {
                 String paraName = it.parameters().get(0).asClassData().name();
                 if (paraName.endsWith("ItemStack")) {
                     casters.put(paraName, it);
                 }
             });
-            casters.put("net.minecraft.item.ItemStack", MCPReobfuscation.INSTANCE.reobfMethod(craftTweakerMC, "getIItemStack", true));
-            casters.put("crafttweaker.api.item.IIngredient", MCPReobfuscation.INSTANCE.reobfMethod(craftTweakerMC, "getIngredient", true));
-            casters.put("net.minecraft.item.crafting.Ingredient", MCPReobfuscation.INSTANCE.reobfMethod(craftTweakerMC, "getIIngredient", true));
+            casters.put("net.minecraft.item.ItemStack", craftTweakerMC.methods("getIItemStack", true).get(0));
+            casters.put("crafttweaker.api.item.IIngredient", craftTweakerMC.methods("getIngredient", true).get(0));
+            casters.put("net.minecraft.item.crafting.Ingredient", craftTweakerMC.methods("getIIngredient", true).get(0));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
