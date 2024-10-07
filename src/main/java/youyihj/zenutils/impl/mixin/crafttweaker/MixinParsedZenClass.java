@@ -76,7 +76,7 @@ public abstract class MixinParsedZenClass {
                         }
                     } catch (ClassNotFoundException e) {
                         isMixinClass = false;
-                        classEnvironment.info("Skipping loading mixin class " + name + ", because the target " + target + " is not found");
+                        classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is not found");
                     }
                 }
                 if (isMixinClass) {

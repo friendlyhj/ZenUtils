@@ -10,8 +10,8 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionAs;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.casting.CastingAnySubtype;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.impl.zenscript.nat.CastingRuleCoerced;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 
 /**
@@ -34,8 +34,8 @@ public abstract class MixinExpression implements IPartialExpression {
             cancellable = true
     )
     private void javaNativeTypeCastExplicitly(ZenPosition position, IEnvironmentGlobal environment, ZenType type, CallbackInfoReturnable<Expression> cir) {
-        if (type instanceof ZenTypeJavaNative && getType() instanceof ZenTypeJavaNative) {
-            cir.setReturnValue(new ExpressionAs(position, (Expression) (Object) this, new CastingAnySubtype(getType(), type)));
+        if (type instanceof ZenTypeJavaNative || getType() instanceof ZenTypeJavaNative) {
+            cir.setReturnValue(new ExpressionAs(position, (Expression) (Object) this, new CastingRuleCoerced(getType(), type)));
         }
     }
 }
