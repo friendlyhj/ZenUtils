@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import crafttweaker.CraftTweakerAPI;
+import crafttweaker.mc1120.preprocessors.ModLoadedPreprocessor;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ITweaker;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -45,6 +46,8 @@ public abstract class MixinCraftTweakerAPI {
         preprocessorManager.registerPreprocessorAction(ReloadablePreprocessor.NAME, ReloadablePreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NotReloadablePreprocessor.NAME, NotReloadablePreprocessor::new);
         preprocessorManager.registerPreprocessorAction(DownloadReobfMappingPreprocessor.NAME, DownloadReobfMappingPreprocessor::new);
+
+        preprocessorManager.registerPreprocessorAction("modloaded", ModLoadedPreprocessor::new);
     }
 
     @Unique
