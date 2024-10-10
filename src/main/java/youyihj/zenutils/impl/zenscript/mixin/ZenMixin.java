@@ -6,8 +6,6 @@ import crafttweaker.preprocessor.PreprocessorManager;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.transformer.MixinProcessor;
@@ -27,8 +25,6 @@ import java.util.Map;
  * @author youyihj
  */
 public class ZenMixin {
-    private static final Logger LOGGER = LogManager.getLogger("ZenUtils Custom Mixin");
-
     public static void load() throws Exception {
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(MixinPreprocessor.NAME, (IMultilinePreprocessorFactory<MixinPreprocessor>) MixinPreprocessor::new);
@@ -44,7 +40,7 @@ public class ZenMixin {
                 resourceCache.put(name.replace('/', '.'), bytecode);
                 String classSimpleName = name.substring("youyihj/zenutils/impl/mixin/custom/".length());
                 CustomMixinPlugin.addMixinClass(classSimpleName);
-                LOGGER.info("Loaded {}", classSimpleName);
+                CraftTweakerAPI.logInfo("Loaded mixin class: " + classSimpleName);
             } else {
                 resourceCache.put(name, bytecode);
             }
