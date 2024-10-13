@@ -22,6 +22,8 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -29,6 +31,7 @@ import net.minecraftforge.items.IItemHandler;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenGetter;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.energy.CrTEnergyStorage;
 import youyihj.zenutils.api.entity.INearbyEntityList;
 import youyihj.zenutils.api.item.CrTItemHandler;
 import youyihj.zenutils.api.liquid.CrTLiquidHandler;
@@ -165,6 +168,16 @@ public class ZenUtilsWorld {
                 .map(tileEntity -> {
                     IFluidHandler fluidHandler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, CraftTweakerMC.getFacing(facing));
                     return CrTLiquidHandler.of(fluidHandler);
+                })
+                .orElse(null);
+    }
+
+    @ZenMethod
+    public static CrTEnergyStorage getEnergyStorage(IWorld world, IBlockPos pos, @stanhebben.zenscript.annotations.Optional IFacing facing) {
+        return Optional.ofNullable(CraftTweakerMC.getWorld(world).getTileEntity(CraftTweakerMC.getBlockPos(pos)))
+                .map(tileEntity -> {
+                    IEnergyStorage energyStorage = tileEntity.getCapability(CapabilityEnergy.ENERGY, CraftTweakerMC.getFacing(facing));
+                    return CrTEnergyStorage.of(energyStorage);
                 })
                 .orElse(null);
     }
