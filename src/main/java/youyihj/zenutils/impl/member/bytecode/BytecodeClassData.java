@@ -29,7 +29,7 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         this.bytecode = bytecode;
         this.classDataFetcher = classDataFetcher;
         this.classNode = new ClassNode();
-        new ClassReader(bytecode).accept(classNode, 0);
+        new ClassReader(bytecode).accept(classNode, ClassReader.SKIP_CODE);
         setAnnotationNodes(classNode.visibleAnnotations);
         setAnnotationNodes(classNode.invisibleAnnotations);
     }
