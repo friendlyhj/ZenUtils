@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,6 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
@@ -60,6 +62,13 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
         if (type instanceof TypeVariable) {
             cir.setReturnValue(getType(((TypeVariable<?>) type).getBounds()[0]));
         }
+    }
+
+    @ModifyReturnValue(method = "getType", at = @At("RETURN"), slice = @Slice(
+            from = @At(value = "CONSTANT", args = "nullValue=true")
+    ))
+    private ZenType modifyTypeFallback(ZenType original) {
+        return ZenTypeJavaNative.OBJECT;
     }
 
     @Inject(method = "getClassType", at = @At(value = "NEW", target = "stanhebben/zenscript/type/ZenTypeNative"), cancellable = true)
