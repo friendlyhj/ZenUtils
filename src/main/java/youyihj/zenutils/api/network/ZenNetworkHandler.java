@@ -54,4 +54,9 @@ public class ZenNetworkHandler {
     public static void registerClient2ServerMessage(String key, IServerMessageHandler serverMessageHandler) {
         ZenUtilsNetworkHandler.INSTANCE.registerClient2ServerMessage(key, serverMessageHandler);
     }
+
+    @ZenMethod
+    public static void disableScriptValidation() {
+        ZenUtilsNetworkHandler.INSTANCE.disableScriptValidation();
+    }
 }

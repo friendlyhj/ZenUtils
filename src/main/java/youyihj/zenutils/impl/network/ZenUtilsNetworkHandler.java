@@ -31,6 +31,8 @@ public enum ZenUtilsNetworkHandler {
     private final Int2ObjectArrayMap<IClientMessageHandler> clientHandlers = new Int2ObjectArrayMap<>();
     private final Int2ObjectArrayMap<IServerMessageHandler> serverHandlers = new Int2ObjectArrayMap<>();
 
+    private boolean disableScriptValidation;
+
     ZenUtilsNetworkHandler() {
         channel.registerMessage(ZenUtilsMessage.Server2Client.class, ZenUtilsMessage.Server2Client.class, 0, Side.CLIENT);
         channel.registerMessage(ZenUtilsMessage.Client2Server.class, ZenUtilsMessage.Client2Server.class, 1, Side.SERVER);
@@ -63,6 +65,14 @@ public enum ZenUtilsNetworkHandler {
 
     public void sendToServer(String key, IByteBufWriter byteBufWriter) {
         channel.sendToServer(getClient2ServerMessage(key, byteBufWriter));
+    }
+
+    public void disableScriptValidation() {
+        disableScriptValidation = true;
+    }
+
+    public boolean isDisableScriptValidation() {
+        return disableScriptValidation;
     }
 
     IClientMessageHandler getClientMessageHandler(int key) {

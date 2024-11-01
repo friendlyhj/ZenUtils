@@ -42,6 +42,9 @@ public class ValidateScriptMessage extends ZenUtilsMessage {
 
         @Override
         public IMessage onMessage(ValidateScriptMessage message, MessageContext ctx) {
+            if (ZenUtilsNetworkHandler.INSTANCE.isDisableScriptValidation()) {
+                return null;
+            }
             byte[] serverScriptBytes = ZenModule.classes.get(message.scriptClassName);
             if (serverScriptBytes == null || Arrays.hashCode(serverScriptBytes) != message.scriptBytesHash) {
                 ctx.getServerHandler().disconnect(new TextComponentTranslation("message.zenutils.validate"));
