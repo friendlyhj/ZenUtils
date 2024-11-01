@@ -1,6 +1,5 @@
 package youyihj.zenutils.impl.network;
 
-import crafttweaker.api.data.DataByteArray;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -14,27 +13,27 @@ import java.util.Arrays;
  * @author youyihj
  */
 public class ValidateScriptMessage extends ZenUtilsMessage {
-    private byte[] scriptBytes;
+    private int scriptBytesHash;
     private String scriptClassName;
 
     public ValidateScriptMessage() {}
 
     public ValidateScriptMessage(byte[] scriptBytes, String scriptClassName) {
         setKey("validate_script");
-        this.scriptBytes = scriptBytes;
+        this.scriptBytesHash = Arrays.hashCode(scriptBytes);
         this.scriptClassName = scriptClassName;
     }
 
     @Override
     protected void writeExtraBytes(IByteBuf buf) {
         buf.writeString(scriptClassName);
-        buf.writeData(new DataByteArray(scriptBytes, true));
+        buf.writeInt(scriptBytesHash);
     }
 
     @Override
     protected void readExtraBytes(IByteBuf buf) {
         this.scriptClassName = buf.readString();
-        this.scriptBytes = buf.readData().asByteArray();
+        this.scriptBytesHash = buf.readInt();
     }
 
     public static class Handler implements IMessageHandler<ValidateScriptMessage, IMessage> {
@@ -43,7 +42,8 @@ public class ValidateScriptMessage extends ZenUtilsMessage {
 
         @Override
         public IMessage onMessage(ValidateScriptMessage message, MessageContext ctx) {
-            if (!Arrays.equals(ZenModule.classes.get(message.scriptClassName), message.scriptBytes)) {
+            byte[] serverScriptBytes = ZenModule.classes.get(message.scriptClassName);
+            if (serverScriptBytes == null || Arrays.hashCode(serverScriptBytes) != message.scriptBytesHash) {
                 ctx.getServerHandler().disconnect(new TextComponentTranslation("message.zenutils.validate"));
             }
             return null;
