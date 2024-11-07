@@ -59,4 +59,9 @@ public class ZenNetworkHandler {
     public static void disableScriptValidation() {
         ZenUtilsNetworkHandler.INSTANCE.disableScriptValidation();
     }
+
+    @ZenMethod
+    public static void addValidationBlacklist(String className) {
+        ZenUtilsNetworkHandler.INSTANCE.addValidationBlacklist(className);
+    }
 }

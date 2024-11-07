@@ -11,7 +11,9 @@ import youyihj.zenutils.api.network.IByteBufWriter;
 import youyihj.zenutils.api.network.IClientMessageHandler;
 import youyihj.zenutils.api.network.IServerMessageHandler;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author youyihj
@@ -22,6 +24,8 @@ public enum ZenUtilsNetworkHandler {
     private final SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MODID);
     private final Int2ObjectOpenHashMap<IClientMessageHandler> clientHandlers = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<IServerMessageHandler> serverHandlers = new Int2ObjectOpenHashMap<>();
+
+    final Set<String> validationBlacklist = new HashSet<>();
 
     private boolean disableScriptValidation;
 
@@ -61,6 +65,10 @@ public enum ZenUtilsNetworkHandler {
 
     public void disableScriptValidation() {
         disableScriptValidation = true;
+    }
+
+    public void addValidationBlacklist(String className) {
+        validationBlacklist.add(className);
     }
 
     public boolean shouldSendScripts() {

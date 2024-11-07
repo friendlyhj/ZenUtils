@@ -20,10 +20,7 @@ import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.world.ZenUtilsWorld;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -79,6 +76,7 @@ public class PlayerScriptValidation {
                     scripts.add(name);
                 }
             }
+            scripts.removeAll(ZenUtilsNetworkHandler.INSTANCE.validationBlacklist);
             return scripts;
         });
 
@@ -90,7 +88,9 @@ public class PlayerScriptValidation {
                 ZenUtilsWorld.catenation(CraftTweakerMC.getIWorld(event.getWorld()))
                         .sleep(100)
                         .then((w, ctx) -> {
-                            if (!validatedScriptsByPlayer.containsKey(player) || !validatedScriptsByPlayer.get(player).equals(shouldValidatedScripts.get())) {
+                            Collection<String> validClientScripts = validatedScriptsByPlayer.get(player);
+                            validClientScripts.removeAll(ZenUtilsNetworkHandler.INSTANCE.validationBlacklist);
+                            if (!validClientScripts.equals(shouldValidatedScripts.get())) {
                                 player.connection.disconnect(new TextComponentTranslation("message.zenutils.validate"));
                             } else {
                                 ZenUtils.forgeLogger.info("Validated scripts of client {}", player.getName());
