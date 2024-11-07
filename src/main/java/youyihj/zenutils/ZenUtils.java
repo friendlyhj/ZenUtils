@@ -22,6 +22,8 @@ import youyihj.zenutils.api.zenscript.SidedZenRegister;
 import youyihj.zenutils.impl.capability.ZenWorldCapabilityHandler;
 import youyihj.zenutils.impl.command.CleanLogCommand;
 import youyihj.zenutils.impl.command.StatCommand;
+import youyihj.zenutils.impl.network.PlayerScriptValidation;
+import youyihj.zenutils.impl.network.ZenUtilsNetworkHandler;
 import youyihj.zenutils.impl.player.IStatFormatterAdapter;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
@@ -77,6 +79,9 @@ public class ZenUtils {
         CTChatCommand.registerCommand(new ReloadCommand());
         CTChatCommand.registerCommand(new StatCommand());
         CTChatCommand.registerCommand(new CleanLogCommand());
+        if (ZenUtilsNetworkHandler.INSTANCE.shouldValidateScripts(event.getServer())) {
+            MinecraftForge.EVENT_BUS.register(PlayerScriptValidation.ServerEventHandler.class);
+        }
         ZenCommandRegisterAction.ApplyLogic.INSTANCE.init((CommandHandler) event.getServer().commandManager);
         if (InternalUtils.isContentTweakerInstalled()) {
             LateGetContentLookup.refreshFields();

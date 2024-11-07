@@ -1,6 +1,5 @@
 package youyihj.zenutils.impl.network;
 
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -42,12 +41,9 @@ public class ValidateScriptMessage extends ZenUtilsMessage {
 
         @Override
         public IMessage onMessage(ValidateScriptMessage message, MessageContext ctx) {
-            if (ZenUtilsNetworkHandler.INSTANCE.isDisableScriptValidation()) {
-                return null;
-            }
             byte[] serverScriptBytes = ZenModule.classes.get(message.scriptClassName);
-            if (serverScriptBytes == null || Arrays.hashCode(serverScriptBytes) != message.scriptBytesHash) {
-                ctx.getServerHandler().disconnect(new TextComponentTranslation("message.zenutils.validate"));
+            if (serverScriptBytes != null && Arrays.hashCode(serverScriptBytes) == message.scriptBytesHash) {
+                PlayerScriptValidation.ServerEventHandler.validatedScriptsByPlayer.put(ctx.getServerHandler().player, message.scriptClassName);
             }
             return null;
         }
