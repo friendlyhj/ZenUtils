@@ -11,6 +11,7 @@ import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
+import youyihj.zenutils.impl.member.LookupRequester;
 import youyihj.zenutils.impl.util.Either;
 import youyihj.zenutils.impl.util.InternalUtils;
 
@@ -26,42 +27,42 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     private final ClassData owner;
     private final IEnvironmentGlobal environment;
     private final boolean isStatic;
-    private final boolean publicOnly;
+    private final LookupRequester lookupRequester;
     private final List<IJavaMethod> methods;
     private final Either<ExecutableData, FieldData> getter;
     private final Either<ExecutableData, FieldData> setter;
     private final IPartialExpression receiver;
 
-    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, boolean publicOnly, IPartialExpression receiver) {
+    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, LookupRequester lookupRequester, IPartialExpression receiver) {
         this.name = name;
         this.environment = environment;
         this.owner = owner;
         this.isStatic = isStatic;
         this.receiver = receiver;
-        this.publicOnly = publicOnly;
-        this.methods = MCPReobfuscation.INSTANCE.reobfMethodOverloads(owner, name, publicOnly)
+        this.lookupRequester = lookupRequester;
+        this.methods = MCPReobfuscation.INSTANCE.reobfMethodOverloads(owner, name, lookupRequester)
                                                 .filter(it -> validateModifier(it.modifiers()))
                                                 .map(it -> new NativeMethod(it, environment))
                                                 .collect(Collectors.toList());
-        this.getter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name), publicOnly))
+        this.getter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name), lookupRequester))
                 .validateLeft(this::validateGetter)
-                .orElseLeft(() -> MCPReobfuscation.INSTANCE.reobfMethod(owner, "is" + StringUtils.capitalize(name), publicOnly))
+                .orElseLeft(() -> MCPReobfuscation.INSTANCE.reobfMethod(owner, "is" + StringUtils.capitalize(name), lookupRequester))
                 .validateLeft(this::validateGetter)
-                .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name, publicOnly))
+                .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name, lookupRequester))
                 .validateRight(this::validateFieldGet);
-        this.setter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "set" + StringUtils.capitalize(name), publicOnly))
+        this.setter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "set" + StringUtils.capitalize(name), lookupRequester))
                             .validateLeft(this::validateSetter)
-                            .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name, publicOnly))
+                            .orElseRight(() -> MCPReobfuscation.INSTANCE.reobfField(owner, name, lookupRequester))
                             .validateRight(this::validateFieldSet);
     }
 
-    public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, boolean publicOnly) {
-        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, publicOnly,null);
+    public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, LookupRequester lookupRequester) {
+        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, lookupRequester,null);
     }
 
     public JavaNativeMemberSymbol receiver(IPartialExpression instanceValue) {
         if (!isStatic) {
-            return new JavaNativeMemberSymbol(environment, owner, name, false, publicOnly, instanceValue);
+            return new JavaNativeMemberSymbol(environment, owner, name, false, lookupRequester, instanceValue);
         } else {
             throw new IllegalStateException("set instance to static symbol");
         }

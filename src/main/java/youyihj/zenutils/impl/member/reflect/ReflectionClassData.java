@@ -4,9 +4,14 @@ import com.google.common.collect.Lists;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
+import youyihj.zenutils.impl.member.LookupRequester;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,47 +38,33 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
     }
 
     @Override
-    public List<FieldData> fields(boolean publicOnly) {
-        if (publicOnly) {
-            return Arrays.stream(clazz.getFields())
-                    .map(ReflectionFieldData::new)
-                    .collect(Collectors.toList());
-        } else {
-            List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
-            for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
-                Arrays.stream(superclass.getDeclaredFields())
-                        .filter(it -> Modifier.isProtected(it.getModifiers()) || Modifier.isPublic(it.getModifiers()))
-                        .forEach(fields::add);
-            }
-            return fields.stream()
-                    .map(ReflectionFieldData::new)
-                    .collect(Collectors.toList());
+    public List<FieldData> fields(LookupRequester requester) {
+        List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
+        for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
+            fields.addAll(Arrays.asList(superclass.getDeclaredFields()));
         }
+        return fields.stream()
+                .filter(it -> requester.allows(it.getModifiers()))
+                .map(ReflectionFieldData::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ExecutableData> methods(boolean publicOnly) {
-        if (publicOnly) {
-            return Arrays.stream(clazz.getMethods())
-                    .map(ReflectionExecutableData::new)
-                    .collect(Collectors.toList());
-        } else {
-            List<Method> methods = Lists.newArrayList(clazz.getDeclaredMethods());
-            for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
-                Arrays.stream(superclass.getDeclaredMethods())
-                        .filter(it -> Modifier.isProtected(it.getModifiers()))
-                        .forEach(methods::add);
-            }
-            return methods.stream()
-                    .map(ReflectionExecutableData::new)
-                    .collect(Collectors.toList());
+    public List<ExecutableData> methods(LookupRequester requester) {
+        List<Method> methods = Lists.newArrayList(clazz.getDeclaredMethods());
+        for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
+            methods.addAll(Arrays.asList(superclass.getDeclaredMethods()));
         }
+        return methods.stream()
+                .filter(it -> requester.allows(it.getModifiers()))
+                .map(ReflectionExecutableData::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ExecutableData> constructors(boolean publicOnly) {
-        Constructor<?>[] constructors = publicOnly ? clazz.getConstructors() : clazz.getDeclaredConstructors();
-        return Arrays.stream(constructors)
+    public List<ExecutableData> constructors(LookupRequester requester) {
+        return Arrays.stream(clazz.getDeclaredConstructors())
+                .filter(it -> requester.allows(it.getModifiers()))
                 .map(ReflectionExecutableData::new)
                 .collect(Collectors.toList());
     }
@@ -123,5 +114,15 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
     @Override
     public String toString() {
         return descriptor();
+    }
+
+    private List<Method> getParentMethods() {
+        List<Method> methods = new ArrayList<>();
+        for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
+            Arrays.stream(superclass.getDeclaredMethods())
+                    .filter(it -> Modifier.isProtected(it.getModifiers()) || Modifier.isPublic(it.getModifiers()))
+                    .forEach(methods::add);
+        }
+        return methods;
     }
 }

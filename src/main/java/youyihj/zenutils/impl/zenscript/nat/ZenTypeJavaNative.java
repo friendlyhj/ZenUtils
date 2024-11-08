@@ -18,6 +18,7 @@ import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.LookupRequester;
 import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassData;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
@@ -131,7 +132,7 @@ public class ZenTypeJavaNative extends ZenType {
     @Override
     public Expression call(ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
         Expression[] actualArguments = receiver == null ? arguments : ArrayUtils.add(arguments, 0, receiver);
-        List<ExecutableData> constructors = clazz.constructors(true);
+        List<ExecutableData> constructors = clazz.constructors(getLookupRequester(environment));
         for (ExecutableData constructor : constructors) {
             if (canAcceptConstructor(constructor, environment, actualArguments)) {
                 return new ExpressionNativeConstructorCall(position, constructor, environment, actualArguments);
@@ -218,7 +219,7 @@ public class ZenTypeJavaNative extends ZenType {
     }
 
     private JavaNativeMemberSymbol getSymbol(String name, IEnvironmentGlobal environment, boolean isStatic) {
-        return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic, !isInMixinMethodEnvironment(environment)));
+        return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic, getLookupRequester(environment)));
     }
 
     @Override
@@ -239,17 +240,17 @@ public class ZenTypeJavaNative extends ZenType {
         return obj == null ? Stream.empty() : Stream.of(obj);
     }
 
-    private boolean isInMixinMethodEnvironment(IEnvironmentGlobal environment) {
+    private LookupRequester getLookupRequester(IEnvironmentGlobal environment) {
         try {
             if (environment instanceof EnvironmentMethod) {
                 Object methodEnvParent = METHOD_ENVIRONMENT_PARENT.get(environment);
                 if (methodEnvParent instanceof IMixinTargetEnvironment) {
-                    return ((IMixinTargetEnvironment) methodEnvParent).getTargets().contains(clazz.name());
+                    return ((IMixinTargetEnvironment) methodEnvParent).getTargets().contains(clazz.name()) ? LookupRequester.SELF : LookupRequester.PUBLIC;
                 }
             }
         } catch (Exception ignored) {
         }
-        return false;
+        return LookupRequester.PUBLIC;
     }
 
     private static class ClassInfoClassLoader extends ClassLoader {

@@ -7,13 +7,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.FieldData;
+import youyihj.zenutils.impl.member.LookupRequester;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.nio.file.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +28,9 @@ public enum MCPReobfuscation {
 
     private final CompletableFuture<Pair<Multimap<String, String>, Multimap<String, String>>> mappers = CompletableFuture.supplyAsync(this::init);
 
-    public FieldData reobfField(ClassData owner, String name, boolean publicOnly) {
+    public FieldData reobfField(ClassData owner, String name, LookupRequester requester) {
         Collection<String> possibleNames = mappers.join().getRight().get(name);
-        List<FieldData> fields = owner.fields(publicOnly);
+        List<FieldData> fields = owner.fields(requester);
         for (String possibleSrgName : possibleNames) {
             try {
                 return findField(fields, possibleSrgName);
@@ -44,14 +43,14 @@ public enum MCPReobfuscation {
         }
     }
 
-    public Stream<ExecutableData> reobfMethodOverloads(ClassData owner, String name, boolean publicOnly) {
+    public Stream<ExecutableData> reobfMethodOverloads(ClassData owner, String name, LookupRequester requester) {
         Collection<String> possibleNames = ImmutableList.<String>builder().addAll(mappers.join().getLeft().get(name)).add(name).build();
-        return owner.methods(publicOnly).stream()
+        return owner.methods(requester).stream()
                      .filter(it -> possibleNames.contains(it.name()));
     }
 
-    public ExecutableData reobfMethod(ClassData owner, String name, boolean publicOnly) {
-        return reobfMethodOverloads(owner, name, publicOnly).findFirst().orElse(null);
+    public ExecutableData reobfMethod(ClassData owner, String name, LookupRequester requester) {
+        return reobfMethodOverloads(owner, name, requester).findFirst().orElse(null);
     }
 
     private FieldData findField(List<FieldData> fields, String name) throws NoSuchFieldException {

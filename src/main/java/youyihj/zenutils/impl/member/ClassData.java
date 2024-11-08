@@ -12,14 +12,14 @@ public interface ClassData extends TypeData, AnnotatedMember {
 
     String internalName();
 
-    List<FieldData> fields(boolean publicOnly);
+    List<FieldData> fields(LookupRequester requester);
 
-    List<ExecutableData> methods(boolean publicOnly);
+    List<ExecutableData> methods(LookupRequester requester);
 
-    List<ExecutableData> constructors(boolean publicOnly);
+    List<ExecutableData> constructors(LookupRequester requester);
 
-    default List<ExecutableData> methods(String name, boolean publicOnly) {
-        return methods(publicOnly).stream().filter(it -> name.equals(it.name())).collect(Collectors.toList());
+    default List<ExecutableData> methods(String name, LookupRequester requester) {
+        return methods(requester).stream().filter(it -> name.equals(it.name())).collect(Collectors.toList());
     }
 
     boolean isInterface();

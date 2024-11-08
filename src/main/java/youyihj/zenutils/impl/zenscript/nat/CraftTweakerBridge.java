@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
+import youyihj.zenutils.impl.member.LookupRequester;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public enum CraftTweakerBridge {
         casters.clear();
         try {
             ClassData craftTweakerMC = InternalUtils.getClassDataFetcher().forName("crafttweaker.api.minecraft.CraftTweakerMC");
-            for (ExecutableData method : craftTweakerMC.methods(true)) {
+            for (ExecutableData method : craftTweakerMC.methods(LookupRequester.PUBLIC)) {
                 if (method.name().startsWith("get") && method.parameterCount() == 1) {
                     ClassData toConvert = method.parameters().get(0).asClassData();
                     String toConvertClassName = toConvert.name();
@@ -41,15 +42,15 @@ public enum CraftTweakerBridge {
                 }
             }
             // There are many overloads in ItemStack, Ingredient conversations, specify additionally
-            craftTweakerMC.methods("getItemStack", true).forEach(it -> {
+            craftTweakerMC.methods("getItemStack", LookupRequester.PUBLIC).forEach(it -> {
                 String paraName = it.parameters().get(0).asClassData().name();
                 if (paraName.endsWith("ItemStack")) {
                     casters.put(paraName, it);
                 }
             });
-            casters.put("net.minecraft.item.ItemStack", craftTweakerMC.methods("getIItemStack", true).get(0));
-            casters.put("crafttweaker.api.item.IIngredient", craftTweakerMC.methods("getIngredient", true).get(0));
-            casters.put("net.minecraft.item.crafting.Ingredient", craftTweakerMC.methods("getIIngredient", true).get(0));
+            casters.put("net.minecraft.item.ItemStack", craftTweakerMC.methods("getIItemStack", LookupRequester.PUBLIC).get(0));
+            casters.put("crafttweaker.api.item.IIngredient", craftTweakerMC.methods("getIngredient", LookupRequester.PUBLIC).get(0));
+            casters.put("net.minecraft.item.crafting.Ingredient", craftTweakerMC.methods("getIIngredient", LookupRequester.PUBLIC).get(0));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

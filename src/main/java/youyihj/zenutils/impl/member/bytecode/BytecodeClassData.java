@@ -4,10 +4,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
-import youyihj.zenutils.impl.member.ClassData;
-import youyihj.zenutils.impl.member.ExecutableData;
-import youyihj.zenutils.impl.member.FieldData;
-import youyihj.zenutils.impl.member.LiteralType;
+import youyihj.zenutils.impl.member.*;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
@@ -45,31 +42,26 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     }
 
     @Override
-    public List<FieldData> fields(boolean publicOnly) {
+    public List<FieldData> fields(LookupRequester requester) {
         List<FieldData> fieldData = new ArrayList<>();
         for (FieldNode field : classNode.fields) {
-            if (!publicOnly || Modifier.isPublic(field.access)) {
+            if (requester.allows(field.access)) {
                 fieldData.add(new BytecodeFieldData(field, this));
             }
         }
         ClassData superClass = superClass();
         if (superClass != null) {
-            for (FieldData superField : superClass.fields(false)) {
-                int modifiers = superField.modifiers();
-                if (Modifier.isPublic(modifiers) || (!publicOnly && Modifier.isProtected(modifiers))) {
-                    fieldData.add(superField);
-                }
-            }
+            fieldData.addAll(superClass.fields(requester));
         }
         return fieldData;
     }
 
     @Override
-    public List<ExecutableData> methods(boolean publicOnly) {
+    public List<ExecutableData> methods(LookupRequester requester) {
         List<ExecutableData> methods = new ArrayList<>();
         Set<String> usedDescriptions = new HashSet<>();
         for (MethodNode method : classNode.methods) {
-            if (!method.name.startsWith("<") && (!publicOnly || Modifier.isPublic(method.access))) {
+            if (!method.name.startsWith("<") && requester.allows(method.access)) {
                 BytecodeMethodData methodData = new BytecodeMethodData(method, this);
                 methods.add(methodData);
                 usedDescriptions.add(methodData.name() + methodData.descriptor());
@@ -77,17 +69,14 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         }
         ClassData superClass = superClass();
         if (superClass != null) {
-            for (ExecutableData superMethod : superClass.methods(false)) {
-                int modifiers = superMethod.modifiers();
-                if (Modifier.isPublic(modifiers) || (!publicOnly && Modifier.isProtected(modifiers))) {
-                    if (usedDescriptions.add(superMethod.name() + superMethod.descriptor())) {
-                        methods.add(superMethod);
-                    }
+            for (ExecutableData superMethod : superClass.methods(requester)) {
+                if (usedDescriptions.add(superMethod.name() + superMethod.descriptor())) {
+                    methods.add(superMethod);
                 }
             }
         }
         for (ClassData anInterface : interfaces()) {
-            List<ExecutableData> interfaceMethods = anInterface.methods(true);
+            List<ExecutableData> interfaceMethods = anInterface.methods(requester);
             for (ExecutableData interfaceMethod : interfaceMethods) {
                 if (usedDescriptions.add(interfaceMethod.name() + interfaceMethod.descriptor())) {
                     methods.add(interfaceMethod);
@@ -98,10 +87,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     }
 
     @Override
-    public List<ExecutableData> constructors(boolean publicOnly) {
+    public List<ExecutableData> constructors(LookupRequester requester) {
         List<ExecutableData> constructors = new ArrayList<>();
         for (MethodNode method : classNode.methods) {
-            if (method.name.equals("<init>") && (!publicOnly || Modifier.isPublic(method.access))) {
+            if (method.name.equals("<init>") && requester.allows(method.access)) {
                 constructors.add(new BytecodeMethodData(method, this));
             }
         }
