@@ -34,6 +34,6 @@ public class ReflectionFieldData extends ReflectionAnnotatedMember implements Fi
 
     @Override
     public TypeData type() {
-        return ReflectionClassDataFetcher.type(field.getType());
+        return ReflectionClassDataFetcher.type(field.getGenericType());
     }
 }
