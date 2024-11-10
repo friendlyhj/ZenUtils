@@ -29,7 +29,7 @@ public class ExpressionNativeConstructorCall extends Expression {
     @Override
     public void compile(boolean result, IEnvironmentMethod environment) {
         MethodOutput output = environment.getOutput();
-        output.newObject(getType().toJavaClass());
+        output.newObject(getType().toASMType().getInternalName());
         output.dup();
         for(int i = 0; i < arguments.length; i++) {
             Expression argument = arguments[i];
