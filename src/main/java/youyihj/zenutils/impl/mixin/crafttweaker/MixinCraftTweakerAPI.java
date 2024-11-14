@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.mc1120.preprocessors.ModLoadedPreprocessor;
+import crafttweaker.mc1120.util.CraftTweakerHacks;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ITweaker;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -9,6 +10,8 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import stanhebben.zenscript.compiler.EnvironmentMethodLambda;
+import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialType;
 import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
@@ -19,6 +22,7 @@ import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfoReturnable;
 import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author youyihj
@@ -34,7 +38,11 @@ public abstract class MixinCraftTweakerAPI {
     private static void redirectTweaker(CallbackInfo ci) {
         tweaker = new ZenUtilsTweaker(tweaker);
         zu$registerGlobalMethods();
+
         GlobalRegistry.getRoot().put("native", pos -> new PartialJavaNativeClassOrPackage(pos, ""), null);
+        List<Class<? extends IPartialExpression>> nonCapturedExpressions = CraftTweakerHacks.getPrivateStaticObject(EnvironmentMethodLambda.class, "nonCapturedExpressions");
+        nonCapturedExpressions.add(PartialJavaNativeClassOrPackage.class);
+
         if (Configuration.enableMixin) {
             GlobalRegistry.getRoot().put("mixin.CallbackInfo", pos -> new PartialType(pos, ZenTypeMixinCallbackInfo.INSTANCE), null);
             GlobalRegistry.getRoot().put("mixin.CallbackInfoReturnable", pos -> new PartialType(pos, ZenTypeMixinCallbackInfoReturnable.INSTANCE), null);
