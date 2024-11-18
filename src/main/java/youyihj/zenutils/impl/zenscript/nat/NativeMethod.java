@@ -23,9 +23,15 @@ public class NativeMethod implements IJavaMethod {
 
     private final ZenType returnType;
     private final ZenType[] parameterTypes;
+    private final boolean special;
 
     public NativeMethod(ExecutableData executable, ITypeRegistry types) {
+        this(executable, types, false);
+    }
+
+    public NativeMethod(ExecutableData executable, ITypeRegistry types, boolean special) {
         this.executable = executable;
+        this.special = special;
 
         this.returnType = types.getType(executable.returnType().javaType());
         this.parameterTypes = executable.parameters().stream()
@@ -115,7 +121,11 @@ public class NativeMethod implements IJavaMethod {
             if(executable.declaringClass().isInterface()) {
                 output.invokeInterface(executable.declaringClass().internalName(), executable.name(), executable.descriptor());
             } else {
-                output.invokeVirtual(executable.declaringClass().internalName(), executable.name(), executable.descriptor());
+                if (special) {
+                    output.invokeSpecial(executable.declaringClass().internalName(), executable.name(), executable.descriptor());
+                } else {
+                    output.invokeVirtual(executable.declaringClass().internalName(), executable.name(), executable.descriptor());
+                }
             }
         }
     }

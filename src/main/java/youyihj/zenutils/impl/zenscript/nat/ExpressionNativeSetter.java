@@ -17,12 +17,14 @@ public class ExpressionNativeSetter extends Expression {
     private final Either<ExecutableData, FieldData> setter;
     private final Expression toSet;
     private final IPartialExpression instanceValue;
+    private final boolean special;
 
-    public ExpressionNativeSetter(ZenPosition position, Either<ExecutableData, FieldData> setter, Expression toSet, IPartialExpression instanceValue) {
+    public ExpressionNativeSetter(ZenPosition position, Either<ExecutableData, FieldData> setter, Expression toSet, IPartialExpression instanceValue, boolean special) {
         super(position);
         this.setter = setter;
         this.toSet = toSet;
         this.instanceValue = instanceValue;
+        this.special = special;
     }
 
     @Override
@@ -39,7 +41,11 @@ public class ExpressionNativeSetter extends Expression {
                 if (method.declaringClass().isInterface()) {
                     output.invokeInterface(method.declaringClass().internalName(), method.name(), method.descriptor());
                 } else {
-                    output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
+                    if (special) {
+                        output.invokeSpecial(method.declaringClass().internalName(), method.name(), method.descriptor());
+                    } else {
+                        output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
+                    }
                 }
             }
         }, field -> {

@@ -22,6 +22,7 @@
     "MixinItemContent",
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
+    "MixinParsedClassConstructor",
     "MixinParsedExpression",
     "MixinParsedExpressionFunction",
     "MixinParsedZenClass",
@@ -37,6 +38,7 @@
     "MixinZenType",
     "MixinZenTypeAssociate",
     "MixinZenTypeNative",
+    "MixinZenTypeZenClass",
     "TokenStreamAccessor"
   ],
   "client": [

@@ -18,12 +18,14 @@ public class ExpressionNativeGetter extends Expression {
     private final Either<ExecutableData, FieldData> getter;
     private final IPartialExpression instanceValue;
     private final IEnvironmentGlobal environment;
+    private final boolean special;
 
-    public ExpressionNativeGetter(ZenPosition position, Either<ExecutableData, FieldData> getter, IPartialExpression instanceValue, IEnvironmentGlobal environment) {
+    public ExpressionNativeGetter(ZenPosition position, Either<ExecutableData, FieldData> getter, IPartialExpression instanceValue, IEnvironmentGlobal environment, boolean special) {
         super(position);
         this.getter = getter;
         this.instanceValue = instanceValue;
         this.environment = environment;
+        this.special = special;
     }
 
     @Override
@@ -38,7 +40,11 @@ public class ExpressionNativeGetter extends Expression {
                     if (method.declaringClass().isInterface()) {
                         output.invokeInterface(method.declaringClass().internalName(), method.name(), method.descriptor());
                     } else {
-                        output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
+                        if (special) {
+                            output.invokeSpecial(method.declaringClass().internalName(), method.name(), method.descriptor());
+                        } else {
+                            output.invokeVirtual(method.declaringClass().internalName(), method.name(), method.descriptor());
+                        }
                     }
                 }
             }, field -> {

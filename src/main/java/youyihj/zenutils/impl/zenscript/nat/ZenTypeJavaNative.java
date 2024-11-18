@@ -23,7 +23,7 @@ import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassData;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
-import youyihj.zenutils.impl.mixin.itf.IMixinTargetEnvironment;
+import youyihj.zenutils.impl.mixin.itf.IEnvironmentClassExtension;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
 import java.lang.ref.WeakReference;
@@ -56,12 +56,16 @@ public class ZenTypeJavaNative extends ZenType {
     }
 
     public ZenTypeJavaNative(ClassData clazz, ITypeRegistry registry) {
-        this.clazz = clazz;
-        superClasses = Stream.concat(optionalStream(clazz.superClass()), clazz.interfaces().stream())
+        this(clazz, Stream.concat(optionalStream(clazz.superClass()), clazz.interfaces().stream())
                 .map(it -> registry.getType(it.javaType()))
                 .filter(ZenTypeJavaNative.class::isInstance)
                 .map(ZenTypeJavaNative.class::cast)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+    }
+
+    protected ZenTypeJavaNative(ClassData clazz, List<ZenTypeJavaNative> superClasses) {
+        this.clazz = clazz;
+        this.superClasses = superClasses;
     }
 
     @Override
@@ -102,31 +106,12 @@ public class ZenTypeJavaNative extends ZenType {
 
     @Override
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
-        if ("wrapper".equals(name)) {
-            Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getCaster(clazz);
-            if (wrapperCaster.isPresent()) {
-                return new ExpressionCallStatic(position, environment, new NativeMethod(wrapperCaster.get(), environment), value.eval(environment));
-            }
-        }
-        IPartialExpression member = getSymbol(name, environment, false).receiver(value).instance(position);
-        if (member instanceof ExpressionInvalid) {
-            IPartialExpression memberExpansion = memberExpansion(position, environment, value.eval(environment), name);
-            if (memberExpansion == null) {
-                environment.error("no such member " + name + " in " + clazz.name());
-                return member;
-            }
-            return memberExpansion;
-        }
-        return member;
+        return getMember(position, environment, value, name, true);
     }
 
     @Override
     public IPartialExpression getStaticMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
-        IPartialExpression expression = getSymbol(name, environment, true).instance(position);
-        if (expression instanceof ExpressionInvalid) {
-            environment.error("no such static member " + name + " in " + clazz.name());
-        }
-        return expression;
+        return getMember(position, environment, null, name, true);
     }
 
     @Override
@@ -204,7 +189,7 @@ public class ZenTypeJavaNative extends ZenType {
         return new ExpressionNull(position);
     }
 
-    private boolean canAcceptConstructor(ExecutableData constructor, IEnvironmentGlobal environment, Expression[] arguments) {
+    public static boolean canAcceptConstructor(ExecutableData constructor, IEnvironmentGlobal environment, Expression[] arguments) {
         List<TypeData> parameters = constructor.parameters();
         if (arguments.length != parameters.size()) {
             return false;
@@ -218,7 +203,7 @@ public class ZenTypeJavaNative extends ZenType {
         return true;
     }
 
-    private JavaNativeMemberSymbol getSymbol(String name, IEnvironmentGlobal environment, boolean isStatic) {
+    protected JavaNativeMemberSymbol getSymbol(String name, IEnvironmentGlobal environment, boolean isStatic) {
         return symbols.computeIfAbsent(name, it -> JavaNativeMemberSymbol.of(environment, clazz, it, isStatic, getLookupRequester(environment)));
     }
 
@@ -236,6 +221,38 @@ public class ZenTypeJavaNative extends ZenType {
         return expression;
     }
 
+    public ClassData getClassData() {
+        return clazz;
+    }
+
+    public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name, boolean logError) {
+        if (value != null && "wrapper".equals(name)) {
+            Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getCaster(clazz);
+            if (wrapperCaster.isPresent()) {
+                return new ExpressionCallStatic(position, environment, new NativeMethod(wrapperCaster.get(), environment), value.eval(environment));
+            }
+        }
+        IPartialExpression member = getSymbol(name, environment, value == null).receiver(value).instance(position);
+        if (member instanceof ExpressionInvalid) {
+            IPartialExpression memberExpansion = null;
+            if (value != null) {
+                memberExpansion = memberExpansion(position, environment, value.eval(environment), name);
+            }
+            if (memberExpansion == null) {
+                if (logError) {
+                    environment.error(position, "no such member " + name + " in " + clazz.name());
+                }
+                return member;
+            }
+            return memberExpansion;
+        }
+        return member;
+    }
+
+    public ZenTypeJavaNativeSuper toSuper() {
+        return new ZenTypeJavaNativeSuper(clazz, superClasses);
+    }
+
     private static <T> Stream<T> optionalStream(T obj) {
         return obj == null ? Stream.empty() : Stream.of(obj);
     }
@@ -244,8 +261,15 @@ public class ZenTypeJavaNative extends ZenType {
         try {
             if (environment instanceof EnvironmentMethod) {
                 Object methodEnvParent = METHOD_ENVIRONMENT_PARENT.get(environment);
-                if (methodEnvParent instanceof IMixinTargetEnvironment) {
-                    return ((IMixinTargetEnvironment) methodEnvParent).getTargets().contains(clazz.name()) ? LookupRequester.SELF : LookupRequester.PUBLIC;
+                if (methodEnvParent instanceof IEnvironmentClassExtension) {
+                    IEnvironmentClassExtension envParent = (IEnvironmentClassExtension) methodEnvParent;
+                    if (envParent.getMixinTargets().contains(clazz.name())) {
+                        return LookupRequester.SELF;
+                    } else if (envParent.getSuperClasses().contains(this)) {
+                        return LookupRequester.SUBCLASS;
+                    } else {
+                        return LookupRequester.PUBLIC;
+                    }
                 }
             }
         } catch (Exception ignored) {

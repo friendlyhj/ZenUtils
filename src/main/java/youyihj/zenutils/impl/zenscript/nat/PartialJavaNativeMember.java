@@ -33,8 +33,9 @@ public class PartialJavaNativeMember implements IPartialExpression {
     private final ClassData owner;
     private final Either<ExecutableData, FieldData> getter;
     private final Either<ExecutableData, FieldData> setter;
+    private final boolean special;
 
-    public PartialJavaNativeMember(ZenPosition position, String name, List<IJavaMethod> methods, IPartialExpression instanceValue, IEnvironmentGlobal environment, ClassData owner, Either<ExecutableData, FieldData> getter, Either<ExecutableData, FieldData> setter) {
+    public PartialJavaNativeMember(ZenPosition position, String name, List<IJavaMethod> methods, IPartialExpression instanceValue, IEnvironmentGlobal environment, ClassData owner, Either<ExecutableData, FieldData> getter, Either<ExecutableData, FieldData> setter, boolean special) {
         this.position = position;
         this.name = name;
         this.methods = methods;
@@ -43,16 +44,17 @@ public class PartialJavaNativeMember implements IPartialExpression {
         this.owner = owner;
         this.getter = getter;
         this.setter = setter;
+        this.special = special;
     }
 
     @Override
     public Expression eval(IEnvironmentGlobal environment) {
-        return new ExpressionNativeGetter(position, getter, instanceValue, environment);
+        return new ExpressionNativeGetter(position, getter, instanceValue, environment, special);
     }
 
     @Override
     public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
-        return new ExpressionNativeSetter(position, setter, other, instanceValue.eval(environment));
+        return new ExpressionNativeSetter(position, setter, other, instanceValue.eval(environment), special);
     }
 
     @Override

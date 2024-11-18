@@ -32,17 +32,19 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     private final Either<ExecutableData, FieldData> getter;
     private final Either<ExecutableData, FieldData> setter;
     private final IPartialExpression receiver;
+    private final boolean special;
 
-    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, LookupRequester lookupRequester, IPartialExpression receiver) {
+    private JavaNativeMemberSymbol(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, LookupRequester lookupRequester, IPartialExpression receiver, boolean special) {
         this.name = name;
         this.environment = environment;
         this.owner = owner;
         this.isStatic = isStatic;
         this.receiver = receiver;
         this.lookupRequester = lookupRequester;
+        this.special = special;
         this.methods = MCPReobfuscation.INSTANCE.reobfMethodOverloads(owner, name, lookupRequester)
                                                 .filter(it -> validateModifier(it.modifiers()))
-                                                .map(it -> new NativeMethod(it, environment))
+                                                .map(it -> new NativeMethod(it, environment, special))
                                                 .collect(Collectors.toList());
         this.getter = Either.<ExecutableData, FieldData>left(MCPReobfuscation.INSTANCE.reobfMethod(owner, "get" + StringUtils.capitalize(name), lookupRequester))
                 .validateLeft(this::validateGetter)
@@ -57,15 +59,21 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     }
 
     public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, LookupRequester lookupRequester) {
-        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, lookupRequester,null);
+        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, lookupRequester,null, false);
     }
 
     public JavaNativeMemberSymbol receiver(IPartialExpression instanceValue) {
         if (!isStatic) {
-            return new JavaNativeMemberSymbol(environment, owner, name, false, lookupRequester, instanceValue);
+            return new JavaNativeMemberSymbol(environment, owner, name, false, lookupRequester, instanceValue, special);
+        } else if (instanceValue == null) {
+            return this;
         } else {
             throw new IllegalStateException("set instance to static symbol");
         }
+    }
+
+    public JavaNativeMemberSymbol special() {
+        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, lookupRequester, receiver, true);
     }
 
     @Override
@@ -78,11 +86,11 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
                 try {
                     return new PartialType(position, environment.getType(InternalUtils.getClassDataFetcher().forName(owner.name() + "$" + name).javaType()));
                 } catch (ClassNotFoundException e) {
-                    environment.error("no such static member or nested class: " + owner.name() + "." + name);
+                    environment.error(position, "no such static member or nested class: " + owner.name() + "." + name);
                 }
             }
         } else {
-            return new PartialJavaNativeMember(position, name, methods, receiver, environment, owner, getter, setter);
+            return new PartialJavaNativeMember(position, name, methods, receiver, environment, owner, getter, setter, special);
         }
         return new ExpressionInvalid(position);
     }
