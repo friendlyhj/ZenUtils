@@ -10,6 +10,8 @@ import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.casting.CastingRuleNone;
+import stanhebben.zenscript.type.casting.ICastingRule;
 import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
@@ -59,6 +61,15 @@ public class ZenTypeDeepNull extends ZenType {
     @Override
     public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
 
+    }
+
+    @Override
+    public ICastingRule getCastingRule(ZenType type, IEnvironmentGlobal environment) {
+        if(type.isPointer()) {
+            return new CastingRuleNone(this, type);
+        } else {
+            return null;
+        }
     }
 
     @Override
