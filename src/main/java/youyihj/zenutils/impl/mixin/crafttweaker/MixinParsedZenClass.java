@@ -1,5 +1,7 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -35,18 +37,23 @@ import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 import youyihj.zenutils.impl.zenscript.mixin.ExpressionMixinThis;
 import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
+import youyihj.zenutils.impl.zenscript.mixin.ZenMixin;
 import youyihj.zenutils.impl.zenscript.nat.ExpressionSuper;
 import youyihj.zenutils.impl.zenscript.nat.ParsedZenClassCompile;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author youyihj
  */
 @Mixin(value = ParsedZenClass.class, remap = false)
 public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
+
+
     @Shadow
     @Final
     public ZenPosition position;
@@ -139,7 +146,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                     }
                 }
                 if (isMixinClass) {
-                    this.className = "youyihj/zenutils/impl/mixin/custom/" + name;
+                    this.className = ZenMixin.handleMixinClassName(name);
                 }
                 break;
             }

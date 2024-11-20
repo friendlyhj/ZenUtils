@@ -1,5 +1,7 @@
 package youyihj.zenutils.impl.zenscript.mixin;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.network.NetworkSide;
 import crafttweaker.preprocessor.PreprocessorManager;
@@ -15,6 +17,8 @@ import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
 import youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin;
+import youyihj.zenutils.impl.runtime.ScriptStatus;
+import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
 import java.lang.reflect.Field;
@@ -25,6 +29,8 @@ import java.util.Map;
  * @author youyihj
  */
 public class ZenMixin {
+    private static final Multiset<String> mixinNameUsedCounter = HashMultiset.create();
+
     public static void load() throws Exception {
         PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(MixinPreprocessor.NAME, (IMultilinePreprocessorFactory<MixinPreprocessor>) MixinPreprocessor::new);
@@ -53,5 +59,17 @@ public class ZenMixin {
         Method selectMethod = processor.getClass().getDeclaredMethod("select", MixinEnvironment.class);
         selectMethod.setAccessible(true);
         selectMethod.invoke(processor, Reference.IS_CLEANROOM ? MixinEnvironment.getDefaultEnvironment() : MixinEnvironment.getCurrentEnvironment());
+    }
+
+    public static String handleMixinClassName(String className) {
+        String mixinClassName = "youyihj/zenutils/impl/mixin/custom/" + className;
+        if (InternalUtils.getScriptStatus() != ScriptStatus.SYNTAX) {
+            int usedCountBefore = mixinNameUsedCounter.count(className);
+            mixinNameUsedCounter.add(className);
+            if (usedCountBefore != 0) {
+                mixinClassName += usedCountBefore;
+            }
+        }
+        return mixinClassName;
     }
 }
