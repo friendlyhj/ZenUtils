@@ -43,6 +43,11 @@ public class CrTUUID {
         return new CrTUUID(UUID.fromString(name));
     }
 
+    @ZenMethod
+    public static CrTUUID fromSignificantBits(long most, long least) {
+        return new CrTUUID(new UUID(most, least));
+    }
+
     @ZenOperator(OperatorType.COMPARE)
     public int compareTo(CrTUUID other) {
         return this.uuid.compareTo(other.uuid);
