@@ -9,11 +9,8 @@ import youyihj.zenutils.impl.member.LookupRequester;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,14 +48,34 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     @Override
     public List<ExecutableData> methods(LookupRequester requester) {
-        List<Method> methods = Lists.newArrayList(clazz.getDeclaredMethods());
-        for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
-            methods.addAll(Arrays.asList(superclass.getDeclaredMethods()));
+        List<ExecutableData> methods = new ArrayList<>();
+        Set<String> usedDescriptors = new HashSet<>();
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (requester.allows(method.getModifiers())) {
+                ReflectionExecutableData methodData = new ReflectionExecutableData(method);
+                methods.add(methodData);
+                usedDescriptors.add(methodData.name() + methodData.descriptor());
+            }
         }
-        return methods.stream()
-                .filter(it -> requester.allows(it.getModifiers()))
-                .map(ReflectionExecutableData::new)
-                .collect(Collectors.toList());
+        ClassData superClass = superClass();
+        if (superClass != null) {
+            for (ExecutableData superMethod : superClass.methods(requester)) {
+                if (usedDescriptors.add(superMethod.name() + superMethod.descriptor())) {
+                    methods.add(superMethod);
+                }
+            }
+        }
+        for (Class<?> itf : clazz.getInterfaces()) {
+            for (Method method : itf.getDeclaredMethods()) {
+                if (requester.allows(method.getModifiers())) {
+                    ReflectionExecutableData interfaceMethodData = new ReflectionExecutableData(method);
+                    if (usedDescriptors.add(interfaceMethodData.name() + interfaceMethodData.descriptor())) {
+                        methods.add(interfaceMethodData);
+                    }
+                }
+            }
+        }
+        return methods;
     }
 
     @Override
@@ -114,15 +131,5 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
     @Override
     public String toString() {
         return descriptor();
-    }
-
-    private List<Method> getParentMethods() {
-        List<Method> methods = new ArrayList<>();
-        for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
-            Arrays.stream(superclass.getDeclaredMethods())
-                    .filter(it -> Modifier.isProtected(it.getModifiers()) || Modifier.isPublic(it.getModifiers()))
-                    .forEach(methods::add);
-        }
-        return methods;
     }
 }
