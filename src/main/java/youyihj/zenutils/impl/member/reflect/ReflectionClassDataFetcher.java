@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.member.reflect;
 
+import net.minecraft.entity.EntityLiving;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.TypeData;
@@ -16,11 +17,12 @@ public class ReflectionClassDataFetcher implements ClassDataFetcher {
         this.classLoader = classLoader;
     }
 
-    public static TypeData type(Type type) {
+    public static TypeData type(Type type, Class<?> clazz) {
         if (type instanceof Class<?>) {
-            return new ReflectionClassData((Class<?>) type);
+            EntityLiving e = null;
+            return new ReflectionClassData(clazz);
         } else {
-            return new ReflectionTypeData(type);
+            return new ReflectionTypeData(type, clazz);
         }
     }
 

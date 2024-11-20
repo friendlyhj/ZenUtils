@@ -13,9 +13,11 @@ public class ReflectionTypeData implements TypeData {
     private static final ClassData OBJECT_ARRAY_DATA = new ReflectionClassData(Object[].class);
 
     private final Type type;
+    private final Class<?> clazz;
 
-    /* package-private */ ReflectionTypeData(Type type) {
+    /* package-private */ ReflectionTypeData(Type type, Class<?> clazz) {
         this.type = type;
+        this.clazz = clazz;
     }
 
     @Override
@@ -25,40 +27,11 @@ public class ReflectionTypeData implements TypeData {
 
     @Override
     public String descriptor() {
-        if (type instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) type).getRawType();
-            return ReflectionClassDataFetcher.type(rawType).descriptor();
-        }
-        if (type instanceof TypeVariable) {
-            return ReflectionClassDataFetcher.type(((TypeVariable<?>) type).getBounds()[0]).descriptor();
-        }
-        if (type instanceof WildcardType) {
-            return ReflectionClassDataFetcher.type(((WildcardType) type).getUpperBounds()[0]).descriptor();
-        }
-        if (type instanceof GenericArrayType) {
-            return "[" + ReflectionClassDataFetcher.type(((GenericArrayType) type).getGenericComponentType()).descriptor();
-        }
-        return type.getTypeName();
+        return "L" + clazz.getName().replace('.', '/') + ";";
     }
 
     @Override
     public ClassData asClassData() {
-        if (type instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) type).getRawType();
-            return rawType instanceof Class ? new ReflectionClassData(((Class<?>) rawType)) : OBJECT_DATA;
-        }
-        if (type instanceof TypeVariable) {
-            Type bound = ((TypeVariable<?>) type).getBounds()[0];
-            return bound instanceof Class ? new ReflectionClassData(((Class<?>) bound)) : OBJECT_DATA;
-        }
-        if (type instanceof WildcardType) {
-            Type bound = ((WildcardType) type).getUpperBounds()[0];
-            return bound instanceof Class ? new ReflectionClassData(((Class<?>) bound)) : OBJECT_DATA;
-        }
-        if (type instanceof GenericArrayType) {
-            Type componentType = ((GenericArrayType) type).getGenericComponentType();
-            return componentType instanceof Class ? new ReflectionClassData(((Class<?>) componentType)) : OBJECT_ARRAY_DATA;
-        }
-        return new ReflectionClassData(((Class<?>) type));
+        return new ReflectionClassData(clazz);
     }
 }

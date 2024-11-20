@@ -1,20 +1,21 @@
 package youyihj.zenutils.impl.member.reflect;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.TypeData;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author youyihj
  */
 public class ReflectionExecutableData extends ReflectionAnnotatedMember implements ExecutableData {
+    private static final Logger LOGGER = LogManager.getLogger("ReflectionExecutableData");
+
     private final Executable executable;
 
     public ReflectionExecutableData(Executable executable) {
@@ -44,14 +45,36 @@ public class ReflectionExecutableData extends ReflectionAnnotatedMember implemen
 
     @Override
     public TypeData returnType() {
-        return executable instanceof Method ? ReflectionClassDataFetcher.type(((Method) executable).getGenericReturnType()) : declaringClass();
+        if (executable instanceof Method) {
+            Method method = (Method) executable;
+            Type type;
+            try {
+                type = method.getGenericReturnType();
+            } catch (GenericSignatureFormatError | TypeNotPresentException | MalformedParameterizedTypeException e) {
+                LOGGER.error("Can not get generic parameter types of method {}", executable);
+                type = method.getReturnType();
+            }
+            return ReflectionClassDataFetcher.type(type, method.getReturnType());
+        } else {
+            return declaringClass();
+        }
     }
 
     @Override
     public List<TypeData> parameters() {
-        return Arrays.stream(executable.getGenericParameterTypes())
-                .map(ReflectionClassDataFetcher::type)
-                .collect(Collectors.toList());
+        Class<?>[] parameterTypes = executable.getParameterTypes();
+        Type[] genericParameterTypes;
+        try {
+            genericParameterTypes = executable.getGenericParameterTypes();
+        } catch (GenericSignatureFormatError | TypeNotPresentException | MalformedParameterizedTypeException e) {
+            LOGGER.error("Can not get generic parameter types of method {}", executable);
+            genericParameterTypes = parameterTypes;
+        }
+        List<TypeData> parameters = new ArrayList<>(parameterTypes.length);
+        for (int i = 0; i < genericParameterTypes.length; i++) {
+            parameters.add(ReflectionClassDataFetcher.type(genericParameterTypes[i], parameterTypes[i]));
+        }
+        return parameters;
     }
 
     @Override
