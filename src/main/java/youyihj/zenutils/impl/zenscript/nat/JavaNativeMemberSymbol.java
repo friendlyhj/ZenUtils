@@ -59,7 +59,7 @@ public class JavaNativeMemberSymbol implements IZenSymbol {
     }
 
     public static JavaNativeMemberSymbol of(IEnvironmentGlobal environment, ClassData owner, String name, boolean isStatic, LookupRequester lookupRequester) {
-        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, lookupRequester,null, false);
+        return new JavaNativeMemberSymbol(environment, owner, name, isStatic, lookupRequester, null, false);
     }
 
     public JavaNativeMemberSymbol receiver(IPartialExpression instanceValue) {

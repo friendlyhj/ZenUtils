@@ -43,16 +43,13 @@ import youyihj.zenutils.impl.zenscript.nat.ParsedZenClassCompile;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author youyihj
  */
 @Mixin(value = ParsedZenClass.class, remap = false)
 public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
-
 
     @Shadow
     @Final
