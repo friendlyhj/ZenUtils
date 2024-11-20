@@ -46,6 +46,9 @@ public class MixinPreprocessor implements IMultilinePreprocessor {
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
         String annotationType = getPreprocessorLine().trim().substring(NAME.length() + 1).trim();
+        if (annotationType.isEmpty()) {
+            annotationType = "Mixin";
+        }
         String annotationContent = getPreprocessorLines().stream()
                 .skip(1)
                 .map(it -> it.trim().substring(1))
