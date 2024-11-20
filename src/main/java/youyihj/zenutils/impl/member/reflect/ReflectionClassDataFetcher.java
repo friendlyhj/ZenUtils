@@ -1,6 +1,5 @@
 package youyihj.zenutils.impl.member.reflect;
 
-import net.minecraft.entity.EntityLiving;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.TypeData;
@@ -19,8 +18,7 @@ public class ReflectionClassDataFetcher implements ClassDataFetcher {
 
     public static TypeData type(Type type, Class<?> clazz) {
         if (type instanceof Class<?>) {
-            EntityLiving e = null;
-            return new ReflectionClassData(clazz);
+            return ReflectionClassData.of(clazz);
         } else {
             return new ReflectionTypeData(type, clazz);
         }
@@ -28,11 +26,11 @@ public class ReflectionClassDataFetcher implements ClassDataFetcher {
 
     @Override
     public ClassData forName(String className) throws ClassNotFoundException {
-        return new ReflectionClassData(Class.forName(className, false, classLoader));
+        return ReflectionClassData.of(Class.forName(className, false, classLoader));
     }
 
     @Override
     public ClassData forClass(Class<?> clazz) {
-        return new ReflectionClassData(clazz);
+        return ReflectionClassData.of(clazz);
     }
 }

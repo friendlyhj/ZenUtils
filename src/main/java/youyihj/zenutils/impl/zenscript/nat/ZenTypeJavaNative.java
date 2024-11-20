@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  * @author youyihj
  */
 public class ZenTypeJavaNative extends ZenType {
-    public static final ZenTypeJavaNative OBJECT = new ZenTypeJavaNative(new ReflectionClassData(Object.class), ZenTypeUtil.EMPTY_REGISTRY);
+    public static final ZenTypeJavaNative OBJECT = new ZenTypeJavaNative(ReflectionClassData.of(Object.class), ZenTypeUtil.EMPTY_REGISTRY);
 
     private final ClassData clazz;
     private final Map<String, JavaNativeMemberSymbol> symbols = new HashMap<>();

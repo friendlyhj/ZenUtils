@@ -19,9 +19,19 @@ import java.util.stream.Collectors;
 public class ReflectionClassData extends ReflectionAnnotatedMember implements ClassData {
     private final Class<?> clazz;
 
-    public ReflectionClassData(Class<?> clazz) {
+    private final Map<LookupRequester, List<FieldData>> fieldsCache = new EnumMap<>(LookupRequester.class);
+    private final Map<LookupRequester, List<ExecutableData>> methodsCache = new EnumMap<>(LookupRequester.class);
+    private final Map<LookupRequester, List<ExecutableData>> constructorsCache = new EnumMap<>(LookupRequester.class);
+
+    private static final Map<Class<?>, ReflectionClassData> POOL = new HashMap<>();
+
+    private ReflectionClassData(Class<?> clazz) {
         super(clazz);
         this.clazz = clazz;
+    }
+
+    public static ReflectionClassData of(Class<?> clazz) {
+        return POOL.computeIfAbsent(clazz, ReflectionClassData::new);
     }
 
     @Override
@@ -36,6 +46,10 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     @Override
     public List<FieldData> fields(LookupRequester requester) {
+        return fieldsCache.computeIfAbsent(requester, this::fields0);
+    }
+
+    private List<FieldData> fields0(LookupRequester requester) {
         List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
         for (Class<?> superclass = clazz.getSuperclass(); superclass != null; superclass = superclass.getSuperclass()) {
             fields.addAll(Arrays.asList(superclass.getDeclaredFields()));
@@ -48,6 +62,10 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     @Override
     public List<ExecutableData> methods(LookupRequester requester) {
+        return methodsCache.computeIfAbsent(requester, this::methods0);
+    }
+
+    private List<ExecutableData> methods0(LookupRequester requester) {
         List<ExecutableData> methods = new ArrayList<>();
         Set<String> usedDescriptors = new HashSet<>();
         for (Method method : clazz.getDeclaredMethods()) {
@@ -80,6 +98,10 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     @Override
     public List<ExecutableData> constructors(LookupRequester requester) {
+        return constructorsCache.computeIfAbsent(requester, this::constructors0);
+    }
+
+    private List<ExecutableData> constructors0(LookupRequester requester) {
         return Arrays.stream(clazz.getDeclaredConstructors())
                 .filter(it -> requester.allows(it.getModifiers()))
                 .map(ReflectionExecutableData::new)
@@ -103,13 +125,13 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
     @Override
     @Nullable
     public ClassData superClass() {
-        return clazz.getSuperclass() != null ? new ReflectionClassData(clazz.getSuperclass()) : null;
+        return clazz.getSuperclass() != null ? ReflectionClassData.of(clazz.getSuperclass()) : null;
     }
 
     @Override
     public List<ClassData> interfaces() {
         return Arrays.stream(clazz.getInterfaces())
-                .map(ReflectionClassData::new)
+                .map(ReflectionClassData::of)
                 .collect(Collectors.toList());
     }
 

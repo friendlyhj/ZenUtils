@@ -40,7 +40,7 @@ public class BytecodeTypeData implements TypeData {
             }
             // TODO: bad implementation
             if (descriptor.startsWith("[")) {
-                return new ReflectionClassData(Array.newInstance(Object.class, new int[descriptor.lastIndexOf('[') + 1]).getClass());
+                return ReflectionClassData.of(Array.newInstance(Object.class, new int[descriptor.lastIndexOf('[') + 1]).getClass());
             }
             return classDataFetcher.forName(descriptor);
         } catch (ClassNotFoundException e) {

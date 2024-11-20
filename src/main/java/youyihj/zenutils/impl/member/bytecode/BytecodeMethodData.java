@@ -17,6 +17,9 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
     private final MethodNode methodNode;
     private final BytecodeClassData declaringClass;
 
+    private TypeData returnType;
+    private List<TypeData> parameters;
+
     public BytecodeMethodData(MethodNode methodNode, BytecodeClassData declaringClass) {
         this.methodNode = methodNode;
         this.declaringClass = declaringClass;
@@ -46,32 +49,37 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
 
     @Override
     public TypeData returnType() {
-        String signature = methodNode.signature;
-        String descriptor = Type.getReturnType(methodNode.desc).getDescriptor();
-        if (signature == null) {
-            return declaringClass.getClassDataFetcher().type(descriptor, null);
-        } else {
-            String returnAndException = signature.substring(signature.indexOf(')') + 1);
-            if (returnAndException.contains("^")) {
-                return declaringClass.getClassDataFetcher().type(descriptor, signature.substring(0, signature.indexOf('^')));
+        if (returnType == null) {
+            String signature = methodNode.signature;
+            String descriptor = Type.getReturnType(methodNode.desc).getDescriptor();
+            if (signature == null) {
+                returnType = declaringClass.getClassDataFetcher().type(descriptor, null);
             } else {
-                return declaringClass.getClassDataFetcher().type(descriptor, returnAndException);
+                String returnAndException = signature.substring(signature.indexOf(')') + 1);
+                if (returnAndException.contains("^")) {
+                    returnType = declaringClass.getClassDataFetcher().type(descriptor, signature.substring(0, signature.indexOf('^')));
+                } else {
+                    returnType = declaringClass.getClassDataFetcher().type(descriptor, returnAndException);
+                }
             }
         }
+        return returnType;
     }
 
     @Override
     public List<TypeData> parameters() {
-        List<TypeData> parameters = new ArrayList<>();
-        if (methodNode.signature == null) {
-            for (Type parameter : Type.getMethodType(methodNode.desc).getArgumentTypes()) {
-                parameters.add(declaringClass.getClassDataFetcher().type(parameter.getDescriptor(), null));
-            }
-        } else {
-            List<String> genericInfos = new MethodParameterParser(methodNode.signature).parse();
-            Type[] descriptors = Type.getMethodType(methodNode.desc).getArgumentTypes();
-            for (int i = 0; i < descriptors.length; i++) {
-                parameters.add(declaringClass.getClassDataFetcher().type(descriptors[i].getDescriptor(), genericInfos.get(i)));
+        if (parameters == null) {
+            parameters = new ArrayList<>();
+            if (methodNode.signature == null) {
+                for (Type parameter : Type.getMethodType(methodNode.desc).getArgumentTypes()) {
+                    parameters.add(declaringClass.getClassDataFetcher().type(parameter.getDescriptor(), null));
+                }
+            } else {
+                List<String> genericInfos = new MethodParameterParser(methodNode.signature).parse();
+                Type[] descriptors = Type.getMethodType(methodNode.desc).getArgumentTypes();
+                for (int i = 0; i < descriptors.length; i++) {
+                    parameters.add(declaringClass.getClassDataFetcher().type(descriptors[i].getDescriptor(), genericInfos.get(i)));
+                }
             }
         }
         return parameters;

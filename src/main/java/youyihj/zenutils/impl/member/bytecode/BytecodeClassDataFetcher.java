@@ -23,15 +23,15 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
 
     public BytecodeClassDataFetcher(ClassDataFetcher parent, List<Path> classpath) {
         this.parent = parent;
-        cache.put("I", new ReflectionClassData(int.class));
-        cache.put("J", new ReflectionClassData(long.class));
-        cache.put("F", new ReflectionClassData(float.class));
-        cache.put("D", new ReflectionClassData(double.class));
-        cache.put("Z", new ReflectionClassData(boolean.class));
-        cache.put("S", new ReflectionClassData(short.class));
-        cache.put("B", new ReflectionClassData(byte.class));
-        cache.put("C", new ReflectionClassData(char.class));
-        cache.put("V", new ReflectionClassData(void.class));
+        cache.put("I", ReflectionClassData.of(int.class));
+        cache.put("J", ReflectionClassData.of(long.class));
+        cache.put("F", ReflectionClassData.of(float.class));
+        cache.put("D", ReflectionClassData.of(double.class));
+        cache.put("Z", ReflectionClassData.of(boolean.class));
+        cache.put("S", ReflectionClassData.of(short.class));
+        cache.put("B", ReflectionClassData.of(byte.class));
+        cache.put("C", ReflectionClassData.of(char.class));
+        cache.put("V", ReflectionClassData.of(void.class));
         try {
             for (Path path : classpath) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -73,7 +73,7 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
         try {
             return forName(clazz.getName());
         } catch (ClassNotFoundException e) {
-            return new ReflectionClassData(clazz);
+            return ReflectionClassData.of(clazz);
         }
     }
 

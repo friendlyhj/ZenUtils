@@ -9,10 +9,7 @@ import youyihj.zenutils.impl.member.*;
 import javax.annotation.Nullable;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author youyihj
@@ -21,6 +18,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     private final byte[] bytecode;
     private final BytecodeClassDataFetcher classDataFetcher;
     private final ClassNode classNode;
+
+    private final Map<LookupRequester, List<FieldData>> fieldsCache = new EnumMap<>(LookupRequester.class);
+    private final Map<LookupRequester, List<ExecutableData>> methodsCache = new EnumMap<>(LookupRequester.class);
+    private final Map<LookupRequester, List<ExecutableData>> constructorsCache = new EnumMap<>(LookupRequester.class);
 
     public BytecodeClassData(byte[] bytecode, BytecodeClassDataFetcher classDataFetcher) {
         this.bytecode = bytecode;
@@ -43,6 +44,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     @Override
     public List<FieldData> fields(LookupRequester requester) {
+        return fieldsCache.computeIfAbsent(requester, this::fields0);
+    }
+
+    private List<FieldData> fields0(LookupRequester requester) {
         List<FieldData> fieldData = new ArrayList<>();
         for (FieldNode field : classNode.fields) {
             if (requester.allows(field.access)) {
@@ -58,6 +63,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     @Override
     public List<ExecutableData> methods(LookupRequester requester) {
+        return methodsCache.computeIfAbsent(requester, this::methods0);
+    }
+
+    private List<ExecutableData> methods0(LookupRequester requester) {
         List<ExecutableData> methods = new ArrayList<>();
         Set<String> usedDescriptions = new HashSet<>();
         for (MethodNode method : classNode.methods) {
@@ -88,6 +97,10 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     @Override
     public List<ExecutableData> constructors(LookupRequester requester) {
+        return constructorsCache.computeIfAbsent(requester, this::constructors0);
+    }
+
+    private List<ExecutableData> constructors0(LookupRequester requester) {
         List<ExecutableData> constructors = new ArrayList<>();
         for (MethodNode method : classNode.methods) {
             if (method.name.equals("<init>") && requester.allows(method.access)) {

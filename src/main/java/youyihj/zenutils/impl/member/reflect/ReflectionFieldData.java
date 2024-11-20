@@ -19,7 +19,7 @@ public class ReflectionFieldData extends ReflectionAnnotatedMember implements Fi
 
     @Override
     public ClassData declaringClass() {
-        return new ReflectionClassData(field.getDeclaringClass());
+        return ReflectionClassData.of(field.getDeclaringClass());
     }
 
     @Override
