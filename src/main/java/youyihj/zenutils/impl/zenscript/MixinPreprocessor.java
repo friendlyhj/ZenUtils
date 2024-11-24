@@ -45,6 +45,28 @@ public class MixinPreprocessor implements IMultilinePreprocessor {
 
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
+        if (preprocessorLines.size() != 1) {
+            processMultiline(scriptFile);
+        } else {
+            processSingleLine(scriptFile);
+        }
+    }
+
+    @Override
+    public void executeActionOnFinish(ScriptFile scriptFile) {
+
+    }
+
+    @Override
+    public String getFileName() {
+        return fileName;
+    }
+
+    public Pair<String, JsonElement> getAnnotation() {
+        return annotation;
+    }
+
+    private void processMultiline(ScriptFile scriptFile) {
         String annotationType = getPreprocessorLine().trim().substring(NAME.length() + 1).trim();
         if (annotationType.isEmpty()) {
             annotationType = "Mixin";
@@ -64,17 +86,25 @@ public class MixinPreprocessor implements IMultilinePreprocessor {
         }
     }
 
-    @Override
-    public void executeActionOnFinish(ScriptFile scriptFile) {
-
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
-    }
-
-    public Pair<String, JsonElement> getAnnotation() {
-        return annotation;
+    private void processSingleLine(ScriptFile scriptFile) {
+        String content = getPreprocessorLine().trim().substring(NAME.length() + 1).trim();
+        int jsonStartIndex = content.indexOf('{');
+        if (jsonStartIndex == -1) {
+            jsonStartIndex = content.length();
+        }
+        String annotationType = content.substring(0, jsonStartIndex).trim();
+        if (annotationType.isEmpty()) {
+            annotationType = "Mixin";
+        }
+        String annotationContent = content.substring(jsonStartIndex).trim();
+        if (!annotationContent.isEmpty()) {
+            try {
+                annotation = Pair.of(annotationType, GSON.fromJson(annotationContent, JsonElement.class));
+            } catch (JsonSyntaxException e) {
+                throw new IllegalArgumentException(String.format("mixin annotation json is malformed, file: %s, line: %d", scriptFile.getEffectiveName(), getLineIndex()), e);
+            }
+        } else {
+            annotation = Pair.of(annotationType, new JsonObject());
+        }
     }
 }
