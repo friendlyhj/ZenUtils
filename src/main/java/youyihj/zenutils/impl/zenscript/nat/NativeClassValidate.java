@@ -15,7 +15,8 @@ import java.util.Scanner;
  */
 public class NativeClassValidate {
     public static final List<INativeClassExclude> EXCLUDES = new ArrayList<>();
-    private static final List<String> WHITELIST = ImmutableList.of(
+    private static final List<String> JAVA_LANG_WHITELIST = ImmutableList.of(
+            // primitive types
             Integer.class.getName(),
             Long.class.getName(),
             Short.class.getName(),
@@ -23,7 +24,12 @@ public class NativeClassValidate {
             Float.class.getName(),
             Boolean.class.getName(),
             Byte.class.getName(),
-            Object.class.getName()
+            Object.class.getName(),
+            Comparable.class.getName(),
+            Iterable.class.getName(),
+            Math.class.getName(), // although you should call crt Math class, but it is not accessible in mixin scripts...
+            StrictMath.class.getName(),
+            StringBuilder.class.getName() // meh, ~ operator is same
     );
 
     static {
@@ -60,6 +66,6 @@ public class NativeClassValidate {
     }
 
     public static boolean isValid(ClassData clazz) {
-        return WHITELIST.contains(clazz.name()) || (!clazz.isAnnotationPresent(ZenClass.class) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz)));
+        return JAVA_LANG_WHITELIST.contains(clazz.name()) || (!clazz.isAnnotationPresent(ZenClass.class) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz)));
     }
 }
