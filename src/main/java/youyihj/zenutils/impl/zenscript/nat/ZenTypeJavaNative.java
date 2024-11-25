@@ -292,7 +292,7 @@ public class ZenTypeJavaNative extends ZenType {
                 return classes.get(className);
             } else {
                 classDataFetcherRef = new WeakReference<>(classData.getClassDataFetcher());
-                Class<?> clazz = findClass(classData.name());
+                Class<?> clazz = loadClass(classData.name());
                 classes.put(className, clazz);
                 return clazz;
             }
@@ -300,7 +300,10 @@ public class ZenTypeJavaNative extends ZenType {
 
         @Override
         protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            return findClass(name);
+            synchronized (getClassLoadingLock(name)) {
+                Class<?> c = findLoadedClass(name);
+                return c == null ? findClass(name) : c;
+            }
         }
 
         @Override
