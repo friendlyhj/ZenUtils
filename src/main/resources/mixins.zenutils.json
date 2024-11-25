@@ -38,7 +38,6 @@
     "MixinZenType",
     "MixinZenTypeAssociate",
     "MixinZenTypeNative",
-    "MixinZenTypeZenClass",
     "TokenStreamAccessor"
   ],
   "client": [

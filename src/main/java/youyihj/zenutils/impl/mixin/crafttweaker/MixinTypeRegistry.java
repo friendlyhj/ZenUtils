@@ -2,10 +2,7 @@ package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
@@ -144,5 +141,23 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
         } else {
             return ZenTypeJavaNative.OBJECT;
         }
+    }
+
+    /**
+     * @author youyihj
+     * @reason allow zs to use List subclasses
+     */
+    @Overwrite
+    private ZenType getListType(ParameterizedType type) {
+        return new ZenTypeArrayList(getType(type.getActualTypeArguments()[0]));
+    }
+
+    /**
+     * @author youyihj
+     * @reason allow zs to use Map subclasses
+     */
+    @Overwrite
+    private ZenType getMapType(ParameterizedType type) {
+        return new ZenTypeAssociative(getType(type.getActualTypeArguments()[1]), getType(type.getActualTypeArguments()[0]));
     }
 }
