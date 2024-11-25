@@ -27,7 +27,7 @@ public class NativeClassValidate {
             Object.class.getName(),
             Comparable.class.getName(),
             Iterable.class.getName(),
-            Math.class.getName(), // although you should call crt Math class, but it is not accessible in mixin scripts...
+            Math.class.getName(), // although you should call crt Math class, it is not accessible in mixin scripts...
             StrictMath.class.getName(),
             StringBuilder.class.getName() // meh, ~ operator is same
     );
