@@ -21,6 +21,7 @@ import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNativeIterable;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -46,7 +47,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     public abstract ZenType getType(Type type);
 
     @Inject(method = "getType", at = @At(value = "HEAD"), cancellable = true)
-    private void handleLiteralTypeAndTypeVariable(Type type, CallbackInfoReturnable<ZenType> cir) {
+    private void handleComplexTypes(Type type, CallbackInfoReturnable<ZenType> cir) {
         if (type instanceof LiteralType) {
             if (literalTypes.containsKey(type.toString())) {
                 cir.setReturnValue(literalTypes.get(type.toString()));
@@ -58,6 +59,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
         }
         if (type instanceof TypeVariable) {
             cir.setReturnValue(getType(((TypeVariable<?>) type).getBounds()[0]));
+        }
+        if (type instanceof GenericArrayType) {
+            cir.setReturnValue(new ZenTypeArrayBasic(getType(((GenericArrayType) type).getGenericComponentType())));
         }
     }
 
