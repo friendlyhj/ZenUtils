@@ -52,8 +52,12 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
-        crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
-        tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;
+        try {
+            crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
+            tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("CraftTweaker ITweaker or Logger is not redirected. A mixin config is failed. please report to the mod author!");
+        }
         if (Loader.isModLoaded("ftbquests")) {
             MinecraftForge.EVENT_BUS.register(FTBQEventManager.Handler.class);
         }

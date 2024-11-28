@@ -5,6 +5,7 @@ import com.google.common.collect.Multiset;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.network.NetworkSide;
 import crafttweaker.preprocessor.PreprocessorManager;
+import crafttweaker.runtime.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -20,6 +21,7 @@ import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
 import youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
+import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
@@ -36,15 +38,19 @@ public class ZenMixin {
     private static final Multiset<String> mixinNameUsedCounter = HashMultiset.create();
 
     public static void load() throws Exception {
-        PreprocessorManager preprocessorManager = CraftTweakerAPI.tweaker.getPreprocessorManager();
+        ITweaker tweaker = CraftTweakerAPI.tweaker;
+        if (!(tweaker instanceof ZenUtilsTweaker)) {
+            throw new IllegalStateException("CraftTweaker ITweaker is not redirected. A mixin config is failed. please report to the mod author!");
+        }
+        PreprocessorManager preprocessorManager = tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(MixinPreprocessor.NAME, (IMultilinePreprocessorFactory<MixinPreprocessor>) MixinPreprocessor::new);
         Class<?> classLoaderClass = Reference.IS_CLEANROOM ? Class.forName("top.outlands.foundation.boot.ActualClassLoader") : LaunchClassLoader.class;
         Field lclBytecodesField = classLoaderClass.getDeclaredField("resourceCache");
         lclBytecodesField.setAccessible(true);
         //noinspection unchecked
         Map<String, byte[]> resourceCache = (Map<String, byte[]>) lclBytecodesField.get(Launch.classLoader);
-        CraftTweakerAPI.tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
-        CraftTweakerAPI.tweaker.loadScript(false, MixinPreprocessor.NAME);
+        tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
+        tweaker.loadScript(false, MixinPreprocessor.NAME);
         ZenModule.classes.forEach((name, bytecode) -> {
             if (name.startsWith("youyihj/zenutils/impl/mixin/custom/")) {
                 resourceCache.put(name.replace('/', '.'), bytecode);
