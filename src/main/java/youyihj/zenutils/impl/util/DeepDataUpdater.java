@@ -209,12 +209,10 @@ public class DeepDataUpdater implements IDataConverter<IData> {
             case Operation.APPEND:
                 return new DataByteArray(ArrayUtils.addAll(origin, value), true);
             case Operation.MERGE:
-                byte[] originSorted = origin.clone();
-                Arrays.sort(originSorted);
                 byte[] temp = Arrays.copyOf(origin, origin.length + value.length);
                 int addCount = 0;
                 for (byte b : value) {
-                    if (Arrays.binarySearch(originSorted, b) < 0) {
+                    if (!ArrayUtils.contains(origin, b)) {
                         temp[origin.length + addCount] = b;
                         addCount++;
                     }
@@ -224,12 +222,10 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 if (value.length == 0) {
                     return new DataByteArray(new byte[0], true);
                 }
-                byte[] valueSorted = value.clone();
-                Arrays.sort(valueSorted);
                 byte[] tempR = new byte[origin.length];
                 int addCountR = 0;
                 for (byte b : origin) {
-                    if (Arrays.binarySearch(valueSorted, b) < 0) {
+                    if (!ArrayUtils.contains(origin, b)) {
                         tempR[addCountR] = b;
                         addCountR++;
                     }
@@ -257,12 +253,10 @@ public class DeepDataUpdater implements IDataConverter<IData> {
             case Operation.APPEND:
                 return new DataIntArray(ArrayUtils.addAll(origin, value), true);
             case Operation.MERGE:
-                int[] originSorted = origin.clone();
-                Arrays.sort(originSorted);
                 int[] temp = Arrays.copyOf(origin, origin.length + value.length);
                 int addCount = 0;
                 for (int i : value) {
-                    if (Arrays.binarySearch(originSorted, i) < 0) {
+                    if (!ArrayUtils.contains(origin, i)) {
                         temp[origin.length + addCount] = i;
                         addCount++;
                     }
@@ -272,12 +266,10 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 if (value.length == 0) {
                     return new DataIntArray(new int[0], true);
                 }
-                int[] valueSorted = value.clone();
-                Arrays.sort(valueSorted);
                 int[] tempR = new int[origin.length];
                 int addCountR = 0;
                 for (int i : origin) {
-                    if (Arrays.binarySearch(valueSorted, i) < 0) {
+                    if (!ArrayUtils.contains(value, i)) {
                         tempR[addCountR] = i;
                         addCountR++;
                     }
