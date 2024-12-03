@@ -257,7 +257,7 @@ public class ZenTypeJavaNative extends ZenType {
         return obj == null ? Stream.empty() : Stream.of(obj);
     }
 
-    private LookupRequester getLookupRequester(IEnvironmentGlobal environment) {
+    LookupRequester getLookupRequester(IEnvironmentGlobal environment) {
         try {
             if (environment instanceof EnvironmentMethod) {
                 Object methodEnvParent = METHOD_ENVIRONMENT_PARENT.get(environment);
