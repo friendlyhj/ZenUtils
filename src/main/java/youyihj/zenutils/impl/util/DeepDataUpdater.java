@@ -225,7 +225,7 @@ public class DeepDataUpdater implements IDataConverter<IData> {
                 byte[] tempR = new byte[origin.length];
                 int addCountR = 0;
                 for (byte b : origin) {
-                    if (!ArrayUtils.contains(origin, b)) {
+                    if (!ArrayUtils.contains(value, b)) {
                         tempR[addCountR] = b;
                         addCountR++;
                     }
