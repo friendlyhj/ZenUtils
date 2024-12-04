@@ -3,9 +3,9 @@ package youyihj.zenutils.api.preprocessor;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.PreprocessorActionBase;
 import crafttweaker.runtime.ScriptFile;
-import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.logger.LogLevel;
 import youyihj.zenutils.api.logger.ScriptSuppressLogFilter;
+import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class SuppressErrorPreprocessor extends PreprocessorActionBase {
 
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
-        ZenUtils.crafttweakerLogger.getLogOption().addFilter(new ScriptSuppressLogFilter(scriptFile.getName(), suppressLevels));
+        ((ZenUtilsLogger) CraftTweakerAPI.getLogger()).getLogOption().addFilter(new ScriptSuppressLogFilter(scriptFile.getName(), suppressLevels));
     }
 
     @Override
