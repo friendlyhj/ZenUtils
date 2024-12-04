@@ -209,28 +209,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
             case Operation.APPEND:
                 return new DataByteArray(ArrayUtils.addAll(origin, value), true);
             case Operation.MERGE:
-                byte[] temp = Arrays.copyOf(origin, origin.length + value.length);
-                int addCount = 0;
-                for (byte b : value) {
-                    if (!ArrayUtils.contains(origin, b)) {
-                        temp[origin.length + addCount] = b;
-                        addCount++;
-                    }
-                }
-                return new DataByteArray(Arrays.copyOf(temp, origin.length + addCount), true);
+                return new DataByteArray(mergeByteArrays(origin, value), true);
             case Operation.REMOVE:
-                if (value.length == 0) {
-                    return new DataByteArray(new byte[0], true);
-                }
-                byte[] tempR = new byte[origin.length];
-                int addCountR = 0;
-                for (byte b : origin) {
-                    if (!ArrayUtils.contains(value, b)) {
-                        tempR[addCountR] = b;
-                        addCountR++;
-                    }
-                }
-                return new DataByteArray(Arrays.copyOf(tempR, addCountR), true);
+                return new DataByteArray(value.length == 0 ? value : removeByteArrays(origin, value), true);
         }
         return new DataByteArray(value, true);
     }
@@ -253,28 +234,9 @@ public class DeepDataUpdater implements IDataConverter<IData> {
             case Operation.APPEND:
                 return new DataIntArray(ArrayUtils.addAll(origin, value), true);
             case Operation.MERGE:
-                int[] temp = Arrays.copyOf(origin, origin.length + value.length);
-                int addCount = 0;
-                for (int i : value) {
-                    if (!ArrayUtils.contains(origin, i)) {
-                        temp[origin.length + addCount] = i;
-                        addCount++;
-                    }
-                }
-                return new DataIntArray(Arrays.copyOf(temp, origin.length + addCount), true);
+                return new DataIntArray(mergeIntArrays(origin, value), true);
             case Operation.REMOVE:
-                if (value.length == 0) {
-                    return new DataIntArray(new int[0], true);
-                }
-                int[] tempR = new int[origin.length];
-                int addCountR = 0;
-                for (int i : origin) {
-                    if (!ArrayUtils.contains(value, i)) {
-                        tempR[addCountR] = i;
-                        addCountR++;
-                    }
-                }
-                return new DataIntArray(Arrays.copyOf(tempR, addCountR), true);
+                return new DataIntArray(value.length == 0 ? value : removeIntArrays(origin, value), true);
         }
         return new DataIntArray(value, true);
     }
@@ -300,5 +262,79 @@ public class DeepDataUpdater implements IDataConverter<IData> {
             }
         }
         return false;
+    }
+
+    // merge and remove array functions
+
+    private static int[] mergeIntArrays(int[] a, int[] b) {
+        boolean binarySearch = shouldBinarySearch(a.length, b.length);
+        int[] checkArray = a;
+        if (binarySearch) {
+            checkArray = a.clone();
+            Arrays.sort(checkArray);
+        }
+        int[] result = Arrays.copyOf(a, a.length + b.length);
+        int addedIndex = a.length;
+        for (int i : b) {
+            if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
+                result[addedIndex++] = i;
+            }
+        }
+        return Arrays.copyOf(result, addedIndex);
+    }
+
+    private static byte[] mergeByteArrays(byte[] a, byte[] b) {
+        boolean binarySearch = shouldBinarySearch(a.length, b.length);
+        byte[] checkArray = a;
+        if (binarySearch) {
+            checkArray = a.clone();
+            Arrays.sort(checkArray);
+        }
+        byte[] result = Arrays.copyOf(a, a.length + b.length);
+        int addedIndex = a.length;
+        for (byte i : b) {
+            if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
+                result[addedIndex++] = i;
+            }
+        }
+        return Arrays.copyOf(result, addedIndex);
+    }
+
+    private static int[] removeIntArrays(int[] array, int[] toRemove) {
+        boolean binarySearch = shouldBinarySearch(array.length, toRemove.length);
+        int[] checkArray = array;
+        if (binarySearch) {
+            checkArray = array.clone();
+            Arrays.sort(checkArray);
+        }
+        int[] result = new int[array.length];
+        int addedIndex = 0;
+        for (int i : array) {
+            if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
+                result[addedIndex++] = i;
+            }
+        }
+        return Arrays.copyOf(result, addedIndex);
+    }
+
+    private static byte[] removeByteArrays(byte[] array, byte[] toRemove) {
+        boolean binarySearch = shouldBinarySearch(array.length, toRemove.length);
+        byte[] checkArray = array;
+        if (binarySearch) {
+            checkArray = array.clone();
+            Arrays.sort(checkArray);
+        }
+        byte[] result = new byte[array.length];
+        int addedIndex = 0;
+        for (byte i : array) {
+            if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
+                result[addedIndex++] = i;
+            }
+        }
+        return Arrays.copyOf(result, addedIndex);
+    }
+
+    private static boolean shouldBinarySearch(int total, int items) {
+        return items > Math.max(2, Integer.highestOneBit(total));
     }
 }
