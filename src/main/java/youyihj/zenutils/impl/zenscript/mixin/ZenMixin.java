@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript.mixin;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import crafttweaker.CraftTweakerAPI;
@@ -39,9 +40,7 @@ public class ZenMixin {
 
     public static void load() throws Exception {
         ITweaker tweaker = CraftTweakerAPI.tweaker;
-        if (!(tweaker instanceof ZenUtilsTweaker)) {
-            throw new IllegalStateException("CraftTweaker ITweaker is not redirected. A mixin config is failed. please report to the mod author!");
-        }
+        Preconditions.checkState(tweaker instanceof ZenUtilsTweaker, "CraftTweaker ITweaker is not redirected. A mixin config is failed. please report to the mod author!");
         PreprocessorManager preprocessorManager = tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(MixinPreprocessor.NAME, (IMultilinePreprocessorFactory<MixinPreprocessor>) MixinPreprocessor::new);
         Class<?> classLoaderClass = Reference.IS_CLEANROOM ? Class.forName("top.outlands.foundation.boot.ActualClassLoader") : LaunchClassLoader.class;
