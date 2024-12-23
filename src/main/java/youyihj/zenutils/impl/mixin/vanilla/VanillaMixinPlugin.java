@@ -43,9 +43,7 @@ public class VanillaMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-        if (!Configuration.enableMixin) {
-            myTargets.remove("net.minecraftforge.fml.common.LoadController");
-        }
+        
     }
 
     @Override
