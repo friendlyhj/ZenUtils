@@ -5,7 +5,7 @@ import youyihj.zenutils.api.util.ReflectionInvoked;
 import zone.rong.mixinbooter.IEarlyMixinLoader;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +43,11 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public List<String> getMixinConfigs() {
-        return Collections.singletonList("mixins.zenutils.vanilla.json");
+        List<String> configs = new ArrayList<>();
+        configs.add("mixins.zenutils.vanilla.json");
+        if (Configuration.enableMixin) {
+            configs.add("mixins.zenutils.zenbootstrap.json");
+        }
+        return configs;
     }
 }

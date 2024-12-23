@@ -1,4 +1,4 @@
-package youyihj.zenutils.impl.mixin.vanilla;
+package youyihj.zenutils.impl.mixin.zenbootstrap;
 
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.LoaderState;

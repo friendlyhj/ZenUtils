@@ -1,8 +1,8 @@
 {
   "required": true,
   "compatibilityLevel": "JAVA_8",
-  "package": "youyihj.zenutils.impl.mixin.vanilla",
-  "plugin": "youyihj.zenutils.impl.mixin.vanilla.VanillaMixinPlugin",
+  "package": "youyihj.zenutils.impl.mixin.zenbootstrap",
+  "plugin": "youyihj.zenutils.impl.mixin.zenbootstrap.ZenMixinBootstrapPlugin",
   "minVersion": "0.7.11",
   "setSourceFile": true,
   "priority": 1000,
@@ -11,10 +11,8 @@
     "maxShiftBy": 2
   },
   "mixins": [
-    "ContainerRepairAccessor",
-    "MixinAnvilUpdateEvent",
-    "MixinEntityItem",
-    "MixinForgeHooks"
+    "MixinCleanroomLoadController",
+    "MixinForgeLoadController"
   ],
   "client": [
   ]
