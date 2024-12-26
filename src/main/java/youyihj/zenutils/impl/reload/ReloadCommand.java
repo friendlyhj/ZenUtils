@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.reload;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.mc1120.commands.CraftTweakerCommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -10,8 +11,8 @@ import net.minecraftforge.fml.common.Loader;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.reload.ScriptReloadEvent;
-import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -65,14 +66,18 @@ public class ReloadCommand extends CraftTweakerCommand {
         ZenModule.loadedClasses.clear();
         ZenUtils.crafttweakerLogger.clear();
         InternalUtils.setScriptStatus(ScriptStatus.RELOAD);
+        CraftTweakerAPI.logDefault("Request to reload script, executing pre-reload event...");
         MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Pre(requester));
+        CraftTweakerAPI.logDefault("Reloading scripts...");
         boolean successful = ScriptReloader.reloadScripts();
         if (successful) {
             requester.sendMessage(getNormalMessage("Reloaded successfully"));
         } else {
             requester.sendMessage(getNormalMessage(TextFormatting.DARK_RED + "Failed to reload scripts"));
         }
+        CraftTweakerAPI.logDefault("Scripts reloaded, executing post-reload event...");
         MinecraftForge.EVENT_BUS.post(new ScriptReloadEvent.Post(requester));
+        CraftTweakerAPI.logDefault("Script reload finished.");
         InternalUtils.setScriptStatus(ScriptStatus.STARTED);
     }
 }
