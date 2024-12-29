@@ -9,9 +9,6 @@ import java.lang.reflect.*;
  * @author youyihj
  */
 public class ReflectionTypeData implements TypeData {
-    private static final ClassData OBJECT_DATA = ReflectionClassData.of(Object.class);
-    private static final ClassData OBJECT_ARRAY_DATA = ReflectionClassData.of(Object[].class);
-
     private final Type type;
     private final Class<?> clazz;
 
@@ -27,7 +24,7 @@ public class ReflectionTypeData implements TypeData {
 
     @Override
     public String descriptor() {
-        return "L" + clazz.getName().replace('.', '/') + ";";
+        return org.objectweb.asm.Type.getDescriptor(clazz);
     }
 
     @Override
