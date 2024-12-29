@@ -39,6 +39,7 @@ import youyihj.zenutils.impl.zenscript.mixin.ExpressionMixinThis;
 import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
 import youyihj.zenutils.impl.zenscript.mixin.ZenMixin;
 import youyihj.zenutils.impl.zenscript.nat.ExpressionSuper;
+import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
 import youyihj.zenutils.impl.zenscript.nat.ParsedZenClassCompile;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 
@@ -128,6 +129,9 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                 isMixinClass = true;
                 mixinTargets = MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject());
                 for (String target : mixinTargets) {
+                    if (target.startsWith("youyihj")) {
+                        throw new IllegalArgumentException("why you try to mixin zenutils itself?");
+                    }
                     ClassData classData;
                     try {
                         classData = InternalUtils.getClassDataFetcher().forName(target);
@@ -136,6 +140,9 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                                 isMixinClass = false;
                                 classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");
                             }
+                        } else if (!NativeClassValidate.isValid(classData)) {
+                            isMixinClass = false;
+                            classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is not accessible");
                         }
                     } catch (ClassNotFoundException e) {
                         isMixinClass = false;
