@@ -25,6 +25,7 @@ public class NativeClassValidate {
             Boolean.class.getName(),
             Byte.class.getName(),
             Object.class.getName(),
+            Enum.class.getName(),
             Comparable.class.getName(),
             Iterable.class.getName(),
             Math.class.getName(), // although you should call crt Math class, it is not accessible in mixin scripts...
