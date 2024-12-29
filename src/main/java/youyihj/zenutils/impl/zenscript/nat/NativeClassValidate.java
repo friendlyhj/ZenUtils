@@ -49,6 +49,7 @@ public class NativeClassValidate {
                 "scala",
                 "kotlin",
                 "crafttweaker",
+                "stanhebben.zenscript",
                 "com.teamacronymcoders.contenttweaker",
                 "org.apache.commons.io",
                 "org.apache.http",
