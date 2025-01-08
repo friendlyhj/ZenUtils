@@ -140,7 +140,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                                 isMixinClass = false;
                                 classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");
                             }
-                        } else if (!NativeClassValidate.isValid(classData)) {
+                        } else if (!NativeClassValidate.isValid(classData, true)) {
                             isMixinClass = false;
                             classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is not accessible");
                         }

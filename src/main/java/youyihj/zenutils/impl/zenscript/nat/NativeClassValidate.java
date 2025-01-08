@@ -67,7 +67,11 @@ public class NativeClassValidate {
         INativeClassExclude.filterClass(Scanner.class);
     }
 
+    public static boolean isValid(ClassData clazz, boolean allowZenClasses) {
+        return JAVA_LANG_WHITELIST.contains(clazz.name()) || (allowZenClasses || !clazz.isAnnotationPresent(ZenClass.class)) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz));
+    }
+
     public static boolean isValid(ClassData clazz) {
-        return JAVA_LANG_WHITELIST.contains(clazz.name()) || (!clazz.isAnnotationPresent(ZenClass.class) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz)));
+        return isValid(clazz, false);
     }
 }
