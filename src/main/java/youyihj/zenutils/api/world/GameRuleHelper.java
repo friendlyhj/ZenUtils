@@ -1,6 +1,8 @@
 package youyihj.zenutils.api.world;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.mc1120.CraftTweaker;
+import net.minecraft.command.CommandGameRule;
 import net.minecraft.world.GameRules;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -39,6 +41,36 @@ public class GameRuleHelper {
     @ZenMethod
     public boolean hasRule(String name) {
         return rules.hasRule(name);
+    }
+
+    @ZenMethod
+    public void setInt(String name, int value) {
+        if (rules.areSameType(name, GameRules.ValueType.NUMERICAL_VALUE)) {
+            rules.setOrCreateGameRule(name, Integer.toString(value));
+            CommandGameRule.notifyGameRuleChange(rules, name, CraftTweaker.server);
+        } else {
+            throw new IllegalArgumentException("GameRule " + name + " is not numerical value.");
+        }
+    }
+
+    @ZenMethod
+    public void setBoolean(String name, boolean value) {
+        if (rules.areSameType(name, GameRules.ValueType.BOOLEAN_VALUE)) {
+            rules.setOrCreateGameRule(name, Boolean.toString(value));
+            CommandGameRule.notifyGameRuleChange(rules, name, CraftTweaker.server);
+        } else {
+            throw new IllegalArgumentException("GameRule " + name + " is not boolean value.");
+        }
+    }
+
+    @ZenMethod
+    public void setString(String name, String value) {
+        if (rules.areSameType(name, GameRules.ValueType.ANY_VALUE)) {
+            rules.setOrCreateGameRule(name, value);
+            CommandGameRule.notifyGameRuleChange(rules, name, CraftTweaker.server);
+        } else {
+            throw new IllegalArgumentException("GameRule " + name + " is not string value.");
+        }
     }
 
     @ZenMethod
