@@ -4,6 +4,8 @@ import com.teamacronymcoders.base.registrysystem.ItemRegistry;
 import com.teamacronymcoders.contenttweaker.ContentTweaker;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemContent;
 import com.teamacronymcoders.contenttweaker.modules.vanilla.items.ItemRepresentation;
+import com.teamacronymcoders.contenttweaker.modules.vanilla.items.food.ItemContentFood;
+import com.teamacronymcoders.contenttweaker.modules.vanilla.items.food.ItemFoodRepresentation;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.BracketHandler;
 import crafttweaker.zenscript.IBracketHandler;
@@ -32,8 +34,8 @@ public class BracketHandlerCoTItem implements IBracketHandler {
 
     @Override
     public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
-        if(tokens.size() > 2) {
-            if(tokens.get(0).getValue().equals("cotItem") && tokens.get(1).getValue().equals(":")) {
+        if (tokens.size() > 2) {
+            if (tokens.get(0).getValue().equals("cotItem") && tokens.get(1).getValue().equals(":")) {
                 return find(environment, tokens);
             }
         }
@@ -42,20 +44,21 @@ public class BracketHandlerCoTItem implements IBracketHandler {
 
     public static ItemRepresentation getItemRepresentation(String name) {
         Item item = getItem(name);
-        if (item instanceof ItemContent) {
-            try {
-                if (item.getClass() == ItemContent.class) {
-                    return ((ItemRepresentation) ReflectUtils.removePrivate(ItemContent.class, "itemRepresentation").get(item));
-                } else if (item.getClass().isAnnotationPresent(ExpandContentTweakerEntry.class)) {
-                    for (Method method : item.getClass().getMethods()) {
-                        if (method.isAnnotationPresent(ExpandContentTweakerEntry.RepresentationGetter.class)) {
-                            return ((ItemRepresentation) method.invoke(item));
-                        }
+        Class<? extends Item> itemClass = item.getClass();
+        try {
+            if (itemClass == ItemContent.class) {
+                return ((ItemRepresentation) ReflectUtils.removePrivate(ItemContent.class, "itemRepresentation").get(item));
+            } else if (itemClass == ItemContentFood.class) {
+                return ((ItemFoodRepresentation) ReflectUtils.removePrivate(ItemContentFood.class, "itemRepresentation").get(item));
+            } else if (itemClass.isAnnotationPresent(ExpandContentTweakerEntry.class)) {
+                for (Method method : itemClass.getMethods()) {
+                    if (method.isAnnotationPresent(ExpandContentTweakerEntry.RepresentationGetter.class)) {
+                        return ((ItemRepresentation) method.invoke(item));
                     }
                 }
-            } catch (ReflectiveOperationException | ClassCastException e) {
-                CraftTweakerAPI.logError(null, e);
             }
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            CraftTweakerAPI.logError(null, e);
         }
         return null;
     }
