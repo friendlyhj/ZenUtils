@@ -54,7 +54,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
 
     @Override
     public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
-        return new ExpressionNativeSetter(position, setter, other, instanceValue.eval(environment), special);
+        return new ExpressionNativeSetter(position, setter, other, isStatic() ? null : instanceValue.eval(environment), special);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
         return getNestedZenType(environment)
                 .map(it -> it.call(position, environment, isStatic() ? null : instanceValue.eval(environment), values))
                 .orElseGet(() -> {
-                    environment.error(position, "no such method matched");
+                    environment.error(position, "matched method " + name + ", but the argument types do not match");
                     return new ExpressionInvalid(position);
                 });
     }
