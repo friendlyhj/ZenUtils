@@ -66,10 +66,11 @@ public class ExpandEventManager {
             IEventManager manager,
             IEventHandler<T> eventHandler,
             @Optional(methodClass = Defaults.class, methodName = "eventPriority") CTEventPriority priority,
-            @Optional boolean receiveCanceled
+            @Optional boolean receiveCanceled,
+            @Optional int busID
     ) {
         try {
-            GenericEventManagerImpl.register(eventHandler, priority.getPriority(), receiveCanceled);
+            GenericEventManagerImpl.register(eventHandler, priority.getPriority(), receiveCanceled, busID);
         } catch (EventHandlerRegisterException e) {
             CraftTweakerAPI.logError("Can not register this event handler", e);
         }

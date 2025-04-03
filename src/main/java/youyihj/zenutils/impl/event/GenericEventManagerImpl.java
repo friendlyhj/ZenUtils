@@ -19,19 +19,17 @@ import java.util.Set;
  * @author youyihj
  */
 public class GenericEventManagerImpl {
-    private static final int MAIN_EVENT_BUS_ID = 0;
-
     @SuppressWarnings("unchecked")
-    public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
+    public static <T> void register(IEventHandler<T> eventHandler, EventPriority priority, boolean receiveCanceled, int busID) throws EventHandlerRegisterException {
         Class<T> eventType = getEventType(eventHandler);
         if (!Event.class.isAssignableFrom(eventType)) {
-            registerCTEventHandler(eventHandler, eventType, priority, receiveCanceled);
+            registerCTEventHandler(eventHandler, eventType, priority, receiveCanceled, busID);
         } else {
-            registerNativeEventHandler((IEventHandler<Event>) eventHandler, eventType.asSubclass(Event.class), priority, receiveCanceled);
+            registerNativeEventHandler((IEventHandler<Event>) eventHandler, eventType.asSubclass(Event.class), priority, receiveCanceled, busID);
         }
     }
 
-    private static <T> void registerCTEventHandler(IEventHandler<T> eventHandler, Class<T> typeOfT, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
+    private static <T> void registerCTEventHandler(IEventHandler<T> eventHandler, Class<T> typeOfT, EventPriority priority, boolean receiveCanceled, int busID) throws EventHandlerRegisterException {
         Class<? extends T> implementationClass = typeOfT.isInterface() ? findImplementationClass(typeOfT) : typeOfT;
         Constructor<? extends T> constructor = findProperCTEventConstructor(implementationClass);
         Class<?> forgeEventClass = constructor.getParameterTypes()[0];
@@ -42,20 +40,20 @@ public class GenericEventManagerImpl {
             throw new EventHandlerRegisterException("Failed to construct forge event", e);
         }
         try {
-            CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, typeOfT.getSimpleName()));
+            CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor, receiveCanceled), forgeEvent.getListenerList(), priority, busID, typeOfT.getSimpleName()));
         } catch (IllegalAccessException e) {
             throw new EventHandlerRegisterException("Event constructor is not public", e);
         }
     }
 
-    private static <T extends Event> void registerNativeEventHandler(IEventHandler<T> eventHandler, Class<T> typeOfT, EventPriority priority, boolean receiveCanceled) throws EventHandlerRegisterException {
+    private static <T extends Event> void registerNativeEventHandler(IEventHandler<T> eventHandler, Class<T> typeOfT, EventPriority priority, boolean receiveCanceled, int busID) throws EventHandlerRegisterException {
         Event forgeEvent;
         try {
             forgeEvent = typeOfT.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new EventHandlerRegisterException("Failed to construct forge event", e);
         }
-        CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTNativeEventHandlerAdapter<>(eventHandler, receiveCanceled), forgeEvent.getListenerList(), priority, MAIN_EVENT_BUS_ID, typeOfT.getSimpleName()));
+        CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTNativeEventHandlerAdapter<>(eventHandler, receiveCanceled), forgeEvent.getListenerList(), priority, busID, typeOfT.getSimpleName()));
     }
 
     @SuppressWarnings({"unchecked"})
