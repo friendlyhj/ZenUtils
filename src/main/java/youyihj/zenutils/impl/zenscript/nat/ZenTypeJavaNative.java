@@ -46,10 +46,12 @@ public class ZenTypeJavaNative extends ZenType {
     private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
 
     private static final Field METHOD_ENVIRONMENT_PARENT;
+    private static final Field SCOPE_ENVIRONMENT_PARENT;
 
     static {
         try {
             METHOD_ENVIRONMENT_PARENT = ReflectUtils.removePrivate(EnvironmentMethod.class, "environment");
+            SCOPE_ENVIRONMENT_PARENT = ReflectUtils.removePrivate(EnvironmentScope.class, "outer");
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -259,18 +261,19 @@ public class ZenTypeJavaNative extends ZenType {
 
     LookupRequester getLookupRequester(IEnvironmentGlobal environment) {
         try {
-            if (environment instanceof EnvironmentMethod) {
-                Object methodEnvParent = METHOD_ENVIRONMENT_PARENT.get(environment);
-                if (methodEnvParent instanceof IEnvironmentClassExtension) {
-                    IEnvironmentClassExtension envParent = (IEnvironmentClassExtension) methodEnvParent;
-                    if (envParent.getMixinTargets().contains(clazz.name())) {
-                        return LookupRequester.SELF;
-                    } else if (envParent.getSuperClasses().contains(this)) {
-                        return LookupRequester.SUBCLASS;
-                    } else {
-                        return LookupRequester.PUBLIC;
-                    }
+            if (environment instanceof IEnvironmentClassExtension) {
+                IEnvironmentClassExtension env = (IEnvironmentClassExtension) environment;
+                if (env.getMixinTargets().contains(clazz.name())) {
+                    return LookupRequester.SELF;
+                } else if (env.getSuperClasses().contains(this)) {
+                    return LookupRequester.SUBCLASS;
+                } else {
+                    return LookupRequester.PUBLIC;
                 }
+            } else if (environment instanceof EnvironmentMethod) {
+                return getLookupRequester(((IEnvironmentGlobal) METHOD_ENVIRONMENT_PARENT.get(environment)));
+            } else if (environment instanceof EnvironmentScope) {
+                return getLookupRequester(((IEnvironmentGlobal) SCOPE_ENVIRONMENT_PARENT.get(environment)));
             }
         } catch (Exception ignored) {
         }
