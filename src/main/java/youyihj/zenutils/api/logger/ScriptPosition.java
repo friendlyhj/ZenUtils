@@ -34,4 +34,9 @@ public class ScriptPosition {
     public int getLine() {
         return line;
     }
+
+    @Override
+    public String toString() {
+        return fileName + ":" + line;
+    }
 }

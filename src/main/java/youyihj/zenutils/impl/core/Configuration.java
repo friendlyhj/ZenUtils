@@ -10,6 +10,7 @@ import youyihj.zenutils.Reference;
 @Config(modid = Reference.MODID, name = Reference.NAME)
 public class Configuration {
     public static boolean enableMixin = false;
+    public static boolean enableRandomTickEvent = false;
 
     static {
         ConfigAnytime.register(Configuration.class);

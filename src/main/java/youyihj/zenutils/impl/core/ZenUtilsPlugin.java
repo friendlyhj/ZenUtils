@@ -48,6 +48,9 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
         if (Configuration.enableMixin) {
             configs.add("mixins.zenutils.zenbootstrap.json");
         }
+        if (Configuration.enableRandomTickEvent) {
+            configs.add("mixins.zenutils.randomtickevent.json");
+        }
         return configs;
     }
 }

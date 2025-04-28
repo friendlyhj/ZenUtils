@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.event.EventHandlerRegisterException;
 import youyihj.zenutils.impl.event.GenericEventManagerImpl;
 import youyihj.zenutils.impl.zenscript.Defaults;
@@ -30,6 +31,7 @@ public class ExpandEventManager {
     public static final EventList<WorldLoadEvent> elWorldLoad = new EventList<>();
     public static final EventList<WorldUnloadEvent> elWorldUnload = new EventList<>();
     public static final EventList<WorldSaveEvent> elWorldSave = new EventList<>();
+    public static final EventList<CTRandomTickEvent> elRandomTick = new EventList<>();
 
     @ZenMethod
     public static IEventHandle onEntityRemove(IEventManager manager, IEventHandler<EntityRemoveEvent> ev) {
@@ -59,6 +61,14 @@ public class ExpandEventManager {
     @ZenMethod
     public static IEventHandle onWorldSave(IEventManager manager, IEventHandler<WorldSaveEvent> ev) {
         return elWorldSave.add(ev);
+    }
+
+    @ZenMethod
+    public static IEventHandle onRandomTick(IEventManager manager, IEventHandler<CTRandomTickEvent> ev) {
+        if (!Configuration.enableRandomTickEvent) {
+            CraftTweakerAPI.logError("RandomTickEvent is disabled in config, please enable it to use this event.");
+        }
+        return elRandomTick.add(ev);
     }
 
     @ZenMethod
@@ -108,6 +118,13 @@ public class ExpandEventManager {
         public static void onWorldSave(WorldEvent.Save event) {
             if (ExpandEventManager.elWorldSave.hasHandlers()) {
                 ExpandEventManager.elWorldSave.publish(new WorldSaveEvent(event));
+            }
+        }
+
+        @SubscribeEvent
+        public static void onRandomTick(RandomTickEvent event) {
+            if (ExpandEventManager.elRandomTick.hasHandlers()) {
+                ExpandEventManager.elRandomTick.publish(new CTRandomTickEvent(event));
             }
         }
     }
