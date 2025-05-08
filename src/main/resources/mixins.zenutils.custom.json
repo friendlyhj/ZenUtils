@@ -4,7 +4,7 @@
   "package": "youyihj.zenutils.impl.mixin.custom",
   "plugin": "youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin",
   "minVersion": "0.8",
-  "priority": 1000,
+  "priority": 1,
   "refmap": "mixins.zenutils.refmap.json",
   "injectors": {
     "maxShiftBy": 3

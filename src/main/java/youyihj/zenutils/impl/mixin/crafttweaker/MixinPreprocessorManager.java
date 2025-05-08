@@ -5,12 +5,14 @@ import crafttweaker.preprocessor.IPreprocessor;
 import crafttweaker.preprocessor.PreprocessorFactory;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ScriptFile;
+import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import stanhebben.zenscript.value.IntRange;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessor;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
+import youyihj.zenutils.impl.core.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +32,8 @@ public abstract class MixinPreprocessorManager {
 
     @Shadow
     protected abstract void addPreprocessorToFileMap(String filename, IPreprocessor preprocessor);
+
+    @Shadow protected abstract void executePostActions(ScriptFile scriptFile);
 
     /**
      * @author youyihj
@@ -59,7 +63,29 @@ public abstract class MixinPreprocessorManager {
                 } else {
                     readCurrentLineAgain = false;
                 }
-                if (!content.isEmpty() && content.charAt(0) == '#') {
+
+                if (content.isEmpty()) {
+                    continue;
+                }
+
+                if (Configuration.fastScriptLoading) {
+                    // skip comments
+                    if (content.startsWith("//")) {
+                        continue;
+                    }
+                    if (content.startsWith("/*")) {
+                        while ((line = reader.readLine()) != null) {
+                            lineIndex++;
+                            content = line.trim();
+                            if (content.endsWith("*/")) {
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                }
+
+                if (content.charAt(0) == '#') {
                     content = content.substring(1);
                     String[] splits = content.split(" ");
                     PreprocessorFactory<?> preprocessorFactory = registeredPreprocessorActions.get(splits[0]);
@@ -93,11 +119,16 @@ public abstract class MixinPreprocessorManager {
                         preprocessorList.add(preprocessor);
                         addPreprocessorToFileMap(scriptFile.getEffectiveName(), preprocessor);
                     }
+                } else if (Configuration.fastScriptLoading && !ArrayUtils.contains(scriptFile.getLoaderNames(), "mixin")) {
+                    // fast script loading: skip preprocessor parsing in script body for non-mixin scripts
+                    break;
                 }
             }
+            reader.close();
         } catch (IOException e) {
             CraftTweakerAPI.logError("Could not read preprocessor functions in " + filename, e);
         }
+        executePostActions(scriptFile);
         return preprocessorList;
     }
 }

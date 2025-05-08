@@ -1,36 +1,55 @@
 package youyihj.zenutils.impl.runtime;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.api.network.NetworkSide;
+import crafttweaker.preprocessor.CrTScriptLoadEvent;
 import crafttweaker.preprocessor.PreprocessorManager;
-import crafttweaker.runtime.IScriptProvider;
-import crafttweaker.runtime.ITweaker;
-import crafttweaker.runtime.ScriptLoader;
+import crafttweaker.runtime.*;
 import crafttweaker.runtime.events.CrTLoaderLoadingEvent;
 import crafttweaker.runtime.events.CrTScriptLoadingEvent;
 import crafttweaker.runtime.providers.ScriptProviderDirectory;
 import crafttweaker.util.IEventHandler;
+import crafttweaker.util.SuppressErrorFlag;
+import crafttweaker.zenscript.CrtStoringErrorLogger;
+import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import rml.layer.compat.crt.RMLCrTLoader;
+import stanhebben.zenscript.ZenModule;
+import stanhebben.zenscript.ZenParsedFile;
+import stanhebben.zenscript.ZenTokener;
+import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.type.ZenType;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
 import youyihj.zenutils.api.reload.IActionReloadCallbackFactory;
 import youyihj.zenutils.api.reload.Reloadable;
+import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static stanhebben.zenscript.ZenModule.compileScripts;
+import static stanhebben.zenscript.ZenModule.extractClassName;
 
 public class ZenUtilsTweaker implements ITweaker {
     private final ITweaker tweaker;
+    private IScriptProvider scriptProvider;
     private boolean freeze = false;
     private final Queue<ActionReloadCallback<?>> reloadableActions = new ArrayDeque<>();
     private final Map<Class<?>, IActionReloadCallbackFactory<?>> reloadCallbacks = new HashMap<>();
+
+    private boolean scriptDispatched = false;
+    private final Multimap<String, ScriptFile> loaderTasks = ArrayListMultimap.create();
 
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
@@ -39,11 +58,11 @@ public class ZenUtilsTweaker implements ITweaker {
             globalDir.mkdirs();
         ScriptProviderDirectory provider = new ScriptProviderDirectory(globalDir);
         if (!Loader.isModLoaded("rml")) {
-            tweaker.setScriptProvider(provider);
+            setScriptProvider(provider);
         } else {
             // zenutils tweaker breaks rml crt support, we fix it here
             MinecraftForge.EVENT_BUS.register(RMLCrTLoader.class);
-            tweaker.setScriptProvider(RMLCrTLoader.inject(provider));
+            setScriptProvider(RMLCrTLoader.inject(provider));
         }
     }
 
@@ -84,7 +103,8 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public void setScriptProvider(IScriptProvider provider) {
-        // NO-OP
+        tweaker.setScriptProvider(provider);
+        this.scriptProvider = provider;
     }
 
     @Override
@@ -103,7 +123,7 @@ public class ZenUtilsTweaker implements ITweaker {
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(ScriptStatus.SYNTAX);
         }
-        boolean result = tweaker.loadScript(isSyntaxCommand, loaderName);
+        boolean result = loadScriptInternal(isSyntaxCommand, loaderName);
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(origin);
         }
@@ -116,10 +136,174 @@ public class ZenUtilsTweaker implements ITweaker {
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(ScriptStatus.SYNTAX);
         }
-        tweaker.loadScript(isSyntaxCommand, loader);
+        loadScriptInternal(isSyntaxCommand, loader);
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(origin);
         }
+    }
+
+    private boolean loadScriptInternal(boolean isSyntaxCommand, ScriptLoader loader) {
+        if (isSyntaxCommand) {
+            CraftTweakerAPI.setSuppressErrorFlag(SuppressErrorFlag.FORCED);
+        }
+
+        if (loader == null) {
+            CraftTweakerAPI.logError("Error when trying to load with a null loader");
+            return false;
+        }
+
+        if (!Configuration.fastScriptLoading) {
+            tweaker.loadScript(isSyntaxCommand, loader);
+            return loader.getLoaderStage() == ScriptLoader.LoaderStage.LOADED_SUCCESSFUL;
+        }
+
+        if (!scriptDispatched) {
+            CraftTweakerAPI.logInfo("Fast script loading enabled.");
+            long startTime = System.currentTimeMillis();
+            collectScriptFiles(isSyntaxCommand);
+            CraftTweakerAPI.logDefault("Collected script files and preprocessors. took " + (System.currentTimeMillis() - startTime) + "ms");
+            scriptDispatched = true;
+        }
+
+        CraftTweakerAPI.logInfo("Loading scripts for loader with names " + loader);
+        if (loader.isLoaded() && !isSyntaxCommand) {
+            CraftTweakerAPI.logDefault("Skipping loading for loader " + loader + " since it's already been loaded");
+            return false;
+        }
+
+        if (loader.isDelayed() && !isSyntaxCommand) {
+            CraftTweakerAPI.logDefault("Skipping loading for loader " + loader + " since its execution is being delayed by another mod.");
+            return false;
+        }
+
+        if (loader.getLoaderStage() == ScriptLoader.LoaderStage.INVALIDATED) {
+            CraftTweakerAPI.logWarning("Skipping loading for loader " + loader + " since it's become invalidated");
+            return false;
+        }
+
+        loader.setLoaderStage(ScriptLoader.LoaderStage.LOADING);
+        boolean loadSuccessful = true;
+        ((CrtStoringErrorLogger) GlobalRegistry.getErrors()).clear();
+        Map<String, byte[]> classes = new HashMap<>();
+        IEnvironmentGlobal environmentGlobal = GlobalRegistry.makeGlobalEnvironment(classes, loader.getMainName());
+
+        long startTime = System.currentTimeMillis();
+        List<ScriptFile> scriptFiles = loader.getNames().stream()
+                .flatMap(name -> loaderTasks.get(name).stream())
+                .distinct()
+                .sorted(PreprocessorManager.SCRIPT_FILE_COMPARATOR)
+                .collect(Collectors.toList());
+
+        final String loaderName = loader.getMainName();
+
+        for (ScriptFile scriptFile : scriptFiles) {
+            // update class name generator
+            environmentGlobal.getClassNameGenerator().setPrefix(scriptFile.loaderNamesConcatCapitalized());
+
+            // check for network side
+            if(!scriptFile.shouldBeLoadedOn(getNetworkSide())) {
+                CraftTweakerAPI.logDefault(getTweakerDescriptor(loaderName) + ": Skipping file " + scriptFile + " as we are on the wrong side of the Network");
+                continue;
+            }
+
+            CraftTweakerAPI.logDefault(getTweakerDescriptor(loaderName) + ": Loading Script: " + scriptFile);
+
+            ZenParsedFile zenParsedFile = null;
+            String filename = scriptFile.getEffectiveName();
+            String className = extractClassName(filename);
+
+            // start reading of the scripts
+            ZenTokener parser = null;
+            try(Reader reader = new InputStreamReader(new BufferedInputStream(scriptFile.open()), StandardCharsets.UTF_8)) {
+                getPreprocessorManager().postLoadEvent(new CrTScriptLoadEvent(scriptFile));
+
+                // blocks the parsing of the script
+                if(scriptFile.isParsingBlocked()) {
+                    continue;
+                }
+
+                parser = new ZenTokener(reader, environmentGlobal.getEnvironment(), filename, scriptFile.areBracketErrorsIgnored());
+                zenParsedFile = new ZenParsedFile(filename, className, parser, environmentGlobal);
+
+            } catch(IOException ex) {
+                CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Could not load script " + scriptFile + ": " + ex.getMessage());
+                loadSuccessful = false;
+            } catch(ParseException ex) {
+                CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Error parsing " + ex.getFile().getFileName() + ":" + ex.getLine() + " -- " + ex.getExplanation());
+                loadSuccessful = false;
+            } catch(Exception ex) {
+                CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Error loading " + scriptFile + ": " + ex, ex);
+                loadSuccessful = false;
+            }
+
+            try {
+                // Stops if compile is disabled
+                if(zenParsedFile == null || scriptFile.isCompileBlocked() || !loadSuccessful) {
+                    continue;
+                }
+                compileScripts(className, Collections.singletonList(zenParsedFile), environmentGlobal, scriptFile.isDebugEnabled());
+
+                // stops if the execution is disabled
+                if(scriptFile.isExecutionBlocked() || isSyntaxCommand) {
+                    continue;
+                }
+
+                ZenModule module = new ZenModule(classes, CraftTweakerAPI.class.getClassLoader());
+                Runnable runnable = module.getMain();
+                if (runnable != null)
+                    runnable.run();
+            } catch (Throwable ex) {
+                CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Error executing " + scriptFile + ": " + ex.getMessage(), ex);
+            }
+        }
+
+        loader.setLoaderStage(loadSuccessful ? ScriptLoader.LoaderStage.LOADED_SUCCESSFUL : ScriptLoader.LoaderStage.ERROR);
+        CraftTweakerAPI.logDefault("Completed script loading in: " + (System.currentTimeMillis() - startTime) + "ms");
+
+        return loadSuccessful;
+    }
+
+    private boolean loadScriptInternal(boolean isSyntaxCommand, String loaderName) {
+        if (!Configuration.fastScriptLoading) {
+            return tweaker.loadScript(isSyntaxCommand, loaderName);
+        }
+        return loadScriptInternal(isSyntaxCommand, getOrCreateLoader(loaderName).removeDelay(loaderName));
+    }
+
+    private void collectScriptFiles(boolean isSyntaxCommand) {
+        List<ScriptFile> scriptFiles = new ArrayList<>();
+        HashSet<String> collected = new HashSet<>();
+
+        // Collecting all scripts
+        Iterator<IScriptIterator> scripts = scriptProvider.getScripts();
+        while(scripts.hasNext()) {
+            IScriptIterator script = scripts.next();
+
+            if(!collected.contains(script.getGroupName())) {
+                collected.add(script.getGroupName());
+
+                while(script.next()) {
+                    scriptFiles.add(new ScriptFile(this, script.copyCurrent(), isSyntaxCommand));
+                }
+            }
+        }
+
+        // Collecting all preprocessors
+        for (ScriptFile scriptFile : scriptFiles) {
+            scriptFile.addAll(getPreprocessorManager().checkFileForPreprocessors(scriptFile));
+        }
+
+        // Dispatching all loader tasks
+        for (ScriptFile scriptFile : scriptFiles) {
+            String[] loaderNames = scriptFile.getLoaderNames();
+            for (String loaderName : loaderNames) {
+                loaderTasks.put(loaderName, scriptFile);
+            }
+        }
+    }
+
+    private String getTweakerDescriptor(String loaderName) {
+        return "[" + loaderName + " | " + getNetworkSide() + "]";
     }
 
     @Override
@@ -149,26 +333,41 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public void registerLoadStartedEvent(IEventHandler<CrTLoaderLoadingEvent.Started> eventHandler) {
+        if (Configuration.fastScriptLoading) {
+            CraftTweakerAPI.logWarning("Fast script loading disabled registerLoadStartedEvent. Please tell the mod author!");
+        }
         tweaker.registerLoadStartedEvent(eventHandler);
     }
 
     @Override
     public void registerLoadFinishedEvent(IEventHandler<CrTLoaderLoadingEvent.Finished> eventHandler) {
+        if (Configuration.fastScriptLoading) {
+            CraftTweakerAPI.logWarning("Fast script loading disabled registerLoadFinishedEvent. Please tell the mod author!");
+        }
         tweaker.registerLoadFinishedEvent(eventHandler);
     }
 
     @Override
     public void registerLoadAbortedEvent(IEventHandler<CrTLoaderLoadingEvent.Aborted> eventHandler) {
+        if (Configuration.fastScriptLoading) {
+            CraftTweakerAPI.logWarning("Fast script loading disabled registerLoadAbortedEvent. Please tell the mod author!");
+        }
         tweaker.registerLoadAbortedEvent(eventHandler);
     }
 
     @Override
     public void registerScriptLoadPreEvent(IEventHandler<CrTScriptLoadingEvent.Pre> eventHandler) {
+        if (Configuration.fastScriptLoading) {
+            CraftTweakerAPI.logWarning("Fast script loading disabled registerScriptLoadPreEvent. Please tell the mod author!");
+        }
         tweaker.registerScriptLoadPreEvent(eventHandler);
     }
 
     @Override
     public void registerScriptLoadPostEvent(IEventHandler<CrTScriptLoadingEvent.Post> eventHandler) {
+        if (Configuration.fastScriptLoading) {
+            CraftTweakerAPI.logWarning("Fast script loading disabled registerScriptLoadPostEvent. Please tell the mod author!");
+        }
         tweaker.registerScriptLoadPostEvent(eventHandler);
     }
 
@@ -207,6 +406,11 @@ public class ZenUtilsTweaker implements ITweaker {
 
     public <T extends IAction> void addReloadCallback(Class<T> clazz, IActionReloadCallbackFactory<T> callback) {
         reloadCallbacks.put(clazz, callback);
+    }
+
+    public void clearLoaderTasks() {
+        loaderTasks.clear();
+        scriptDispatched = false;
     }
 
     private boolean validateAction(IAction action) {

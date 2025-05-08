@@ -63,6 +63,7 @@ public class ReloadCommand extends CraftTweakerCommand {
             requester.sendMessage(getNormalMessage(TextFormatting.YELLOW + "Most recipe modifications are not reloadable, they will be ignored."));
         }
         ZenUtils.tweaker.freezeActionApplying();
+        ZenUtils.tweaker.clearLoaderTasks();
         ZenModule.loadedClasses.clear();
         ZenUtils.crafttweakerLogger.clear();
         InternalUtils.setScriptStatus(ScriptStatus.RELOAD);
