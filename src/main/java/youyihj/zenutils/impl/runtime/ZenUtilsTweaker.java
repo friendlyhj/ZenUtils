@@ -418,7 +418,12 @@ public class ZenUtilsTweaker implements ITweaker {
             CraftTweakerAPI.logError("Action could not be applied", new UnsupportedOperationException(action.describeInvalid()));
             return true;
         }
-        String describe = action.describe();
+        String describe;
+        try {
+            describe = action.describe();
+        } catch (Throwable e) {
+            describe = "Applying action " + action.getClass().getName() + "@" + action.hashCode() + " (failed to get its description)";
+        }
         if (describe != null && !describe.isEmpty()) {
             CraftTweakerAPI.logInfo(describe);
         }
