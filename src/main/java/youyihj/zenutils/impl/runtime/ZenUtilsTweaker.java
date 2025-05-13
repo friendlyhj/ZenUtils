@@ -145,6 +145,7 @@ public class ZenUtilsTweaker implements ITweaker {
     private boolean loadScriptInternal(boolean isSyntaxCommand, ScriptLoader loader) {
         if (isSyntaxCommand) {
             CraftTweakerAPI.setSuppressErrorFlag(SuppressErrorFlag.FORCED);
+            clearLoaderTasks();
         }
 
         if (loader == null) {
