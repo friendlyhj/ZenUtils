@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.command.ZenCommandRegisterAction;
 import youyihj.zenutils.api.cotx.brackets.LateGetContentLookup;
@@ -41,7 +42,7 @@ import java.util.Map;
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, dependencies = Reference.DEPENDENCIES)
 @Mod.EventBusSubscriber
 public class ZenUtils {
-    public static Logger forgeLogger;
+    public static final Logger forgeLogger = LogManager.getLogger(Reference.MODID);
     public static ZenUtilsLogger crafttweakerLogger;
     public static ZenUtilsTweaker tweaker;
     public static ASMDataTable asmDataTable;
@@ -69,7 +70,6 @@ public class ZenUtils {
         ZenWorldCapabilityHandler.register();
         PlayerInteractionSimulation.registerNetworkMessage();
         asmDataTable = event.getAsmData();
-        forgeLogger = event.getModLog();
         readSidedZenRegisters(event.getSide());
         try {
             InternalUtils.scanAllEventLists();

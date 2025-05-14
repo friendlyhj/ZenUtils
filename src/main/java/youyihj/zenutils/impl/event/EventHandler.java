@@ -18,6 +18,7 @@ import youyihj.zenutils.api.util.catenation.persistence.BuiltinObjectHolderTypes
 import youyihj.zenutils.api.util.catenation.persistence.CatenationPersistenceAPI;
 import youyihj.zenutils.impl.util.FireEntityRemoveEventListener;
 import youyihj.zenutils.impl.util.catenation.persistence.CatenationPersistenceImpl;
+import youyihj.zenutils.impl.zenscript.entrypoint.CustomScriptEntrypoint;
 
 import java.util.List;
 
@@ -48,11 +49,11 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void clearStagedActions(ActionApplyEvent.Post event) {
-        MCRecipeManager.recipesToRemove.clear();
-        MCRecipeManager.recipesToAdd.clear();
-        MCFurnaceManager.recipesToRemove.clear();
-        MCFurnaceManager.recipesToAdd.clear();
+        CustomScriptEntrypoint.craftingRecipeAdditionStandardIndex = MCRecipeManager.recipesToAdd.size();
+        CustomScriptEntrypoint.craftingRecipeRemovalStandardIndex = MCRecipeManager.recipesToRemove.size();
+        CustomScriptEntrypoint.furnaceRecipeAdditionStandardIndex = MCFurnaceManager.recipesToAdd.size();
+        CustomScriptEntrypoint.furnaceRecipeRemovalStandardIndex = MCFurnaceManager.recipesToRemove.size();
         List<Pair<IIngredient, Boolean>> outputs = CraftTweakerHacks.getPrivateObject(MCRecipeManager.actionRemoveRecipesNoIngredients, "outputs");
-        outputs.clear();;
+        outputs.clear();
     }
 }
