@@ -5,8 +5,10 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.BracketHandler;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.block.IBlockState;
+import crafttweaker.api.damage.IDamageSource;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.mc1120.brackets.*;
+import crafttweaker.mc1120.damage.expand.MCDamageSourceExpand;
 import crafttweaker.zenscript.IBracketHandler;
 import net.minecraftforge.oredict.OreDictionary;
 import stanhebben.zenscript.ZenTokener;
@@ -19,6 +21,7 @@ import stanhebben.zenscript.type.natives.IJavaMethod;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.zenscript.TemplateString;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +32,7 @@ import java.util.stream.Collectors;
  * @author youyihj
  */
 @ZenRegister
-@BracketHandler
+@BracketHandler(priority = 9)
 public class TemplateBracketHandler implements IBracketHandler {
     private final Map<String, IJavaMethod> bracketMethods = new HashMap<>();
 
@@ -43,7 +46,7 @@ public class TemplateBracketHandler implements IBracketHandler {
         registerBracketHandlerMethod("biometypes", CraftTweakerAPI.getJavaMethod(BracketHandlerBiomeType.class, "getBiomeType", String.class));
         registerBracketHandlerMethod("blockstate", CraftTweakerAPI.getJavaMethod(TemplateBracketHandler.class, "getBlockState", String.class));
         registerBracketHandlerMethod("creativetab", CraftTweakerAPI.getJavaMethod(BracketHandlerCreativeTab.class, "getTabFromString", String.class));
-        registerBracketHandlerMethod("damagesource", CraftTweakerAPI.getJavaMethod(BracketHandlerDamageSource.class, "getFromString", String.class));
+        registerBracketHandlerMethod("damagesource", CraftTweakerAPI.getJavaMethod(TemplateBracketHandler.class, "getDamageSource", String.class));
         registerBracketHandlerMethod("enchantment", CraftTweakerAPI.getJavaMethod(BracketHandlerEnchantments.class, "getEnchantment", String.class));
         registerBracketHandlerMethod("entity", CraftTweakerAPI.getJavaMethod(BracketHandlerEntity.class, "getEntity", String.class));
         registerBracketHandlerMethod("liquid", CraftTweakerAPI.getJavaMethod(BracketHandlerLiquid.class, "getLiquid", String.class));
@@ -90,5 +93,18 @@ public class TemplateBracketHandler implements IBracketHandler {
     public static IBlockState getBlockState(String expression) {
         String[] split = expression.split(":", 3);
         return BracketHandlerBlockState.getBlockState(split[0] + ":" + split[1], split.length == 3 ? split[2] : null);
+    }
+
+    @ReflectionInvoked
+    public static IDamageSource getDamageSource(String name) {
+        try {
+            Method preRegistered = MCDamageSourceExpand.class.getMethod(name.toUpperCase());
+            if (preRegistered.getReturnType() != IDamageSource.class) {
+                throw new NoSuchMethodException();
+            }
+            return (IDamageSource) preRegistered.invoke(null);
+        } catch (ReflectiveOperationException e) {
+            return BracketHandlerDamageSource.getFromString(name);
+        }
     }
 }

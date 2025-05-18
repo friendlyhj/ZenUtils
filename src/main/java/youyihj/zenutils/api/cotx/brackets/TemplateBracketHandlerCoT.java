@@ -22,7 +22,7 @@ import youyihj.zenutils.api.zenscript.TemplateBracketHandler;
  * @author youyihj
  */
 @SidedZenRegister(modDeps = Reference.MOD_COT)
-@BracketHandler(priority = 9)
+@BracketHandler(priority = 8)
 public class TemplateBracketHandlerCoT extends TemplateBracketHandler {
     @Override
     protected void initBracketHandlerMethods() {
