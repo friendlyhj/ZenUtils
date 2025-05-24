@@ -36,7 +36,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     @Override
     public String name() {
-        return clazz.getCanonicalName();
+        return clazz.getName();
     }
 
     @Override
