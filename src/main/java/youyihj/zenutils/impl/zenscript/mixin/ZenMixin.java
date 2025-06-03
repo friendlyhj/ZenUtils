@@ -64,6 +64,7 @@ public class ZenMixin {
             }
         });
         Mixins.addConfiguration("mixins.zenutils.custom.json");
+        Mixins.registerErrorHandlerClass("youyihj.zenutils.impl.mixin.custom.CustomMixinErrorHandler");
 
         Field processorField = MixinTransformer.class.getDeclaredField("processor");
         processorField.setAccessible(true);
