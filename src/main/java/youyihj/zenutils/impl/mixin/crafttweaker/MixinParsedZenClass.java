@@ -130,7 +130,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                 mixinTargets = MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject());
                 for (String target : mixinTargets) {
                     if (target.startsWith("youyihj")) {
-                        throw new IllegalArgumentException("why you try to mixin zenutils itself?");
+                        classEnvironment.error(position, "why you try to mixin zenutils itself?");
                     }
                     ClassData classData;
                     try {
@@ -138,15 +138,15 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                         if (classData instanceof ReflectionClassData) {
                             if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
                                 isMixinClass = false;
-                                classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");
+                                classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");
                             }
                         } else if (!NativeClassValidate.isValid(classData, true)) {
                             isMixinClass = false;
-                            classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is not accessible");
+                            classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is not accessible");
                         }
                     } catch (ClassNotFoundException e) {
                         isMixinClass = false;
-                        classEnvironment.info("Skip loading mixin class " + name + ", because the target " + target + " is not found");
+                        classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is not found");
                     }
                 }
                 if (isMixinClass) {
