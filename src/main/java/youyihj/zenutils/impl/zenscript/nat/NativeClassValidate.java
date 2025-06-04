@@ -2,6 +2,9 @@ package youyihj.zenutils.impl.zenscript.nat;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import crafttweaker.api.formatting.IFormatter;
+import crafttweaker.api.item.IItemUtils;
+import crafttweaker.api.recipes.IBrewingManager;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.api.zenscript.INativeClassExclude;
@@ -69,6 +72,10 @@ public class NativeClassValidate {
                 "com.cleanroommc.groovyscript"
         ).forEach(INativeClassExclude::filterPrefix);
         INativeClassExclude.filterClass(Scanner.class);
+
+        INativeClassExclude.filterClass(IItemUtils.class);
+        INativeClassExclude.filterClass(IBrewingManager.class);
+        INativeClassExclude.filterClass(IFormatter.class);
     }
 
     public static boolean isValid(ClassData clazz, boolean allowZenClasses) {
