@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.zenscript;
 
 import com.google.gson.*;
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.runtime.ScriptFile;
 import org.apache.commons.lang3.tuple.Pair;
 import stanhebben.zenscript.value.IntRange;
@@ -79,7 +80,8 @@ public class MixinPreprocessor implements IMultilinePreprocessor {
             try {
                 annotation = Pair.of(annotationType, GSON.fromJson(annotationContent, JsonElement.class));
             } catch (JsonSyntaxException e) {
-                throw new IllegalArgumentException(String.format("mixin annotation json is malformed, file: %s, line: [%d, %d]", scriptFile.getEffectiveName(), lineRange.getFrom(), lineRange.getTo()), e);
+                CraftTweakerAPI.logError(String.format("mixin annotation json is malformed, file: %s, line: [%d, %d]", scriptFile.getEffectiveName(), lineRange.getFrom(), lineRange.getTo()));
+                annotation = Pair.of(annotationType, new JsonObject());
             }
         } else {
             annotation = Pair.of(annotationType, new JsonObject());
@@ -101,7 +103,8 @@ public class MixinPreprocessor implements IMultilinePreprocessor {
             try {
                 annotation = Pair.of(annotationType, GSON.fromJson(annotationContent, JsonElement.class));
             } catch (JsonSyntaxException e) {
-                throw new IllegalArgumentException(String.format("mixin annotation json is malformed, file: %s, line: %d", scriptFile.getEffectiveName(), getLineIndex()), e);
+                CraftTweakerAPI.logError(String.format("mixin annotation json is malformed, file: %s, line: [%d, %d]", scriptFile.getEffectiveName(), lineRange.getFrom(), lineRange.getTo()));
+                annotation = Pair.of(annotationType, new JsonObject());
             }
         } else {
             annotation = Pair.of(annotationType, new JsonObject());
