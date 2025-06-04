@@ -66,6 +66,13 @@ public class PartialJavaNativeMember implements IPartialExpression {
     public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
         IJavaMethod selected = JavaMethod.select(isStatic(), methods, environment, values);
         if (selected != null) {
+            if (selected instanceof NativeMethod) {
+                ExecutableData method = ((NativeMethod) selected).getExecutable();
+                if (NativeClassValidate.isRiskyClassForName(method)) {
+                    environment.error(position, "found a risky Class.forName call of " + method.declaringClass().name() + "#" + method.name());
+                    return new ExpressionInvalid(position);
+                }
+            }
             if (isStatic()) {
                 return new DelegatedExpressionCallStatic(position, environment, selected, values);
             } else {

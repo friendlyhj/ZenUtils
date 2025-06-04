@@ -124,7 +124,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     @Override
     @Nullable
-    public ClassData superClass() {
+    public ReflectionClassData superClass() {
         return clazz.getSuperclass() != null ? ReflectionClassData.of(clazz.getSuperclass()) : null;
     }
 

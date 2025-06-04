@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
@@ -18,6 +19,7 @@ import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.LiteralType;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
+import youyihj.zenutils.impl.zenscript.nat.ZenTypeClass;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNativeIterable;
 
@@ -41,10 +43,16 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     private final Map<String, ZenType> literalTypes = InternalUtils.make(new HashMap<>(), map -> {
         map.put("Ljava/lang/Object;", ZenTypeJavaNative.OBJECT);
         map.put("Ljava/lang/String;", ZenType.STRING);
+        map.put("Ljava/lang/Class;", ZenTypeClass.INSTANCE);
     });
 
     @Shadow
     public abstract ZenType getType(Type type);
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void registerClassType(CallbackInfo ci) {
+        types.put(Class.class, ZenTypeClass.INSTANCE);
+    }
 
     @Inject(method = "getType", at = @At(value = "HEAD"), cancellable = true)
     private void handleComplexTypes(Type type, CallbackInfoReturnable<ZenType> cir) {

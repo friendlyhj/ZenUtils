@@ -158,4 +158,8 @@ public class NativeMethod implements IJavaMethod {
     public String getErrorDescription() {
         return executable.descriptor();
     }
+
+    public ExecutableData getExecutable() {
+        return executable;
+    }
 }

@@ -8,6 +8,7 @@ import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.*;
 import stanhebben.zenscript.expression.*;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
+import stanhebben.zenscript.expression.partial.PartialStaticMethod;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
@@ -44,6 +45,7 @@ public class ZenTypeJavaNative extends ZenType {
     private final List<ZenTypeJavaNative> superClasses;
 
     private static final IJavaMethod OBJECTS_EQUALS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, Objects.class, "equals", Object.class, Object.class);
+    private static final IJavaMethod OBJECT_GET_CLASS = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, NativeClassValidate.class, "safeGetClass", Object.class);
 
     private static final Field METHOD_ENVIRONMENT_PARENT;
     private static final Field SCOPE_ENVIRONMENT_PARENT;
@@ -228,11 +230,32 @@ public class ZenTypeJavaNative extends ZenType {
     }
 
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name, boolean logError) {
-        if (value != null && "wrapper".equals(name)) {
-            Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getCaster(clazz);
-            if (wrapperCaster.isPresent()) {
-                return new ExpressionCallStatic(position, environment, new NativeMethod(wrapperCaster.get(), environment), value.eval(environment));
+        if (value != null) {
+            switch (name) {
+                case "wrapper":
+                    Optional<ExecutableData> wrapperCaster = CraftTweakerBridge.INSTANCE.getCaster(clazz);
+                    if (wrapperCaster.isPresent()) {
+                        return new ExpressionCallStatic(position, environment, new NativeMethod(wrapperCaster.get(), environment), value.eval(environment));
+                    }
+                    break;
+                case "class":
+                    return new ExpressionCallStatic(position, environment, OBJECT_GET_CLASS, value.eval(environment));
+                case "getClass":
+                    return new PartialStaticMethod(position, OBJECT_GET_CLASS) {
+                        @Override
+                        public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+                            if (values.length == 0) {
+                                return super.call(position, environment, value.eval(environment));
+                            } else {
+                                environment.error(position, "getClass() does not accept any arguments");
+                                return new ExpressionInvalid(position);
+                            }
+                        }
+                    };
             }
+        }
+        if (value == null && name.equals("class")) {
+            return new ExpressionClassConstant(position, toASMType());
         }
         IPartialExpression member = getSymbol(name, environment, value == null).receiver(value).instance(position);
         if (member instanceof ExpressionInvalid) {
