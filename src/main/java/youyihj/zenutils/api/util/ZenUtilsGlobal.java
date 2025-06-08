@@ -1,5 +1,6 @@
 package youyihj.zenutils.api.util;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -7,6 +8,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.logger.RegexLogFilter;
 import youyihj.zenutils.impl.reload.ScriptReloader;
+import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Arrays;
@@ -119,6 +121,11 @@ public class ZenUtilsGlobal {
     @ZenMethod
     public static int scriptStatus() {
         return InternalUtils.getScriptStatus().ordinal();
+    }
+
+    @ZenMethod
+    public static String currentLoader() {
+        return ((ZenUtilsTweaker) CraftTweakerAPI.tweaker).getCurrentLoader();
     }
 
     @ZenMethod

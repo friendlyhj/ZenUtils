@@ -47,6 +47,7 @@ public class ZenUtilsTweaker implements ITweaker {
     private boolean freeze = false;
     private final Queue<ActionReloadCallback<?>> reloadableActions = new ArrayDeque<>();
     private final Map<Class<?>, IActionReloadCallbackFactory<?>> reloadCallbacks = new HashMap<>();
+    private String currentLoader = null;
 
     private boolean scriptDispatched = false;
     private final Multimap<String, ScriptFile> loaderTasks = ArrayListMultimap.create();
@@ -114,6 +115,7 @@ public class ZenUtilsTweaker implements ITweaker {
 
     @Override
     public boolean loadScript(boolean isSyntaxCommand, String loaderName) {
+        currentLoader = loaderName;
         try {
             resetPrimitiveCastingRules();
         } catch (Exception e) {
@@ -127,11 +129,13 @@ public class ZenUtilsTweaker implements ITweaker {
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(origin);
         }
+        currentLoader = null;
         return result;
     }
 
     @Override
     public void loadScript(boolean isSyntaxCommand, ScriptLoader loader) {
+        currentLoader = loader.getMainName();
         ScriptStatus origin = InternalUtils.getScriptStatus();
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(ScriptStatus.SYNTAX);
@@ -140,6 +144,7 @@ public class ZenUtilsTweaker implements ITweaker {
         if (isSyntaxCommand) {
             InternalUtils.setScriptStatus(origin);
         }
+        currentLoader = null;
     }
 
     private boolean loadScriptInternal(boolean isSyntaxCommand, ScriptLoader loader) {
@@ -412,6 +417,10 @@ public class ZenUtilsTweaker implements ITweaker {
     public void clearLoaderTasks() {
         loaderTasks.clear();
         scriptDispatched = false;
+    }
+
+    public String getCurrentLoader() {
+        return currentLoader;
     }
 
     private boolean validateAction(IAction action) {
