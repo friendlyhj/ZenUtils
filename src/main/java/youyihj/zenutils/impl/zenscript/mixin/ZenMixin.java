@@ -28,7 +28,9 @@ import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author youyihj
@@ -37,6 +39,7 @@ public class ZenMixin {
     private static final Logger LOGGER = LogManager.getLogger("ZenMixin");
 
     private static final Multiset<String> mixinNameUsedCounter = HashMultiset.create();
+    private static final Set<String> nonMixinClassesInjected = new HashSet<>();
 
     public static void load() throws Exception {
         ITweaker tweaker = CraftTweakerAPI.tweaker;
@@ -59,8 +62,9 @@ public class ZenMixin {
                 CraftTweakerAPI.logInfo("Loaded mixin class: " + classSimpleName);
             } else {
                 LOGGER.info("Injecting non-mixin class: {} to mc LaunchClassLoader", name);
-                CraftTweakerAPI.logInfo("Adding non-mixin class: " + name + " to mc LaunchClassLoader");
+                CraftTweakerAPI.logInfo("Injecting non-mixin class: " + name + " to mc LaunchClassLoader");
                 resourceCache.put(name, bytecode);
+                nonMixinClassesInjected.add(name);
             }
         });
         Mixins.addConfiguration("mixins.zenutils.custom.json");
@@ -84,5 +88,9 @@ public class ZenMixin {
             }
         }
         return mixinClassName;
+    }
+
+    public static boolean isNonMixinClassesInjected(String className) {
+        return !className.equals("__ZenMain__") && nonMixinClassesInjected.contains(className);
     }
 }

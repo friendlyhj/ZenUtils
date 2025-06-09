@@ -12,6 +12,7 @@
   },
   "mixins": [
     "MixinBlockContent",
+    "MixinClassNameGen",
     "MixinCoTItemBracketHandler",
     "MixinCraftTweaker",
     "MixinCraftTweakerAPI",
@@ -34,6 +35,7 @@
     "MixinTemplateStringTokener",
     "MixinTokenStream",
     "MixinTypeRegistry",
+    "MixinZenClassLoader",
     "MixinZenTokener",
     "MixinZenType",
     "MixinZenTypeAssociate",

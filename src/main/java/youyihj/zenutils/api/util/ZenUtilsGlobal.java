@@ -130,9 +130,6 @@ public class ZenUtilsGlobal {
 
     @ZenMethod
     public static void addReloadableLoader(String loaderName) {
-        if (loaderName.equals("preinit") || loaderName.equals("contenttweaker")) {
-            throw new IllegalArgumentException("This loader is not reloadable");
-        }
         ScriptReloader.addReloadableLoader(loaderName);
     }
 

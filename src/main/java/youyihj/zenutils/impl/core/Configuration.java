@@ -18,6 +18,9 @@ public class Configuration {
     @Config.Comment("Enable fast script loading. Note: If enabled, ONLY PREPROCESSORS AT SCRIPT HEADER ARE EFFECTIVE. (except mixin scripts) Default: false")
     public static boolean fastScriptLoading = false;
 
+    @Config.Comment("Disable mixin script reload warning. Default: false")
+    public static boolean disableMixinScriptReloadWarning = false;
+
     @Config.Comment({
         "Allow insertion of zs execution during mod loading stage",
         "Format: scriptLoaderName;modid;stageMarker;before|after",

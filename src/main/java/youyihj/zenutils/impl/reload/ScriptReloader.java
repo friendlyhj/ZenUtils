@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.reload;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.runtime.ScriptLoader;
@@ -9,6 +10,7 @@ import youyihj.zenutils.api.preprocessor.ReloadablePreprocessor;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author youyihj
@@ -16,8 +18,13 @@ import java.util.List;
 public class ScriptReloader {
     private static final String SCRIPT_LOADER_NAME = ReloadablePreprocessor.NAME;
     private static final List<String> reloadableLoaders = Lists.newArrayList(SCRIPT_LOADER_NAME);
+    private static final Set<String> UNRELOADABLE_LOADERS = ImmutableSet.of("preinit", "contenttweaker", "mixin");
 
     public static void addReloadableLoader(String loaderName) {
+        if (UNRELOADABLE_LOADERS.contains(loaderName)) {
+            CraftTweakerAPI.logError("The loader '" + loaderName + "' is not reloadable.");
+            return;
+        }
         if (!reloadableLoaders.contains(loaderName)) {
             reloadableLoaders.add(loaderName);
         }
