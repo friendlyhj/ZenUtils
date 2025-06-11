@@ -1,5 +1,5 @@
 {
-  "required": true,
+  "required": false,
   "compatibilityLevel": "JAVA_8",
   "package": "youyihj.zenutils.impl.mixin.custom",
   "plugin": "youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin",
