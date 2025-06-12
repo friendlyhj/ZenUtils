@@ -1,9 +1,7 @@
 package youyihj.zenutils.impl.util;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.TypeToken;
-import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
@@ -40,8 +38,7 @@ import java.util.function.Consumer;
  * @author youyihj
  */
 public final class InternalUtils {
-    @SuppressWarnings("rawtypes")
-    private static final List<EventList> ALL_EVENT_LISTS = new ArrayList<>();
+    private static final List<Runnable> ALL_EVENT_LISTS_CLEAR_ACTIONS = new ArrayList<>();
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
@@ -75,7 +72,9 @@ public final class InternalUtils {
     @SuppressWarnings("unchecked")
     public static void scanAllEventLists() throws NoSuchFieldException {
         try {
-            ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(MTEventManager.class, EventList.class, CraftTweakerAPI.events));
+            for (EventList<?> eventList : ReflectUtils.getAllFieldsWithClass(MTEventManager.class, EventList.class, null)) {
+                ALL_EVENT_LISTS_CLEAR_ACTIONS.add(eventList::clear);
+            }
         } catch (IllegalAccessException e) {
             ZenUtils.forgeLogger.error("Failed to get vanilla CraftTweaker Event List!", e);
         }
@@ -96,7 +95,9 @@ public final class InternalUtils {
                     Class<?> owner = javaMethodClass.cast(javaMethod).getOwner();
                     if (!lookupClasses.contains(owner)) {
                         lookupClasses.add(owner);
-                        ALL_EVENT_LISTS.addAll(ReflectUtils.getAllFieldsWithClass(owner, EventList.class, null));
+                        for (EventList<?> eventList : ReflectUtils.getAllFieldsWithClass(owner, EventList.class, null)) {
+                            ALL_EVENT_LISTS_CLEAR_ACTIONS.add(eventList::clear);
+                        }
                     }
                 }
             }
@@ -105,9 +106,8 @@ public final class InternalUtils {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public static List<EventList> getAllEventLists() {
-        return ImmutableList.copyOf(ALL_EVENT_LISTS);
+    public static void cleanAllEventLists() {
+        ALL_EVENT_LISTS_CLEAR_ACTIONS.forEach(Runnable::run);
     }
 
     public static void setScriptStatus(ScriptStatus scriptStatus) {
