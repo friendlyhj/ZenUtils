@@ -90,7 +90,7 @@ public class ZenMixin {
         return mixinClassName;
     }
 
-    public static boolean isNonMixinClassesInjected(String className) {
+    public static boolean isNonMixinClassInjected(String className) {
         return !className.equals("__ZenMain__") && nonMixinClassesInjected.contains(className);
     }
 }

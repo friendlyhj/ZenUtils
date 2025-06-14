@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
+import crafttweaker.CrafttweakerImplementationAPI;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.event.MTEventManager;
@@ -72,7 +73,7 @@ public final class InternalUtils {
     @SuppressWarnings("unchecked")
     public static void scanAllEventLists() throws NoSuchFieldException {
         try {
-            for (EventList<?> eventList : ReflectUtils.getAllFieldsWithClass(MTEventManager.class, EventList.class, null)) {
+            for (EventList<?> eventList : ReflectUtils.getAllFieldsWithClass(MTEventManager.class, EventList.class, CrafttweakerImplementationAPI.events)) {
                 ALL_EVENT_LISTS_CLEAR_ACTIONS.add(eventList::clear);
             }
         } catch (IllegalAccessException e) {

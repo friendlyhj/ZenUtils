@@ -7,7 +7,6 @@ import crafttweaker.api.event.MTEventManager;
 import crafttweaker.api.event.PlayerLoggedInEvent;
 import crafttweaker.api.event.PlayerLoggedOutEvent;
 import crafttweaker.mc1120.entity.MCEntityDefinition;
-import crafttweaker.util.EventList;
 import crafttweaker.util.IEventHandler;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.Mod;
@@ -32,7 +31,7 @@ import java.util.List;
 public class ReloadEventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onReloadPre(ScriptReloadEvent.Pre event) {
-        InternalUtils.getAllEventLists().forEach(EventList::clear);
+        InternalUtils.cleanAllEventLists();
         reRegisterInternalEvents();
         refreshEntityDrops();
         // remove duplicate recipe name warning, since we don't register new recipes
