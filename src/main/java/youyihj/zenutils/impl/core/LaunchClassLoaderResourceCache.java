@@ -20,7 +20,7 @@ import java.util.Map;
     But the phase of them two setting up the cache is different. VintageFix sets the cache very early (FMLLoadingPlugin), while Loliasm sets the cache "very" late (FMLLoadCompleteEvent).
     VintageFix's optimization is still important when loading textures, sounds, etc. We can not break both of them.
 
-    This class is a wrapper for VintageFix's cache, concentrated with our bytecodes. Loliasm will set its cache later, but like talking before, our bytecodes won't be lost in its cache.
+    This class is a wrapper for VintageFix's cache, concatenated with our bytecodes. Loliasm will set its cache later, but like talking before, our bytecodes won't be lost in its cache.
 */
 public class LaunchClassLoaderResourceCache extends ForwardingMap<String, byte[]> {
     private final Map<String, byte[]> delegate;
