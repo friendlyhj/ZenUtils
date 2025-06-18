@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.zenscript.mixin;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.network.NetworkSide;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.transformer.Proxy;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
+import youyihj.zenutils.impl.core.LaunchClassLoaderResourceCache;
 import youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
@@ -53,9 +55,10 @@ public class ZenMixin {
         Map<String, byte[]> resourceCache = (Map<String, byte[]>) lclBytecodesField.get(Launch.classLoader);
         tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
         tweaker.loadScript(false, MixinPreprocessor.NAME);
+        ImmutableMap.Builder<String, byte[]> injectedClassesBuilder = ImmutableMap.builder();
         ZenModule.classes.forEach((name, bytecode) -> {
             if (name.startsWith("youyihj/zenutils/impl/mixin/custom/")) {
-                resourceCache.put(name.replace('/', '.'), bytecode);
+                injectedClassesBuilder.put(name.replace('/', '.'), bytecode);
                 String classSimpleName = name.substring("youyihj/zenutils/impl/mixin/custom/".length());
                 CustomMixinPlugin.addMixinClass(classSimpleName);
                 LOGGER.info("Loaded mixin class {}", classSimpleName);
@@ -63,10 +66,12 @@ public class ZenMixin {
             } else {
                 LOGGER.info("Injecting non-mixin class: {} to mc LaunchClassLoader", name);
                 CraftTweakerAPI.logInfo("Injecting non-mixin class: " + name + " to mc LaunchClassLoader");
-                resourceCache.put(name, bytecode);
+                injectedClassesBuilder.put(name, bytecode);
                 nonMixinClassesInjected.add(name);
             }
         });
+        lclBytecodesField.set(Launch.classLoader, new LaunchClassLoaderResourceCache(resourceCache, injectedClassesBuilder.build()));
+
         Mixins.addConfiguration("mixins.zenutils.custom.json");
         Mixins.registerErrorHandlerClass("youyihj.zenutils.impl.mixin.custom.CustomMixinErrorHandler");
 
