@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
-import org.apache.commons.lang3.ArrayUtils;
+import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -12,7 +13,12 @@ import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.CompiledDFA;
 import stanhebben.zenscript.parser.NFA;
 import youyihj.zenutils.impl.zenscript.TemplateStringTokener;
-import youyihj.zenutils.impl.zenscript.TemplateString;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static stanhebben.zenscript.ZenTokener.T_QUEST;
+import static youyihj.zenutils.impl.zenscript.ExtendZenTokens.*;
 
 /**
  * @author youyihj
@@ -36,8 +42,16 @@ public abstract class MixinZenTokener {
 
     @Inject(method = "<clinit>", at = @At("RETURN"))
     private static void zu$addTemplateStringToken(CallbackInfo ci) {
-        FINALS = ArrayUtils.addAll(FINALS, TemplateString.T_TEMPLATE_STRING, TemplateString.T_ESCAPE_CHAR);
-        REGEXPS = ArrayUtils.addAll(REGEXPS, TemplateString.T_TEMPLATE_STRING_REGEX, TemplateString.T_ESCAPE_CHAR_REGEX);
+        IntArrayList finalList = new IntArrayList(FINALS);
+        List<String> regexpsList = Lists.newArrayList(REGEXPS);
+        finalList.add(T_TEMPLATE_STRING);
+        finalList.add(T_ESCAPE_CHAR);
+        finalList.addAll(finalList.indexOf(T_QUEST), IntArrayList.wrap(new int[] {T_QUEST2, T_QUEST_ASSIGN, T_QUEST_DOT}));
+        regexpsList.add(T_TEMPLATE_STRING_REGEX);
+        regexpsList.add(T_ESCAPE_CHAR_REGEX);
+        regexpsList.addAll(regexpsList.indexOf("\\?"), Arrays.asList(T_QUEST2_REGEX, T_QUEST_ASSIGN_REGEX, T_QUEST_DOT_REGEX));
+        FINALS = finalList.toIntArray();
+        REGEXPS = regexpsList.toArray(new String[0]);
         DFA = new NFA(REGEXPS, FINALS).toDFA().optimize().compile();
         TemplateStringTokener.setupDFAFromZenTokener(REGEXPS, FINALS);
     }

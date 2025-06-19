@@ -16,16 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static stanhebben.zenscript.ZenTokener.*;
+import static youyihj.zenutils.impl.zenscript.ExtendZenTokens.*;
 
 /**
  * @author youyihj
  */
 public class TemplateString {
-    public static final int T_TEMPLATE_STRING = 196;
-    public static final String T_TEMPLATE_STRING_REGEX = "`([^`\\\\]|\\\\([\\\\`$bfnrt]|u[0-9a-fA-F]{4}))*`";
-    public static final int T_ESCAPE_CHAR = 197;
-    public static final String T_ESCAPE_CHAR_REGEX = "\\\\([\\\\`$ntbfr]|u[0-9a-fA-F]{4})";
-
     // TODO: find a way to read both (whitespace, unicode, comment) and nested template string
     // currently it can not handle nested template string
     // before the commit of this comment, it can handle nested template string, but not the other.

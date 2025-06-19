@@ -4,7 +4,7 @@ import org.objectweb.asm.tree.*;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import youyihj.zenutils.api.util.ReflectionInvoked;
-import youyihj.zenutils.impl.zenscript.TemplateString;
+import youyihj.zenutils.impl.zenscript.ExtendZenTokens;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +57,7 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
                 AbstractInsnNode node = iter.next();
                 if (node.getType() == AbstractInsnNode.LOOKUPSWITCH_INSN) {
                     LookupSwitchInsnNode lookupSwitchInsnNode = (LookupSwitchInsnNode) node;
-                    lookupSwitchInsnNode.keys.add(TemplateString.T_TEMPLATE_STRING);
+                    lookupSwitchInsnNode.keys.add(ExtendZenTokens.T_TEMPLATE_STRING);
                     LabelNode label = new LabelNode();
                     lookupSwitchInsnNode.labels.add(label);
                     instructions.insert(lookupSwitchInsnNode, label);
