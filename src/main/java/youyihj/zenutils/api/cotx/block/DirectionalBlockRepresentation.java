@@ -11,7 +11,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.Reference;
+import youyihj.zenutils.api.cotx.function.IPlacementFacingFunction;
 import youyihj.zenutils.api.zenscript.SidedZenRegister;
 
 import java.util.Locale;
@@ -26,11 +28,15 @@ public class DirectionalBlockRepresentation extends ExpandBlockRepresentation {
     private final boolean planeRotatable;
     private final boolean placingOpposite;
 
+    @ZenProperty
+    public IPlacementFacingFunction placementFacingFunction;
+
     public DirectionalBlockRepresentation(String unlocalizedName, IBlockMaterialDefinition blockMaterial, Directions directions, boolean planeRotatable, boolean placingOpposite) {
         super(unlocalizedName, blockMaterial);
         this.directions = directions;
         this.planeRotatable = planeRotatable;
         this.placingOpposite = placingOpposite;
+        this.placementFacingFunction = IPlacementFacingFunction.placer(this);
     }
 
     public Directions getDirections() {

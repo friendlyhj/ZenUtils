@@ -7,7 +7,12 @@ import com.teamacronymcoders.base.client.models.generator.generatedmodel.IGenera
 import com.teamacronymcoders.base.client.models.generator.generatedmodel.ModelType;
 import com.teamacronymcoders.base.util.files.templates.TemplateFile;
 import com.teamacronymcoders.base.util.files.templates.TemplateManager;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.blockpos.MCBlockPos;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Facing;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Hand;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.resourcelocation.CTResourceLocation;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -15,7 +20,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.annotation.ExpandContentTweakerEntry;
@@ -126,25 +130,17 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         IProperty<EnumFacing> property = getDirections().getBlockProperty();
-        Vec3d lookVec = placer.getLookVec();
-        EnumFacing blockFacing;
-        switch (getDirections()) {
-            case ALL:
-                blockFacing = EnumFacing.getFacingFromVector((float) lookVec.x, (float) lookVec.y, (float) lookVec.z);
-                break;
-            case HORIZONTAL:
-                blockFacing = placer.getHorizontalFacing();
-                break;
-            case VERTICAL:
-                blockFacing = lookVec.y > 0.0 ? EnumFacing.UP : EnumFacing.DOWN;
-                break;
-            default:
-                return getDefaultState();
-        }
+        EnumFacing blockFacing = getExpandBlockRepresentation().placementFacingFunction
+                .apply(new MCWorld(world), new MCBlockPos(pos), Facing.of(facing), hitX, hitY, hitZ, meta, CraftTweakerMC.getIEntityLivingBase(placer), Hand.of(hand))
+                .getInternal();
         if (getExpandBlockRepresentation().isPlacingOpposite()) {
             blockFacing = blockFacing.getOpposite();
         }
-        return getDefaultState().withProperty(property, blockFacing);
+        if (property.getAllowedValues().contains(blockFacing)) {
+            return getDefaultState().withProperty(property, blockFacing);
+        } else {
+            return getDefaultState();
+        }
     }
 
     @Override
