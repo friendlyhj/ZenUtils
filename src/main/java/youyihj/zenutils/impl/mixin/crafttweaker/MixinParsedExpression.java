@@ -1,12 +1,11 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.ZenTokener;
@@ -16,13 +15,15 @@ import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.parser.expression.ParsedExpression;
 import stanhebben.zenscript.util.StringUtil;
 import stanhebben.zenscript.util.ZenPosition;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.zenscript.ParsedExpressionDeepNull;
 import youyihj.zenutils.impl.zenscript.ifnull.ParsedExpressionIfNotNullElse;
 import youyihj.zenutils.impl.zenscript.ifnull.ParsedExpressionIfNotNullMember;
 import youyihj.zenutils.impl.zenscript.ifnull.ParsedExpressionIfNullAssign;
 
 import static stanhebben.zenscript.ZenTokener.*;
-import static youyihj.zenutils.impl.zenscript.ExtendZenTokens.*;
+import static youyihj.zenutils.impl.zenscript.ExtendZenTokens.T_QUEST2;
+import static youyihj.zenutils.impl.zenscript.ExtendZenTokens.T_QUEST_ASSIGN;
 
 /**
  * @author youyihj
@@ -34,21 +35,25 @@ public abstract class MixinParsedExpression {
         throw new AssertionError();
     }
 
+    @Shadow
+    private static ParsedExpression readOrOrExpression(ZenPosition position, ZenTokener parser, IEnvironmentGlobal environment) {
+        throw new AssertionError();
+    }
 
     @ModifyReturnValue(
             method = "readPrimaryExpression",
             at = @At("RETURN"),
             slice = @Slice(
-                from = @At(
-                        value = "INVOKE",
-                        target = "Lstanhebben/zenscript/IZenCompileEnvironment;getBracketed(Lstanhebben/zenscript/compiler/IEnvironmentGlobal;Ljava/util/List;)Lstanhebben/zenscript/symbols/IZenSymbol;"
-                ),
-                to = @At(
-                        value = "INVOKE",
-                        target = "Lstanhebben/zenscript/parser/expression/ParsedExpressionInvalid;<init>(Lstanhebben/zenscript/util/ZenPosition;)V",
-                        shift = At.Shift.BY,
-                        by = 2
-                )
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lstanhebben/zenscript/IZenCompileEnvironment;getBracketed(Lstanhebben/zenscript/compiler/IEnvironmentGlobal;Ljava/util/List;)Lstanhebben/zenscript/symbols/IZenSymbol;"
+                    ),
+                    to = @At(
+                            value = "INVOKE",
+                            target = "Lstanhebben/zenscript/parser/expression/ParsedExpressionInvalid;<init>(Lstanhebben/zenscript/util/ZenPosition;)V",
+                            shift = At.Shift.BY,
+                            by = 2
+                    )
             )
     )
     private static ParsedExpression changeDeepNullExpression(ParsedExpression original) {
@@ -57,65 +62,57 @@ public abstract class MixinParsedExpression {
 
     /*
     Pseudo Mixin, see CraftTweakerMixinPlugin for implementation code
-    @AddSwitchBranch(method = "readPrimaryExpression", key = TemplateString.T_BACKQUOTE, cancellable = true)
+    @AddSwitchBranch(method = "readPrimaryExpression", key = T_BACKQUOTE, cancellable = true)
     private static void readTemplateString(ZenPosition position, ZenTokener parser, IEnvironmentGlobal environment, CallbackInfoReturnable<ParsedExpression> cir) {
         cir.setReturnValue(TemplateString.getExpression(parser, position, environment));
     }
      */
 
     @Inject(
-            method = "readPostfixExpression",
+            method = "readAssignExpression",
+            at = @At("TAIL"),
+            cancellable = true
+    )
+    private static void handleNullishCoalescingAssignment(ZenTokener parser, IEnvironmentGlobal environment, CallbackInfoReturnable<ParsedExpression> cir) {
+        Token token = parser.optional(T_QUEST_ASSIGN);
+        if (token != null) {
+            cir.setReturnValue(new ParsedExpressionIfNullAssign(token.getPosition(), cir.getReturnValue(), readAssignExpression(parser, environment)));
+        }
+    }
+
+    @Redirect(
+            method = "readConditionalExpression",
             at = @At(
-                    value = "INVOKE_ASSIGN",
-                    target = "Lstanhebben/zenscript/ZenTokener;peek()Lstanhebben/zenscript/parser/Token;"
+                    value = "INVOKE",
+                    target = "Lstanhebben/zenscript/parser/expression/ParsedExpression;readOrOrExpression(Lstanhebben/zenscript/util/ZenPosition;Lstanhebben/zenscript/ZenTokener;Lstanhebben/zenscript/compiler/IEnvironmentGlobal;)Lstanhebben/zenscript/parser/expression/ParsedExpression;"
             )
     )
-    private static void handleIfNullSugar(ZenPosition position, ZenTokener parser, IEnvironmentGlobal environment, CallbackInfoReturnable<ParsedExpression> cir, @Local LocalRef<ParsedExpression> base) {
-        Token token = parser.peek();
-        if (token == null) {
-            return;
+    private static ParsedExpression handleNullishCoalescingOperator(ZenPosition position, ZenTokener parser, IEnvironmentGlobal environment) {
+        ParsedExpression left = readOrOrExpression(position, parser, environment);
+
+        while (parser.optional(T_QUEST2) != null) {
+            ParsedExpression right = readOrOrExpression(parser.peek().getPosition(), parser, environment);
+            left = new ParsedExpressionIfNotNullElse(position, left, right);
         }
-        switch (token.getType()) {
-            // a ?? b -> !isNull(a) ? a : b
-            case T_QUEST2:
-                parser.next();
-                base.set(new ParsedExpressionIfNotNullElse(
-                        position,
-                        base.get(),
-                        readAssignExpression(parser, environment)
-                ));
-                break;
-            // a ?= b -> if (isNull(a)) { a = b; }
-            case T_QUEST_ASSIGN:
-                parser.next();
-                base.set(new ParsedExpressionIfNullAssign(
-                        position,
-                        base.get(),
-                        readAssignExpression(parser, environment)
-                ));
-                break;
-            // a?.member -> !isNull(a) ? a.member : null
-            case T_QUEST_DOT:
-                parser.next();
-                String memberName;
-                Token indexString = parser.optional(T_ID, T_VERSION, T_STRING);
-                if (indexString != null) {
-                    memberName = indexString.getValue();
-                } else {
-                    indexString = parser.optional(T_STRINGVALUE);
-                    if (indexString != null) {
-                        memberName = StringUtil.unescapeString(indexString.getValue());
-                    } else {
-                        Token last = parser.next();
-                        throw new ParseException(last, "Invalid expression, last token: " + last.getValue());
-                    }
-                }
-                base.set(new ParsedExpressionIfNotNullMember(position, base.get(), memberName));
-                break;
-            // how about other operators?
-            // a ?+ b -> !isNull(a) ? a + b : null (?)
-            // a?[i] -> !isNull(a) ? a[i] : null (??)
-            // a?[i] = b -> if (!isNull(a)) { a[i] = b; } (???)
+
+        return left;
+    }
+
+    @ReflectionInvoked(asm = true)
+    private static ParsedExpression handleOptionalChaining(ZenPosition position, ZenTokener parser, IEnvironmentGlobal environment, ParsedExpression base) {
+        String memberName;
+        Token indexString = parser.optional(T_ID, T_VERSION, T_STRING);
+        if (indexString != null) {
+            memberName = indexString.getValue();
+        } else {
+            indexString = parser.optional(T_STRINGVALUE);
+            if (indexString != null) {
+                memberName = StringUtil.unescapeString(indexString.getValue());
+            } else {
+                Token last = parser.next();
+                throw new ParseException(last, "Invalid expression, last token: " + last.getValue());
+            }
         }
+        return new ParsedExpressionIfNotNullMember(position, base, memberName);
     }
 }
