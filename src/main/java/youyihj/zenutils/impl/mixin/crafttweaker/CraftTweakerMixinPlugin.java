@@ -164,7 +164,7 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
         });
     }
 
-    private static void transformParsedExpressionFunction(ClassNode targetClass) {
+    private void transformParsedExpressionFunction(ClassNode targetClass) {
         MethodNode method = targetClass.methods.stream()
                 .filter(it -> it.name.equals("compile"))
                 .findFirst()
@@ -195,7 +195,7 @@ public class CraftTweakerMixinPlugin implements IMixinConfigPlugin {
         }
     }
 
-    private static void transformCraftTweaker(ClassNode targetClass) {
+    private void transformCraftTweaker(ClassNode targetClass) {
         MethodNode method = targetClass.methods.stream()
                 .filter(it -> it.name.equals("onConstruction"))
                 .findFirst()
