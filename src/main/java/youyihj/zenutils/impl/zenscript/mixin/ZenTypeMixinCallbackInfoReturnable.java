@@ -51,6 +51,11 @@ public class ZenTypeMixinCallbackInfoReturnable extends ZenTypeMixinCallbackInfo
         return CallbackInfoReturnable.class;
     }
 
+    @Override
+    public String getName() {
+        return "mixin.CallbackInfoReturnable";
+    }
+
     private class SetReturnValue implements IPartialExpression {
         private final ZenPosition position;
         private final IPartialExpression value;
