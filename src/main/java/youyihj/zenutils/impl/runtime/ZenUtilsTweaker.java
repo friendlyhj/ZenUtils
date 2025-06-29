@@ -266,6 +266,10 @@ public class ZenUtilsTweaker implements ITweaker {
         loader.setLoaderStage(loadSuccessful ? ScriptLoader.LoaderStage.LOADED_SUCCESSFUL : ScriptLoader.LoaderStage.ERROR);
         CraftTweakerAPI.logDefault("Completed script loading in: " + (System.currentTimeMillis() - startTime) + "ms");
 
+        if (isSyntaxCommand) {
+            clearLoaderTasks();
+        }
+
         return loadSuccessful;
     }
 
