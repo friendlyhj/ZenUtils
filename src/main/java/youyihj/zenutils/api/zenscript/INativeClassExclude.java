@@ -18,6 +18,10 @@ public interface INativeClassExclude {
     }
 
     static void filterClass(Class<?> clazz) {
-        register(it -> it.name().equals(clazz.getCanonicalName()));
+        filterClass(clazz.getCanonicalName());
+    }
+
+    static void filterClass(String name) {
+        register(it -> it.name().equals(name));
     }
 }

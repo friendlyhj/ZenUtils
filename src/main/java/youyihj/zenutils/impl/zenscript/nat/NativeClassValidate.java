@@ -76,6 +76,7 @@ public class NativeClassValidate {
         INativeClassExclude.filterClass(IItemUtils.class);
         INativeClassExclude.filterClass(IBrewingManager.class);
         INativeClassExclude.filterClass(IFormatter.class);
+        INativeClassExclude.filterClass("com.teamacronymcoders.contenttweaker.modules.materials.brackethandler.MaterialPartDefinition");
     }
 
     public static boolean isValid(ClassData clazz, boolean allowZenClasses) {
