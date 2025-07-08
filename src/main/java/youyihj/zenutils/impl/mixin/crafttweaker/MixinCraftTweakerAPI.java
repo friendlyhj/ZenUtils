@@ -22,6 +22,7 @@ import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfoReturnable;
 import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
@@ -61,6 +62,9 @@ public abstract class MixinCraftTweakerAPI {
     @Unique
     private static void zu$registerGlobalMethods() {
         for (Method method : ZenUtilsGlobal.class.getDeclaredMethods()) {
+            if (!Modifier.isPublic(method.getModifiers())) {
+                continue;
+            }
             Class<?>[] parameterTypes = method.getParameterTypes();
             String name = method.getName();
             // skip typeof for primitive types

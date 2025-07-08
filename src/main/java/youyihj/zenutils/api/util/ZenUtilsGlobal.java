@@ -2,6 +2,10 @@ package youyihj.zenutils.api.util;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -25,6 +29,16 @@ public class ZenUtilsGlobal {
 
     }
 
+    private static final ToStringStyle ARRAY_TO_STRING_STYLE = InternalUtils.make(new StandardToStringStyle(), it -> {
+        it.setUseClassName(false);
+        it.setUseIdentityHashCode(false);
+        it.setUseFieldNames(false);
+        it.setContentStart(StringUtils.EMPTY);
+        it.setContentEnd(StringUtils.EMPTY);
+        it.setArrayStart("[");
+        it.setArrayEnd("]");
+    });
+
     @ZenMethod
     public static String typeof(Object object) {
         return (object == null) ? "null" : object.getClass().getName();
@@ -32,7 +46,13 @@ public class ZenUtilsGlobal {
 
     @ZenMethod
     public static String toString(Object object) {
-        return String.valueOf(object);
+        if (object == null) {
+            return "null";
+        }
+        if (object.getClass().isArray()) {
+            return new ToStringBuilder(object, ARRAY_TO_STRING_STYLE).append(object).toString();
+        }
+        return object.toString();
     }
 
     @ZenMethod
