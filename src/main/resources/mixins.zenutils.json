@@ -38,6 +38,8 @@
     "MixinZenClassLoader",
     "MixinZenTokener",
     "MixinZenType",
+    "MixinZenTypeArrayBasic",
+    "MixinZenTypeArrayList",
     "MixinZenTypeAssociate",
     "MixinZenTypeNative",
     "TokenStreamAccessor"
