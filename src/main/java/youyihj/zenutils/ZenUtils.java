@@ -71,11 +71,6 @@ public class ZenUtils {
         PlayerInteractionSimulation.registerNetworkMessage();
         asmDataTable = event.getAsmData();
         readSidedZenRegisters(event.getSide());
-        try {
-            InternalUtils.scanAllEventLists();
-        } catch (NoSuchFieldException e) {
-            forgeLogger.error("failed to scan all event lists", e);
-        }
     }
 
     @Mod.EventHandler

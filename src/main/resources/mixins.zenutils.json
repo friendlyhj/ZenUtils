@@ -18,6 +18,7 @@
     "MixinCraftTweakerAPI",
     "MixinCraftTweakerImplementationAPI",
     "MixinEnvironmentClass",
+    "MixinEventList",
     "MixinExpression",
     "MixinExpressionMap",
     "MixinItemContent",
