@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import crafttweaker.api.formatting.IFormatter;
 import crafttweaker.api.item.IItemUtils;
 import crafttweaker.api.recipes.IBrewingManager;
+import crafttweaker.mc1120.item.MCItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.api.zenscript.INativeClassExclude;
@@ -76,7 +77,9 @@ public class NativeClassValidate {
         INativeClassExclude.filterClass(IItemUtils.class);
         INativeClassExclude.filterClass(IBrewingManager.class);
         INativeClassExclude.filterClass(IFormatter.class);
+
         INativeClassExclude.filterClass("com.teamacronymcoders.contenttweaker.modules.materials.brackethandler.MaterialPartDefinition");
+        INativeClassExclude.filterClass(MCItemStack.class);
     }
 
     public static boolean isValid(ClassData clazz, boolean allowZenClasses) {
