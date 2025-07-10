@@ -26,6 +26,7 @@
     "MixinMCPlayerAnvilUpdateEvent",
     "MixinParsedClassConstructor",
     "MixinParsedExpression",
+    "MixinParsedExpressionArray",
     "MixinParsedExpressionFunction",
     "MixinParsedZenClass",
     "MixinParsedZenClassField",
