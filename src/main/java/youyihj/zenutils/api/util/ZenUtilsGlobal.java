@@ -41,7 +41,7 @@ public class ZenUtilsGlobal {
 
     @ZenMethod
     public static String typeof(Object object) {
-        return (object == null) ? "null" : object.getClass().getName();
+        return (object == null) ? "null" : object.getClass().getCanonicalName();
     }
 
     @ZenMethod

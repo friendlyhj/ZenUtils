@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -43,6 +44,14 @@ public class ReflectUtils {
         for (Class<?> cls : classes) {
             if (cls == null || cls.isPrimitive()) {
                 return null;
+            }
+        }
+
+        if (Arrays.stream(classes).allMatch(Class::isArray)) {
+            Class<?>[] components = Arrays.stream(classes).map(Class::getComponentType).toArray(Class<?>[]::new);
+            Class<?> compAncestor = findCommonSuperclass(components);
+            if (compAncestor != null) {
+                return Array.newInstance(compAncestor, 0).getClass();
             }
         }
 
