@@ -1,8 +1,6 @@
 package youyihj.zenutils.api.config.elements;
 
 import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.data.DataMap;
-import crafttweaker.api.data.IData;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -15,6 +13,7 @@ import java.util.function.BiConsumer;
 @ZenRegister
 @ZenClass("mods.zenutils.config.elements.ConfigMap")
 public class ConfigMap extends ConfigPrimitive {
+
     protected Class<?> type;
     protected Map<String, ?> defaultVal;
 
