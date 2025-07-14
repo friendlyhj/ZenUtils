@@ -4,7 +4,7 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigRangedInt")
+@ZenClass("mods.zenutils.config.elements.ConfigRangedInt")
 public class ConfigRangedInt extends ConfigInt {
 
     protected final int min;

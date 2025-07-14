@@ -5,7 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigDouble")
+@ZenClass("mods.zenutils.config.elements.ConfigDouble")
 public class ConfigDouble extends ConfigPrimitive {
     protected final double defaultVal;
 

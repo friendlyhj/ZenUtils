@@ -5,7 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigInt")
+@ZenClass("mods.zenutils.config.elements.ConfigInt")
 public class ConfigInt extends ConfigPrimitive{
     protected final int defaultVal;
 

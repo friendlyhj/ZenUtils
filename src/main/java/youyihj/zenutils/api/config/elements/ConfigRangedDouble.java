@@ -4,7 +4,7 @@ import crafttweaker.annotations.ZenRegister;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigRangedDouble")
+@ZenClass("mods.zenutils.config.elements.ConfigRangedDouble")
 public class ConfigRangedDouble extends ConfigDouble {
     protected final double min;
     protected final double max;

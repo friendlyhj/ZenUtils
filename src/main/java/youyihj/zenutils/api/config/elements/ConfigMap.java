@@ -1,6 +1,8 @@
 package youyihj.zenutils.api.config.elements;
 
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.api.data.DataMap;
+import crafttweaker.api.data.IData;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -9,10 +11,9 @@ import stanhebben.zenscript.annotations.ZenClass;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigMap")
+@ZenClass("mods.zenutils.config.elements.ConfigMap")
 public class ConfigMap extends ConfigPrimitive {
     protected Class<?> type;
     protected Map<String, ?> defaultVal;
@@ -20,7 +21,7 @@ public class ConfigMap extends ConfigPrimitive {
     public ConfigMap(ConfigGroup parentIn, String nameIn, Class<?> type, Map<String, ?> defaultVal) {
         super(parentIn, nameIn);
         this.type = type;
-        this.defaultVal = defaultVal;
+        this.defaultVal = defaultVal == null ? new HashMap<>() : defaultVal;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class ConfigMap extends ConfigPrimitive {
             methodVisitor.visitInsn(Opcodes.DUP);
             methodVisitor.visitLdcInsn(entry.getKey());
             consumer.accept(methodVisitor, cast(entry.getValue()));
-            methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/HashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+            methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
             methodVisitor.visitInsn(Opcodes.POP);
         }
     }
@@ -59,43 +60,36 @@ public class ConfigMap extends ConfigPrimitive {
 
     private static<T> void addStackPutter(final Class<T> c, BiConsumer<MethodVisitor, T> methodVisitorTBiConsumer) {
         STACK_PUTTER.put(c, methodVisitorTBiConsumer);
-    }
-
-    private static<T> void addArrayStackPutter(final Class<T[]> c, BiConsumer<MethodVisitor, T> methodVisitorTBiConsumer, Consumer<MethodVisitor> newArray, int collector) {
         STACK_PUTTER.put(java.lang.reflect.Array.newInstance(c, 0).getClass(), (methodVisitor, object) -> {
             T[] t = cast(object);
             push_int(methodVisitor, t.length);
-            newArray.accept(methodVisitor);
+            methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, c.getName().replace('.', '/'));
             for (int i = 0; i < t.length; i ++) {
                 methodVisitor.visitInsn(Opcodes.DUP);
                 push_int(methodVisitor, i);
                 methodVisitorTBiConsumer.accept(methodVisitor, t[i]);
-                methodVisitor.visitInsn(collector);
+                methodVisitor.visitInsn(Opcodes.AASTORE);
             }
         });
     }
 
-    private static<T> void addIntArrayStackPutter(final Class<T[]> c, BiConsumer<MethodVisitor, T> methodVisitorTBiConsumer) {
-        addArrayStackPutter(c, methodVisitorTBiConsumer, (m)->m.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT), Opcodes.IASTORE);
-    }
 
     static {
-        addStackPutter(Boolean.class, ConfigBoolean::createToStackBoolean);
-        addIntArrayStackPutter(Boolean[].class, ConfigBoolean::createToStackBoolean);
-        addStackPutter(Byte.class, ConfigByte::createToStack0);
-        addIntArrayStackPutter(Byte[].class, ConfigByte::createToStack0);
-        addStackPutter(Character.class, ConfigChar::createToStack0);
-        addIntArrayStackPutter(Character[].class, ConfigChar::createToStack0);
-        addStackPutter(Double.class, ConfigDouble::createToStack0);
-        addArrayStackPutter(Double[].class, ConfigDouble::createToStack0, (m)->m.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_DOUBLE) , Opcodes.DASTORE);
+        addStackPutter(Boolean.class, (methodVisitor, aBoolean) -> {
+            if (aBoolean == null) methodVisitor.visitInsn(Opcodes.ACONST_NULL);
+            else if (aBoolean == Boolean.TRUE) {
+                methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/Boolean", "TRUE", "Ljava/lang/Boolean;");
+            } else methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/Boolean", "FALSE", "Ljava/lang/Boolean;");
+        });
+        addStackPutter(Double.class, (methodVisitor, aByte) -> {
+            methodVisitor.visitLdcInsn(aByte);
+            methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
+        });
         addStackPutter(Enum.class, ConfigEnum::createToStack0);
-        addStackPutter(Float.class, ConfigFloat::createToStack0);
-        addArrayStackPutter(Float[].class, ConfigFloat::createToStack0, (m)->m.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_FLOAT) , Opcodes.FASTORE);
-        addStackPutter(Integer.class, ConfigInt::createToStack);
-        addIntArrayStackPutter(Integer[].class, ConfigInt::createToStack);
-        addStackPutter(Short.class, ConfigShort::createToStack0);
-        addIntArrayStackPutter(Short[].class, ConfigShort::createToStack0);
-        addStackPutter(String.class, ConfigString::createToStack0);
-        addArrayStackPutter(String[].class, ConfigString::createToStack0, m-> m.visitTypeInsn(Opcodes.ANEWARRAY, "jaba/lang/String"), Opcodes.AASTORE);
+        addStackPutter(Integer.class, (methodVisitor, aByte) -> {
+            push_int(methodVisitor, aByte);
+            methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+        });
+        addStackPutter(String.class, MethodVisitor::visitLdcInsn);
     }
 }

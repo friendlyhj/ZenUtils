@@ -6,10 +6,12 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.ConfigUtil")
-public class ConfigUtil {
+@ZenClass("mods.zenutils.config.ConfigUtils")
+public class ConfigUtils {
+
     @ZenMethod
     public static ConfigGroup named(String name) {
         return new ConfigGroup(null, name);
     }
+
 }

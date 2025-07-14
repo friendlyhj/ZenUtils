@@ -10,7 +10,6 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Configuration;
 import org.objectweb.asm.*;
-import rml.loader.core.ASMUtil;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -23,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigGroup")
+@ZenClass("mods.zenutils.config.elements.ConfigGroup")
 public class ConfigGroup extends ConfigElement {
     protected List<ConfigElement> children;
 
@@ -48,6 +47,11 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
+    public ConfigIntArray integerArray(String nameIn, @Optional int... defaultVal) {
+        return addChild(new ConfigIntArray(this, nameIn, defaultVal));
+    }
+
+    @ZenMethod
     public ConfigRangedInt rangedInteger(String nameIn, int defaultVal, int min, int max) {
         return addChild(new ConfigRangedInt(this, nameIn, defaultVal, min, max));
     }
@@ -68,7 +72,7 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
-    public ConfigStringArray strings(String nameIn, String... strings) {
+    public ConfigStringArray strings(String nameIn, @Optional String... strings) {
         return addChild(new ConfigStringArray(this, nameIn, strings));
     }
 
@@ -78,7 +82,7 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
-    public ConfigDoubleArray doubleValues(String nameIn, double... doubles) {
+    public ConfigDoubleArray doubleValues(String nameIn, @Optional  double... doubles) {
         return addChild(new ConfigDoubleArray(this, nameIn, doubles));
     }
 
@@ -103,128 +107,63 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
-    public ConfigBooleanArray booleanValues(String nameIn, boolean... defaultVal) {
+    public ConfigBooleanArray booleanValues(String nameIn, @Optional boolean... defaultVal) {
         return addChild(new ConfigBooleanArray(this, nameIn, defaultVal));
     }
 
     @ZenMethod
-    public ConfigChar character(String nameIn, char defaultVal) {
-        return addChild(new ConfigChar(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigCharArray characters(String nameIn, char... defaultVal) {
-        return addChild(new ConfigCharArray(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigFloat floatValue(String nameIn, float defaultVal) {
-        return addChild(new ConfigFloat(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigFloatArray floatValues(String nameIn, float... defaultVal) {
-        return addChild(new ConfigFloatArray(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigShort shortValue(String nameIn, short defaultVal) {
-        return addChild(new ConfigShort(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigShortArray shortValues(String nameIn, short... defaultVal) {
-        return addChild(new ConfigShortArray(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigByte byteValue(String nameIn, byte defaultVal) {
-        return addChild(new ConfigByte(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigByteArray byteValues(String nameIn, byte... defaultVal) {
-        return addChild(new ConfigByteArray(this, nameIn, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap booleanArrayMap(String name, Map<String, Boolean[]> defaultVal) {
+    public ConfigMap booleanArrayMap(String name, @Optional Map<String, Boolean[]> defaultVal) {
         return addChild(new ConfigMap(this, name, Boolean[].class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap byteArrayMap(String name, Map<String, Byte[]> defaultVal) {
-        return addChild(new ConfigMap(this, name, Byte[].class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap charArrayMap(String name, Map<String, Character[]> defaultVal) {
-        return addChild(new ConfigMap(this, name, Character[].class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap doubleArrayMap(String name, Map<String, Double[]> defaultVal) {
+    public ConfigMap doubleArrayMap(String name, @Optional  Map<String, Double[]> defaultVal) {
         return addChild(new ConfigMap(this, name, Double[].class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap floatArrayMap(String name, Map<String, Float[]> defaultVal) {
+    public ConfigMap floatArrayMap(String name, @Optional Map<String, Float[]> defaultVal) {
         return addChild(new ConfigMap(this, name, Float[].class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap shortArrayMap(String name, Map<String, Short[]> defaultVal) {
-        return addChild(new ConfigMap(this, name, Short[].class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap intArrayMap(String name, Map<String, Integer[]> defaultVal) {
+    public ConfigMap intArrayMap(String name, @Optional Map<String, Integer[]> defaultVal) {
         return addChild(new ConfigMap(this, name, Integer[].class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap stringArrayMap(String name, Map<String, String[]> defaultVal) {
+    public ConfigMap stringArrayMap(String name, @Optional Map<String, String[]> defaultVal) {
         return addChild(new ConfigMap(this, name, String[].class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap booleanMap(String name, Map<String, Boolean> defaultVal) {
+    public ConfigMap booleanMap(String name, @Optional Map<String, Boolean> defaultVal) {
         return addChild(new ConfigMap(this, name, Boolean.class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap byteMap(String name, Map<String, Byte> defaultVal) {
-        return addChild(new ConfigMap(this, name, Byte.class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap charMap(String name, Map<String, Character> defaultVal) {
-        return addChild(new ConfigMap(this, name, Character.class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap doubleMap(String name, Map<String, Double> defaultVal) {
+    public ConfigMap doubleMap(String name, @Optional Map<String, Double> defaultVal) {
         return addChild(new ConfigMap(this, name, Double.class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap floatMap(String name,Map<String, Float> defaultVal) {
+    public ConfigMap floatMap(String name, @Optional Map<String, Float> defaultVal) {
         return addChild(new ConfigMap(this, name, Float.class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap shortMap(String name, Map<String, Short> defaultVal) {
-        return addChild(new ConfigMap(this, name, Short.class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap intMap(String name, Map<String, Integer> defaultVal) {
+    public ConfigMap intMap(String name, @Optional Map<String, Integer> defaultVal) {
         return addChild(new ConfigMap(this, name, Integer.class, defaultVal));
     }
 
     @ZenMethod
-    public ConfigMap stringMap(String name, Map<String, String> defaultVal) {
+    public ConfigMap stringMap(String name, @Optional Map<String, String> defaultVal) {
         return addChild(new ConfigMap(this, name, String.class, defaultVal));
+    }
+
+    @ZenMethod
+    public ConfigEnum configEnum(String name, String defaultValue, String[] enums) {
+        return addChild(new ConfigEnum(this, name, defaultValue, enums));
     }
 
 

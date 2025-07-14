@@ -6,7 +6,7 @@ import org.objectweb.asm.Opcodes;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigPrimitive")
+@ZenClass("mods.zenutils.config.elements.ConfigPrimitive")
 public abstract class ConfigPrimitive extends ConfigElement {
     protected ConfigPrimitive(ConfigGroup parentIn, String nameIn) {
         super(parentIn, nameIn);

@@ -6,12 +6,12 @@ import org.objectweb.asm.Opcodes;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigStringArray")
+@ZenClass("mods.zenutils.config.elements.ConfigStringArray")
 public class ConfigStringArray extends ConfigPrimitive {
     protected final String[] defaultVal;
     protected ConfigStringArray(ConfigGroup parentIn, String nameIn, String[] defaultVal) {
         super(parentIn, nameIn);
-        this.defaultVal = defaultVal;
+        this.defaultVal = defaultVal == null ? new String[0] : defaultVal;
     }
 
     public String[] getDefaultVal() {

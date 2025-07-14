@@ -5,7 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigString")
+@ZenClass("mods.zenutils.config.elements.ConfigString")
 public class ConfigString extends ConfigPrimitive {
     protected final String defaultVal;
     protected ConfigString(ConfigGroup parentIn, String nameIn, String defaultVal) {

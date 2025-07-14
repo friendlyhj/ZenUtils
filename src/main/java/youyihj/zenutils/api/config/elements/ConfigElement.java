@@ -5,7 +5,7 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigElement")
+@ZenClass("mods.zenutils.config.elements.ConfigElement")
 public class ConfigElement {
     protected final ConfigGroup parent;
     protected final String name;

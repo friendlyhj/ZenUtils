@@ -6,7 +6,7 @@ import org.objectweb.asm.Opcodes;
 import stanhebben.zenscript.annotations.ZenClass;
 
 @ZenRegister
-@ZenClass("youyihj.zenutils.config.elements.ConfigBoolean")
+@ZenClass("mods.zenutils.config.elements.ConfigBoolean")
 public class ConfigBoolean extends ConfigPrimitive {
     protected boolean defaultVal;
 
