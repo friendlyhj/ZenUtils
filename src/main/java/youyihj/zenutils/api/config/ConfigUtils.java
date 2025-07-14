@@ -2,6 +2,7 @@ package youyihj.zenutils.api.config;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.*;
+import stanhebben.zenscript.value.IAny;
 import youyihj.zenutils.api.config.elements.ConfigGroup;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -26,6 +27,11 @@ public class ConfigUtils {
             actualMap.put(entry.getKey(), castToData(entry.getValue()));
         }
         return new DataMap(actualMap, false);
+    }
+
+    @ZenMethod
+    public static String getEnumName(Enum any) {
+        return any.name();
     }
 
     public static IData castToData(Object o) {

@@ -12,7 +12,7 @@ public class ConfigEnum extends ConfigPrimitive{
 
     public ConfigEnum(ConfigGroup parentIn, String nameIn, String defaultValue, String[] enums) {
         super(parentIn, nameIn);
-        String enumName = parentIn.getClassName() + "." + nameIn + "Enum";
+        String enumName = parentIn.getAbsoluteName() + ".Enum" + nameIn;
         {
             String enumInternalName = enumName.replace('.', '/');
             ClassWriter classWriter = new ClassWriter(0);
