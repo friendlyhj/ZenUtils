@@ -111,11 +111,6 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
-    public ConfigMap floatArrayMap(String name, @Optional Map<String, Float[]> defaultVal) {
-        return addChild(new ConfigMap(this, name, Float[].class, defaultVal));
-    }
-
-    @ZenMethod
     public ConfigMap intArrayMap(String name, @Optional Map<String, Integer[]> defaultVal) {
         return addChild(new ConfigMap(this, name, Integer[].class, defaultVal));
     }
@@ -133,11 +128,6 @@ public class ConfigGroup extends ConfigElement {
     @ZenMethod
     public ConfigMap doubleMap(String name, @Optional Map<String, Double> defaultVal) {
         return addChild(new ConfigMap(this, name, Double.class, defaultVal));
-    }
-
-    @ZenMethod
-    public ConfigMap floatMap(String name, @Optional Map<String, Float> defaultVal) {
-        return addChild(new ConfigMap(this, name, Float.class, defaultVal));
     }
 
     @ZenMethod
