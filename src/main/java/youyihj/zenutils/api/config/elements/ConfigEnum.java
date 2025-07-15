@@ -3,6 +3,7 @@ package youyihj.zenutils.api.config.elements;
 import crafttweaker.annotations.ZenRegister;
 import org.objectweb.asm.*;
 import stanhebben.zenscript.annotations.ZenClass;
+import youyihj.zenutils.api.config.ConfigUtils;
 
 @ZenRegister
 @ZenClass("mods.zenutils.config.elements.ConfigEnum")
@@ -49,17 +50,17 @@ public class ConfigEnum extends ConfigPrimitive{
                     methodVisitor.visitTypeInsn(Opcodes.NEW, enumInternalName);
                     methodVisitor.visitInsn(Opcodes.DUP);
                     methodVisitor.visitLdcInsn(desc);
-                    push_int(methodVisitor, idx);
+                    pushInt(methodVisitor, idx);
                     idx += 1;
                     methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, enumInternalName, "<init>", "(Ljava/lang/String;I)V", false);
                     methodVisitor.visitFieldInsn(Opcodes.PUTSTATIC, enumInternalName, desc, "L" + enumInternalName + ";");
                 }
-                push_int(methodVisitor, idx);
+                pushInt(methodVisitor, idx);
                 methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, enumInternalName);
                 idx = 0;
                 for (String desc : enums) {
                     methodVisitor.visitInsn(Opcodes.DUP);
-                    push_int(methodVisitor, idx);
+                    pushInt(methodVisitor, idx);
                     idx += 1;
                     methodVisitor.visitFieldInsn(Opcodes.GETSTATIC, enumInternalName, desc, "L" + enumInternalName + ";");
                     methodVisitor.visitInsn(Opcodes.AASTORE);
@@ -113,7 +114,7 @@ public class ConfigEnum extends ConfigPrimitive{
 
             classWriter.visitEnd();
 
-            ConfigGroup.ClassProvider.classes.put(enumName, classWriter.toByteArray());
+            ConfigUtils.ClassProvider.classes.put(enumName, classWriter.toByteArray());
         }
         try {
             this.enumType = Class.forName(enumName);
@@ -121,7 +122,7 @@ public class ConfigEnum extends ConfigPrimitive{
             throw new RuntimeException(t);
         }
 
-        this.defaultValue = Enum.valueOf(cast(this.enumType), defaultValue);
+        this.defaultValue = Enum.valueOf(ConfigUtils.cast(this.enumType), defaultValue);
     }
 
     protected ConfigEnum(ConfigGroup parentIn, String nameIn, Class<?> enumType, Enum<?> defaultValue) {
@@ -137,21 +138,12 @@ public class ConfigEnum extends ConfigPrimitive{
 
     @Override
     public void createToStack(MethodVisitor methodVisitor) {
-        methodVisitor.visitLdcInsn(Type.getType(this.enumType));
-        methodVisitor.visitLdcInsn(this.defaultValue.name());
-        methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Enum", "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;", false);
-        methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, this.enumType.getName().replace('.', '/'));
+        createToStack0(methodVisitor, this.defaultValue);
     }
 
     public static void createToStack0(MethodVisitor methodVisitor, Enum<?> val) {
-        methodVisitor.visitLdcInsn(Type.getType(val.getDeclaringClass()));
+        String name = Type.getType(val.getDeclaringClass()).getInternalName();
         methodVisitor.visitLdcInsn(val.name());
-        methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Enum", "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;", false);
-        methodVisitor.visitTypeInsn(Opcodes.CHECKCAST, val.getDeclaringClass().getName().replace('.', '/'));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static<T> T cast(Object o) {
-        return (T)o;
+        methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, name, "valueOf", "(Ljava/lang/String;)L" + name + ";", false);
     }
 }

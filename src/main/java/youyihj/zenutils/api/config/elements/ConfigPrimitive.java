@@ -24,7 +24,7 @@ public abstract class ConfigPrimitive extends ConfigElement {
             Opcodes.ICONST_M1, Opcodes.ICONST_0, Opcodes.ICONST_1, Opcodes.ICONST_2, Opcodes.ICONST_3, Opcodes.ICONST_4, Opcodes.ICONST_5
     };
 
-    public static void push_int(MethodVisitor methodVisitor, int val) {
+    public static void pushInt(MethodVisitor methodVisitor, int val) {
         if (val > 32767 || val < -32768) {
             methodVisitor.visitLdcInsn(val);
         } else if (val > 127 || val < -128) {

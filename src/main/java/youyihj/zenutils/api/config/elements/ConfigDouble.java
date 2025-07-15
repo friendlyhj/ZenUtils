@@ -25,7 +25,7 @@ public class ConfigDouble extends ConfigPrimitive {
 
     @Override
     public void createToStack(MethodVisitor methodVisitor) {
-        methodVisitor.visitLdcInsn(this.defaultVal);
+        createToStack0(methodVisitor, this.defaultVal);
     }
 
     public static void createToStack0(MethodVisitor methodVisitor, double d) {

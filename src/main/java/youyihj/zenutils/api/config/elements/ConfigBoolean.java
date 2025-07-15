@@ -30,7 +30,4 @@ public class ConfigBoolean extends ConfigPrimitive {
             methodVisitor.visitInsn(Opcodes.ICONST_1);
         } else methodVisitor.visitInsn(Opcodes.ICONST_0);
     }
-
-    public static void createToStackBoolean(MethodVisitor methodVisitor, Object o) {
-    }
 }

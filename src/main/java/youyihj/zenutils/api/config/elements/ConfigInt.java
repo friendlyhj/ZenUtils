@@ -20,11 +20,11 @@ public class ConfigInt extends ConfigPrimitive{
 
     @Override
     public void createToStack(MethodVisitor methodVisitor) {
-        push_int(methodVisitor, this.defaultVal);
+        pushInt(methodVisitor, this.defaultVal);
     }
 
     public static void createToStack(MethodVisitor methodVisitor, int i) {
-        push_int(methodVisitor, i);
+        pushInt(methodVisitor, i);
     }
 
     @Override

@@ -61,11 +61,11 @@ public class ConfigMap extends ConfigPrimitive {
         STACK_PUTTER.put(c, methodVisitorTBiConsumer);
         STACK_PUTTER.put(java.lang.reflect.Array.newInstance(c, 0).getClass(), (methodVisitor, object) -> {
             T[] t = cast(object);
-            push_int(methodVisitor, t.length);
+            pushInt(methodVisitor, t.length);
             methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, c.getName().replace('.', '/'));
             for (int i = 0; i < t.length; i ++) {
                 methodVisitor.visitInsn(Opcodes.DUP);
-                push_int(methodVisitor, i);
+                pushInt(methodVisitor, i);
                 methodVisitorTBiConsumer.accept(methodVisitor, t[i]);
                 methodVisitor.visitInsn(Opcodes.AASTORE);
             }
@@ -86,7 +86,7 @@ public class ConfigMap extends ConfigPrimitive {
         });
         addStackPutter(Enum.class, ConfigEnum::createToStack0);
         addStackPutter(Integer.class, (methodVisitor, aByte) -> {
-            push_int(methodVisitor, aByte);
+            pushInt(methodVisitor, aByte);
             methodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
         });
         addStackPutter(String.class, MethodVisitor::visitLdcInsn);

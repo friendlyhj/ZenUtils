@@ -11,7 +11,7 @@ public class ConfigStringArray extends ConfigPrimitive {
     protected final String[] defaultVal;
     protected ConfigStringArray(ConfigGroup parentIn, String nameIn, String[] defaultVal) {
         super(parentIn, nameIn);
-        this.defaultVal = defaultVal == null ? new String[0] : defaultVal;
+        this.defaultVal = defaultVal;
     }
 
     public String[] getDefaultVal() {
@@ -29,11 +29,11 @@ public class ConfigStringArray extends ConfigPrimitive {
     }
 
     public static void createToStack0(MethodVisitor methodVisitor, String[] s) {
-        push_int(methodVisitor, s.length);
+        pushInt(methodVisitor, s.length);
         methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/String");
         for (int i = 0; i < s.length; i ++) {
             methodVisitor.visitInsn(Opcodes.DUP);
-            push_int(methodVisitor, i);
+            pushInt(methodVisitor, i);
             methodVisitor.visitLdcInsn(s[i]);
             methodVisitor.visitInsn(Opcodes.AASTORE);
         }

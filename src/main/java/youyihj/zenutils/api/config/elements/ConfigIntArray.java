@@ -11,7 +11,7 @@ public class ConfigIntArray extends ConfigPrimitive {
     protected final int[] defaultVal;
     protected ConfigIntArray(ConfigGroup parentIn, String nameIn, int[] defaultVal) {
         super(parentIn, nameIn);
-        this.defaultVal = defaultVal == null ? new int[0] : defaultVal;
+        this.defaultVal = defaultVal;
     }
 
     @Override
@@ -25,12 +25,12 @@ public class ConfigIntArray extends ConfigPrimitive {
     }
 
     public static void createToStack0(MethodVisitor methodVisitor, int[] is) {
-        push_int(methodVisitor, is.length);
+        pushInt(methodVisitor, is.length);
         methodVisitor.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_INT);
         for (int i = 0; i < is.length; i ++) {
             methodVisitor.visitInsn(Opcodes.DUP);
-            push_int(methodVisitor, i);
-            push_int(methodVisitor, is[i]);
+            pushInt(methodVisitor, i);
+            pushInt(methodVisitor, is[i]);
             methodVisitor.visitInsn(Opcodes.IASTORE);
         }
     }

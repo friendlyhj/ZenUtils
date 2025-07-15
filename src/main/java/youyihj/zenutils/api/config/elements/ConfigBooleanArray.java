@@ -12,7 +12,7 @@ public class ConfigBooleanArray extends ConfigPrimitive {
 
     public ConfigBooleanArray(ConfigGroup parentIn, String nameIn, boolean[] defaultVal){
         super(parentIn, nameIn);
-        this.defaultVal = defaultVal == null ? new boolean[0] : defaultVal;
+        this.defaultVal = defaultVal;
     }
 
     @Override
@@ -26,11 +26,11 @@ public class ConfigBooleanArray extends ConfigPrimitive {
     }
 
     public static void createToStack0(MethodVisitor methodVisitor, boolean[] booleans) {
-        push_int(methodVisitor, booleans.length);
+        pushInt(methodVisitor, booleans.length);
         methodVisitor.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_BOOLEAN);
         for (int i = 0; i < booleans.length; i ++) {
             methodVisitor.visitInsn(Opcodes.DUP);
-            push_int(methodVisitor, i);
+            pushInt(methodVisitor, i);
             ConfigBoolean.createToStackBoolean(methodVisitor, booleans[i]);
             methodVisitor.visitInsn(Opcodes.BASTORE);
         }
