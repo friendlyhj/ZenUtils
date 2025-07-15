@@ -35,7 +35,7 @@ public class ConfigUtils {
     }
 
     @ZenMethod // Map<String, ?> dataMap
-    public static DataMap dataMap(Map<String, IAny> dataMap) {
+    public static DataMap dataMap(Map<String, Object> dataMap) {
         HashMap<String, IData> actualMap = new HashMap<>();
         for (Map.Entry<String, ?> entry : dataMap.entrySet()) {
             actualMap.put(entry.getKey(), castToData(entry.getValue()));
