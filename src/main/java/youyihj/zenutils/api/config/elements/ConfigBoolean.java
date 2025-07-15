@@ -26,8 +26,6 @@ public class ConfigBoolean extends ConfigPrimitive {
     }
 
     public static void createToStackBoolean(MethodVisitor methodVisitor, boolean defaultVal) {
-        if (defaultVal) {
-            methodVisitor.visitInsn(Opcodes.ICONST_1);
-        } else methodVisitor.visitInsn(Opcodes.ICONST_0);
+        methodVisitor.visitInsn(defaultVal ? Opcodes.ICONST_1 : Opcodes.ICONST_0);
     }
 }
