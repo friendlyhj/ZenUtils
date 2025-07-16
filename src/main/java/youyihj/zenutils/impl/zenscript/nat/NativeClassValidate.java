@@ -14,6 +14,7 @@ import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.TypeData;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,7 +24,7 @@ import java.util.Scanner;
  */
 public class NativeClassValidate {
     public static final List<INativeClassExclude> EXCLUDES = new ArrayList<>();
-    private static final List<String> JAVA_LANG_WHITELIST = ImmutableList.of(
+    private static final List<String> WHITELIST = ImmutableList.of(
             // primitive types
             Integer.class.getName(),
             Long.class.getName(),
@@ -40,7 +41,8 @@ public class NativeClassValidate {
             StrictMath.class.getName(),
             StringBuilder.class.getName(), // meh, ~ operator is same
             CharSequence.class.getName(),
-            Class.class.getName() // has extra checks
+            Class.class.getName(), // has extra checks
+            Color.class.getName()
     );
 
     static {
@@ -83,7 +85,7 @@ public class NativeClassValidate {
     }
 
     public static boolean isValid(ClassData clazz, boolean allowZenClasses) {
-        return JAVA_LANG_WHITELIST.contains(clazz.name()) || (allowZenClasses || !clazz.isAnnotationPresent(ZenClass.class)) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz));
+        return WHITELIST.contains(clazz.name()) || (allowZenClasses || !clazz.isAnnotationPresent(ZenClass.class)) && EXCLUDES.stream().noneMatch(it -> it.shouldExclude(clazz));
     }
 
     @ReflectionInvoked
