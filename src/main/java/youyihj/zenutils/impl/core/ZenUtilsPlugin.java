@@ -18,8 +18,8 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{
-            "youyihj.zenutils.api.config.ConfigUtils$ClassProvider"
-        };
+            "youyihj.zenutils.impl.config.ClassProvider"
+        }
     }
 
     @Override

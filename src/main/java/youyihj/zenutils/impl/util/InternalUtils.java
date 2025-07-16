@@ -149,4 +149,9 @@ public final class InternalUtils {
             }
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public static<T> T cast(Object o) {
+        return (T)o;
+    }
 }

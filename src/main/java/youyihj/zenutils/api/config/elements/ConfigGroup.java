@@ -6,7 +6,8 @@ import org.objectweb.asm.*;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.api.config.ConfigUtils;
+import youyihj.zenutils.impl.config.ConfigAnytimeAnytime;
+import youyihj.zenutils.impl.config.ClassProvider;
 
 import java.util.*;
 
@@ -56,12 +57,12 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
-    public ConfigElement string(String nameIn, String defaultVal) {
+    public ConfigElement stringValue(String nameIn, String defaultVal) {
         return addChild(new ConfigString(this, nameIn, defaultVal));
     }
 
     @ZenMethod
-    public ConfigElement strings(String nameIn, String... strings) {
+    public ConfigElement stringValues(String nameIn, String... strings) {
         return addChild(new ConfigStringArray(this, nameIn, strings));
     }
 
@@ -178,7 +179,7 @@ public class ConfigGroup extends ConfigElement {
                 for (String clsN : this.getClasses()) {
                     CraftTweakerAPI.registerClass(Class.forName(clsN));
                 }
-                ConfigUtils.ConfigAnytimeAnytime.register(Class.forName(getClassName()));
+                ConfigAnytimeAnytime.register(Class.forName(getClassName()));
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }
@@ -315,7 +316,7 @@ public class ConfigGroup extends ConfigElement {
         methodVisitor.visitInsn(Opcodes.RETURN);
         methodVisitor.visitEnd();
 
-        ConfigUtils.ClassProvider.classes.put(className.replace('/', '.'), classWriter.toByteArray());
+        ClassProvider.classes.put(className.replace('/', '.'), classWriter.toByteArray());
     }
 
 }
