@@ -45,20 +45,15 @@ public class ConfigMap extends ConfigPrimitive {
         methodVisitor.visitInsn(Opcodes.DUP);
         methodVisitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "youyihj/zenutils/api/config/elements/ConfigMap$HashDataMap", "<init>", "()V", false);
 
-        BiConsumer<MethodVisitor, ?> consumer = cast(STACK_PUTTER.get(this.type));
+        BiConsumer<MethodVisitor, ?> consumer = InternalUtils.cast(STACK_PUTTER.get(this.type));
 
         for (Map.Entry<String, ?> entry : this.defaultVal.entrySet()) {
             methodVisitor.visitInsn(Opcodes.DUP);
             methodVisitor.visitLdcInsn(entry.getKey());
-            consumer.accept(methodVisitor, cast(entry.getValue()));
+            consumer.accept(methodVisitor, InternalUtils.cast(entry.getValue()));
             methodVisitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
             methodVisitor.visitInsn(Opcodes.POP);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static<T> T cast(Object o) {
-        return (T)o;
     }
 
     static Map<Class<?>, BiConsumer<MethodVisitor, ?>> STACK_PUTTER = new HashMap<>();
@@ -66,7 +61,7 @@ public class ConfigMap extends ConfigPrimitive {
     private static<T> void addStackPutter(final Class<T> c, BiConsumer<MethodVisitor, T> methodVisitorTBiConsumer) {
         STACK_PUTTER.put(c, methodVisitorTBiConsumer);
         STACK_PUTTER.put(java.lang.reflect.Array.newInstance(c, 0).getClass(), (methodVisitor, object) -> {
-            T[] t = cast(object);
+            T[] t = InternalUtils.cast(object);
             pushInt(methodVisitor, t.length);
             methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, c.getName().replace('.', '/'));
             for (int i = 0; i < t.length; i ++) {
