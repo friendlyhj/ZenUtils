@@ -106,7 +106,7 @@ public class ConfigMap extends ConfigPrimitive {
         protected boolean updated = true;
         public DataMap getDataMap() {
             if (updated) {
-                dataMapCache = ConfigUtils.dataMap(InternalUtils.cast(this));
+                dataMapCache = (DataMap) ConfigUtils.dataMap(InternalUtils.cast(this));
                 updated = false;
             }
             return dataMapCache;
