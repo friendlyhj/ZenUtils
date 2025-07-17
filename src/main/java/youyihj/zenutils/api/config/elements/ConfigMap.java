@@ -9,15 +9,11 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.annotations.ZenClass;
 import youyihj.zenutils.api.config.ConfigUtils;
-import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.api.util.ReflectionInvoked;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
