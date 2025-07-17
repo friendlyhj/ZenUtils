@@ -28,7 +28,7 @@ public class ConfigBooleanArray extends ConfigPrimitive {
     public static void createToStack0(MethodVisitor methodVisitor, boolean[] booleans) {
         pushInt(methodVisitor, booleans.length);
         methodVisitor.visitIntInsn(Opcodes.NEWARRAY, Opcodes.T_BOOLEAN);
-        for (int i = 0; i < booleans.length; i ++) {
+        for (int i = 0; i < booleans.length; i++) {
             methodVisitor.visitInsn(Opcodes.DUP);
             pushInt(methodVisitor, i);
             ConfigBoolean.createToStackBoolean(methodVisitor, booleans[i]);

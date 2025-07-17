@@ -1,21 +1,4 @@
-package youyihj.zenutils.impl.config;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.config.Configuration;
-
-import java.io.File;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Set;
-
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2022 CleanroomMC
@@ -38,6 +21,23 @@ import java.util.Set;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package youyihj.zenutils.impl.config;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.common.config.Configuration;
+
+import java.io.File;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
+
 public class ConfigAnytimeAnytime {
     private static final MethodHandle CONFIGMANAGER$SYNC;
 

@@ -20,14 +20,13 @@ public class ConfigUtils {
     }
 
     @ZenMethod
-    public static DataMap dataMap(Map<String, Object> dataMap) {
+    public static IData dataMap(Map<String, Object> dataMap) {
         HashMap<String, IData> actualMap = new HashMap<>();
         for (Map.Entry<String, ?> entry : dataMap.entrySet()) {
             actualMap.put(entry.getKey(), castToData(entry.getValue()));
         }
         return new DataMap(actualMap, true);
     }
-
 
     public static DataList castToDataList(Object[] o) {
         LinkedList<IData> data = new LinkedList<>();

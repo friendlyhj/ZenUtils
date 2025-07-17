@@ -189,8 +189,8 @@ public class ConfigGroup extends ConfigElement {
     protected void register0() {
         ClassWriter classWriter = new ClassWriter(0);
         FieldVisitor fieldVisitor = null;
-        MethodVisitor methodVisitor = null;
-        AnnotationVisitor annotationVisitor0 = null;
+        MethodVisitor methodVisitor;
+        AnnotationVisitor annotationVisitor0;
         String className = getClassName().replace('.', '/');
         boolean isInstance = this.getParent() != null;
 
