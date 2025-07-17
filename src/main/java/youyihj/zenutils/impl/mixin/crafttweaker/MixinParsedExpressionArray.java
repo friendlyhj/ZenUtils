@@ -74,10 +74,11 @@ public abstract class MixinParsedExpressionArray extends ParsedExpression {
         }
 
         // if the all remaining content types can cast to the first one
-        ZenType first = distinctTypes.get(0);
-        if (distinctTypes.stream().skip(1).allMatch(type -> type.canCastImplicit(first, environment))) {
-            return first;
-        }
+        // disable this rule for now, it breaks Object[] / any[] argument
+//        ZenType first = distinctTypes.get(0);
+//        if (distinctTypes.stream().skip(1).allMatch(type -> type.canCastImplicit(first, environment))) {
+//            return first;
+//        }
         return null;
     }
 
