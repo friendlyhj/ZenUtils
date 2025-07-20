@@ -16,7 +16,9 @@ import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author youyihj
@@ -51,6 +53,9 @@ public class ZenUtilsGlobal {
         }
         if (object.getClass().isArray()) {
             return new ToStringBuilder(object, ARRAY_TO_STRING_STYLE).append(object).toString();
+        }
+        if (object instanceof List) {
+            return ((List<?>) object).stream().map(ZenUtilsGlobal::toString).collect(Collectors.joining(",", "[", "]"));
         }
         return object.toString();
     }
