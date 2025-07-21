@@ -60,6 +60,7 @@ public class ListHelper {
         }
         if (indexes.length == 1) {
             list.remove(indexes[0]);
+            return;
         }
         indexes = Arrays.stream(indexes).distinct().sorted().toArray();
         if (indexes[0] < 0) {
