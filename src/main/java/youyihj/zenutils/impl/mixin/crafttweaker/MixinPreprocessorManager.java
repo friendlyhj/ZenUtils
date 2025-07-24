@@ -128,7 +128,11 @@ public abstract class MixinPreprocessorManager {
         } catch (IOException e) {
             CraftTweakerAPI.logError("Could not read preprocessor functions in " + filename, e);
         }
-        executePostActions(scriptFile);
+        // according to issue #100, the method may take lots of time, although I don't know why
+        // I search on GitHub, only the deprecated zslint preprocessor uses it, so remove it
+        if (!Configuration.fastScriptLoading) {
+            executePostActions(scriptFile);
+        }
         return preprocessorList;
     }
 }
