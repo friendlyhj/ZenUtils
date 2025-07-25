@@ -52,10 +52,12 @@ public class ZenUtilsTweaker implements ITweaker {
     private boolean scriptDispatched = false;
     private final Multimap<String, ScriptFile> loaderTasks = ArrayListMultimap.create();
 
+    private ZenUtilsGlobalEnvironment lastEnvironment = null;
+
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
         File globalDir = new File("scripts");
-        if(!globalDir.exists())
+        if (!globalDir.exists())
             globalDir.mkdirs();
         ScriptProviderDirectory provider = new ScriptProviderDirectory(globalDir);
         if (!Loader.isModLoaded("rml")) {
@@ -190,8 +192,21 @@ public class ZenUtilsTweaker implements ITweaker {
         loader.setLoaderStage(ScriptLoader.LoaderStage.LOADING);
         boolean loadSuccessful = true;
         ((CrtStoringErrorLogger) GlobalRegistry.getErrors()).clear();
-        Map<String, byte[]> classes = new HashMap<>();
-        IEnvironmentGlobal environmentGlobal = GlobalRegistry.makeGlobalEnvironment(classes, loader.getMainName());
+
+        Map<String, byte[]> classes;
+        IEnvironmentGlobal environmentGlobal;
+
+        if (Configuration.crossLoaderAccess) {
+            ZenUtilsGlobalEnvironment environment = new ZenUtilsGlobalEnvironment(lastEnvironment, loader.getMainName());
+            environmentGlobal = environment;
+            if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
+                lastEnvironment = environment;
+            }
+            classes = environment.getClasses();
+        } else {
+            classes = new HashMap<>();
+            environmentGlobal = GlobalRegistry.makeGlobalEnvironment(classes, loader.getMainName());
+        }
 
         long startTime = System.currentTimeMillis();
         List<ScriptFile> scriptFiles = loader.getNames().stream()
@@ -207,7 +222,7 @@ public class ZenUtilsTweaker implements ITweaker {
             environmentGlobal.getClassNameGenerator().setPrefix(scriptFile.loaderNamesConcatCapitalized());
 
             // check for network side
-            if(!scriptFile.shouldBeLoadedOn(getNetworkSide())) {
+            if (!scriptFile.shouldBeLoadedOn(getNetworkSide())) {
                 CraftTweakerAPI.logDefault(getTweakerDescriptor(loaderName) + ": Skipping file " + scriptFile + " as we are on the wrong side of the Network");
                 continue;
             }
@@ -220,37 +235,37 @@ public class ZenUtilsTweaker implements ITweaker {
 
             // start reading of the scripts
             ZenTokener parser = null;
-            try(Reader reader = new InputStreamReader(new BufferedInputStream(scriptFile.open()), StandardCharsets.UTF_8)) {
+            try (Reader reader = new InputStreamReader(new BufferedInputStream(scriptFile.open()), StandardCharsets.UTF_8)) {
                 getPreprocessorManager().postLoadEvent(new CrTScriptLoadEvent(scriptFile));
 
                 // blocks the parsing of the script
-                if(scriptFile.isParsingBlocked()) {
+                if (scriptFile.isParsingBlocked()) {
                     continue;
                 }
 
                 parser = new ZenTokener(reader, environmentGlobal.getEnvironment(), filename, scriptFile.areBracketErrorsIgnored());
                 zenParsedFile = new ZenParsedFile(filename, className, parser, environmentGlobal);
 
-            } catch(IOException ex) {
+            } catch (IOException ex) {
                 CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Could not load script " + scriptFile + ": " + ex.getMessage());
                 loadSuccessful = false;
-            } catch(ParseException ex) {
+            } catch (ParseException ex) {
                 CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Error parsing " + ex.getFile().getFileName() + ":" + ex.getLine() + " -- " + ex.getExplanation());
                 loadSuccessful = false;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Error loading " + scriptFile + ": " + ex, ex);
                 loadSuccessful = false;
             }
 
             try {
                 // Stops if compile is disabled
-                if(zenParsedFile == null || scriptFile.isCompileBlocked() || !loadSuccessful) {
+                if (zenParsedFile == null || scriptFile.isCompileBlocked() || !loadSuccessful) {
                     continue;
                 }
                 compileScripts(className, Collections.singletonList(zenParsedFile), environmentGlobal, scriptFile.isDebugEnabled());
 
                 // stops if the execution is disabled
-                if(scriptFile.isExecutionBlocked() || isSyntaxCommand) {
+                if (scriptFile.isExecutionBlocked() || isSyntaxCommand) {
                     continue;
                 }
 
@@ -286,13 +301,13 @@ public class ZenUtilsTweaker implements ITweaker {
 
         // Collecting all scripts
         Iterator<IScriptIterator> scripts = scriptProvider.getScripts();
-        while(scripts.hasNext()) {
+        while (scripts.hasNext()) {
             IScriptIterator script = scripts.next();
 
-            if(!collected.contains(script.getGroupName())) {
+            if (!collected.contains(script.getGroupName())) {
                 collected.add(script.getGroupName());
 
-                while(script.next()) {
+                while (script.next()) {
                     scriptFiles.add(new ScriptFile(this, script.copyCurrent(), isSyntaxCommand));
                 }
             }

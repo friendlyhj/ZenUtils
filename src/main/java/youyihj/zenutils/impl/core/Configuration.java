@@ -21,6 +21,9 @@ public class Configuration {
     @Config.Comment("Disable mixin script reload warning. Default: false")
     public static boolean disableMixinScriptReloadWarning = false;
 
+    @Config.Comment("Allow script to access other scripts loaded by previous loaders. The config is only effective when fastScriptLoading is enabled. Default: false")
+    public static boolean crossLoaderAccess = false;
+
     @Config.Comment({
         "Allow insertion of zs execution during mod loading stage",
         "Format: scriptLoaderName;modid;stageMarker;before|after",
