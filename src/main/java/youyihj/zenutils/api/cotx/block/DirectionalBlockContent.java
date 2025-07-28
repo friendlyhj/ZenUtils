@@ -19,12 +19,19 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.model.TRSRTransformation;
+import org.apache.commons.lang3.tuple.Pair;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.cotx.annotation.ExpandContentTweakerEntry;
+import youyihj.zenutils.impl.util.SimpleCache;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.vecmath.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +43,8 @@ import java.util.Optional;
 @ExpandContentTweakerEntry
 public abstract class DirectionalBlockContent extends ExpandBlockContent {
     public static final IProperty<DirectionalBlockRepresentation.PlaneRotation> PLANE_ROTATION_PROPERTY = PropertyEnum.create("plane_rot", DirectionalBlockRepresentation.PlaneRotation.class);
+
+    private final SimpleCache<Pair<EnumFacing, DirectionalBlockRepresentation.PlaneRotation>, AxisAlignedBB> boxCache = new SimpleCache<>(this::getBox);
 
     protected DirectionalBlockContent(DirectionalBlockRepresentation blockRepresentation) {
         super(blockRepresentation);
@@ -110,6 +119,15 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
         }
     }
 
+    @Nonnull
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return boxCache.get(Pair.of(
+                state.getValue(getDirections().getBlockProperty()),
+                getExpandBlockRepresentation().isPlaneRotatable() ? state.getValue(PLANE_ROTATION_PROPERTY) : DirectionalBlockRepresentation.PlaneRotation.DOWN)
+        );
+    }
+
     @Override
     public int getMetaFromState(IBlockState state) {
         return getDirections().toMeta(state, getExpandBlockRepresentation().isPlaneRotatable());
@@ -147,7 +165,7 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
     public List<IGeneratedModel> getGeneratedModels() {
         List<IGeneratedModel> models = Lists.newArrayList();
         String templateFileName = (getExpandBlockRepresentation().isPlaneRotatable() ? "plane_rotatable_" : "") + getDirections().name().toLowerCase(Locale.ENGLISH) + "_directional_block";
-        this.getResourceLocations(Lists.newArrayList()).forEach(resourceLocation ->  {
+        this.getResourceLocations(Lists.newArrayList()).forEach(resourceLocation -> {
             TemplateFile templateFile = TemplateManager.getTemplateFile(new ResourceLocation(Reference.MODID, templateFileName));
             Map<String, String> replacements = Maps.newHashMap();
             replacements.put("texture", Optional.ofNullable(getExpandBlockRepresentation().getTextureLocation())
@@ -166,4 +184,76 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
 
     @Override
     public abstract DirectionalBlockRepresentation getExpandBlockRepresentation();
+
+    private AxisAlignedBB getBox(Pair<EnumFacing, DirectionalBlockRepresentation.PlaneRotation> key) {
+        AxisAlignedBB aabb = getExpandBlockRepresentation().getAxisAlignedBB().getInternal();
+        Matrix4f rot = getRotationMatrix(key.getLeft(), key.getRight());
+        Point3f minPoint = new Point3f((float) aabb.minX, (float) aabb.minY, (float) aabb.minZ);
+        Point3f maxPoint = new Point3f((float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ);
+        rot.transform(minPoint);
+        rot.transform(maxPoint);
+        return new AxisAlignedBB(minPoint.x, minPoint.y, minPoint.z, maxPoint.x, maxPoint.y, maxPoint.z);
+    }
+
+    private static Matrix4f getRotationMatrix(EnumFacing facing, DirectionalBlockRepresentation.PlaneRotation planeRot) {
+        float x, y, z;
+        switch (planeRot) {
+            case DOWN:
+                z = 0;
+                break;
+            case UP:
+                z = 180;
+                break;
+            case LEFT:
+                z = 90;
+                break;
+            case RIGHT:
+                z = 270;
+                break;
+            default:
+                throw new IllegalArgumentException("unknown plane rotation");
+        }
+        switch (facing) {
+            case DOWN:
+                x = 270;
+                y = 0;
+                break;
+            case UP:
+                x = 90;
+                y = 0;
+                break;
+            case NORTH:
+                x = 0;
+                y = 0;
+                break;
+            case SOUTH:
+                x = 0;
+                y = 180;
+                break;
+            case WEST:
+                x = 0;
+                y = 90;
+                break;
+            case EAST:
+                x = 0;
+                y = 270;
+                break;
+            default:
+                throw new IllegalArgumentException("unknown facing");
+        }
+        Quat4f quat4f = TRSRTransformation.quatFromXYZDegrees(new Vector3f(x, y, z));
+        Matrix4f rotMat = new Matrix4f();
+        rotMat.setIdentity();
+        rotMat.setRotation(quat4f);
+        Matrix4f translationMat = new Matrix4f();
+        translationMat.setIdentity();
+        translationMat.setTranslation(new Vector3f(-0.5f, -0.5f, -0.5f));
+        Matrix4f postTranslationMat = new Matrix4f();
+        postTranslationMat.setIdentity();
+        postTranslationMat.setTranslation(new Vector3f(0.5f, 0.5f, 0.5f));
+        Matrix4f result = new Matrix4f();
+        result.mul(postTranslationMat, rotMat);
+        result.mul(translationMat);
+        return result;
+    }
 }
