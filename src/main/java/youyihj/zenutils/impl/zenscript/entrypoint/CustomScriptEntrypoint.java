@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.event.*;
 import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.core.Configuration;
 
 import java.util.Collections;
@@ -30,6 +31,7 @@ public class CustomScriptEntrypoint {
     public static int furnaceRecipeAdditionStandardIndex;
     public static int furnaceRecipeRemovalStandardIndex;
 
+    @ReflectionInvoked(asm = true)
     public static void runScript(Object modCoreObj, FMLEvent event, boolean before) {
         if (!parsed) {
             parseEntryPoint();

@@ -14,12 +14,16 @@ import java.util.Map;
  */
 @ReflectionInvoked
 @IFMLLoadingPlugin.MCVersion("1.12.2")
+@IFMLLoadingPlugin.SortingIndex(-1)
 public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public String[] getASMTransformerClass() {
-        return new String[]{
-            "youyihj.zenutils.impl.config.ClassProvider"
-        };
+        List<String> transformers = new ArrayList<>();
+        if (Configuration.customScriptEntrypoint.length != 0) {
+            transformers.add("youyihj.zenutils.impl.core.FMLModContainerTransformer");
+        }
+        transformers.add("youyihj.zenutils.impl.config.ClassProvider");
+        return transformers.toArray(new String[0]);
     }
 
     @Override
@@ -52,9 +56,6 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
         }
         if (Configuration.enableRandomTickEvent) {
             configs.add("mixins.zenutils.randomtickevent.json");
-        }
-        if (Configuration.customScriptEntrypoint.length != 0) {
-            configs.add("mixins.zenutils.customscriptentrypoint.json");
         }
         return configs;
     }
