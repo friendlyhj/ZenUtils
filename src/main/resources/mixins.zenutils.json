@@ -25,6 +25,7 @@
     "MixinItemContent",
     "MixinMCEntity",
     "MixinMCPlayerAnvilUpdateEvent",
+    "MixinMethodOutput",
     "MixinParsedClassConstructor",
     "MixinParsedExpression",
     "MixinParsedExpressionArray",
