@@ -15,9 +15,11 @@ import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author youyihj
@@ -70,7 +72,7 @@ public class PartialListOperation implements IPartialExpression {
             selected = JavaMethod.select(false, methods, environment, values);
         }
         if (selected == null) {
-            environment.error(position, "arguments do not match any method");
+            environment.error(position, "arguments do not match any method, params: " + Arrays.stream(values).map(Expression::getType).map(ZenType::getName).collect(Collectors.joining(", ")));
             return new ExpressionInvalid(position);
         }
         // ambiguous 1 argument for varargs check

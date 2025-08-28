@@ -46,6 +46,7 @@
     "MixinZenTypeArrayList",
     "MixinZenTypeAssociate",
     "MixinZenTypeNative",
+    "MixinZenTypePrimitive",
     "MixinZenTypeUtil",
     "MixinZenTypeZenClass",
     "TokenStreamAccessor"
