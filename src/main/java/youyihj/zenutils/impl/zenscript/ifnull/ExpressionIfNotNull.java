@@ -7,6 +7,7 @@ import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.ZenTypeUtil;
 
 /**
  * @author youyihj
@@ -47,6 +48,6 @@ public class ExpressionIfNotNull extends Expression {
 
     @Override
     public ZenType getType() {
-        return PrimitiveWrap.wrap(expression.getType());
+        return ZenTypeUtil.checkPrimitive(expression.getType());
     }
 }

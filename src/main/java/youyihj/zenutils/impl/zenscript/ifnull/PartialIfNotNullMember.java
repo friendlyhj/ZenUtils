@@ -8,6 +8,7 @@ import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.ZenTypeUtil;
 
 /**
  * @author youyihj
@@ -57,7 +58,7 @@ public class PartialIfNotNullMember implements IPartialExpression {
 
     @Override
     public ZenType getType() {
-        return PrimitiveWrap.wrap(member.getType());
+        return ZenTypeUtil.checkPrimitive(member.getType());
     }
 
     @Override
