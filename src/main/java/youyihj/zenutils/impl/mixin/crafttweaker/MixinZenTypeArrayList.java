@@ -11,6 +11,7 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArray;
 import stanhebben.zenscript.type.ZenTypeArrayList;
 import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.ZenTypeUtil;
 import youyihj.zenutils.impl.zenscript.ExpressionListSub;
 import youyihj.zenutils.impl.zenscript.ListExpansionMethods;
 import youyihj.zenutils.impl.zenscript.PartialListOperation;
@@ -82,5 +83,11 @@ public abstract class MixinZenTypeArrayList extends ZenTypeArray {
         if (index.getType() == ZenType.INTRANGE) {
             cir.setReturnValue(new ExpressionListSub(position, array, index));
         }
+    }
+
+    @Override
+    public ZenType getBaseType() {
+        // temporary fix for primitive array list base type being boxed
+        return ZenTypeUtil.checkPrimitive(super.getBaseType());
     }
 }
