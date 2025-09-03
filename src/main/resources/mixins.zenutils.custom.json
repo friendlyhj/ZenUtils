@@ -7,8 +7,7 @@
   "priority": 1000,
   "refmap": "mixins.zenutils.refmap.json",
   "injectors": {
-    "maxShiftBy": 3,
-    "defaultRequire": 1
+    "maxShiftBy": 3
   },
   "mixins": [
   ],
