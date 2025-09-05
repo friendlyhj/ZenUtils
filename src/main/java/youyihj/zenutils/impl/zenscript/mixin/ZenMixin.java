@@ -80,9 +80,7 @@ public class ZenMixin {
         MixinProcessor processor = (MixinProcessor) processorField.get(Proxy.transformer);
         Method selectMethod = processor.getClass().getDeclaredMethod("select", MixinEnvironment.class);
         selectMethod.setAccessible(true);
-        MixinEnvironment environment = Reference.IS_CLEANROOM ? MixinEnvironment.getDefaultEnvironment() : MixinEnvironment.getCurrentEnvironment();
-        environment.setOption(MixinEnvironment.Option.DEBUG_INJECTORS, true);
-        selectMethod.invoke(processor, environment);
+        selectMethod.invoke(processor, Reference.IS_CLEANROOM ? MixinEnvironment.getDefaultEnvironment() : MixinEnvironment.getCurrentEnvironment());
     }
 
     public static String handleMixinClassName(String className) {
