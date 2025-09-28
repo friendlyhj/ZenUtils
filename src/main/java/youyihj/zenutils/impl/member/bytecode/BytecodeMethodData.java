@@ -94,4 +94,15 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
     public String descriptor() {
         return methodNode.desc;
     }
+
+    @Override
+    public String descriptorWithoutReturnType() {
+        StringBuilder buf = new StringBuilder();
+        buf.append('(');
+        for (Type parameter : Type.getMethodType(methodNode.desc).getArgumentTypes()) {
+            buf.append(parameter.getDescriptor());
+        }
+        buf.append(')');
+        return buf.toString();
+    }
 }

@@ -72,13 +72,13 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
             if (requester.allows(method.getModifiers())) {
                 ReflectionExecutableData methodData = new ReflectionExecutableData(method);
                 methods.add(methodData);
-                usedDescriptors.add(methodData.name() + methodData.descriptor());
+                usedDescriptors.add(methodData.name() + methodData.descriptorWithoutReturnType());
             }
         }
         ClassData superClass = superClass();
         if (superClass != null) {
             for (ExecutableData superMethod : superClass.methods(requester)) {
-                if (usedDescriptors.add(superMethod.name() + superMethod.descriptor())) {
+                if (usedDescriptors.add(superMethod.name() + superMethod.descriptorWithoutReturnType())) {
                     methods.add(superMethod);
                 }
             }
@@ -87,7 +87,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
             for (Method method : itf.getDeclaredMethods()) {
                 if (requester.allows(method.getModifiers())) {
                     ReflectionExecutableData interfaceMethodData = new ReflectionExecutableData(method);
-                    if (usedDescriptors.add(interfaceMethodData.name() + interfaceMethodData.descriptor())) {
+                    if (usedDescriptors.add(interfaceMethodData.name() + interfaceMethodData.descriptorWithoutReturnType())) {
                         methods.add(interfaceMethodData);
                     }
                 }

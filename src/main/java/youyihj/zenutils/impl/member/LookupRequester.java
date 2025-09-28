@@ -1,19 +1,14 @@
 package youyihj.zenutils.impl.member;
 
-import java.lang.reflect.Modifier;
+import org.objectweb.asm.Opcodes;
 
 /**
  * @author youyihj
  */
 public enum LookupRequester {
-    PUBLIC(Modifier.PUBLIC),
-    SUBCLASS(Modifier.PUBLIC | Modifier.PROTECTED),
-    SELF(0) {
-        @Override
-        public boolean allows(int modifier) {
-            return true;
-        }
-    };
+    PUBLIC(Opcodes.ACC_PUBLIC),
+    SUBCLASS(Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED),
+    SELF(-1);
 
     private final int modifierMask;
 
@@ -22,6 +17,6 @@ public enum LookupRequester {
     }
 
     public boolean allows(int modifier) {
-        return (modifierMask & modifier) != 0;
+        return (this == SELF || (modifierMask & modifier) != 0) && (modifier & Opcodes.ACC_SYNTHETIC) == 0;
     }
 }

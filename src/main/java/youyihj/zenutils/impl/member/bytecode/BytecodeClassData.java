@@ -73,13 +73,13 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
             if (!method.name.startsWith("<") && requester.allows(method.access)) {
                 BytecodeMethodData methodData = new BytecodeMethodData(method, this);
                 methods.add(methodData);
-                usedDescriptions.add(methodData.name() + methodData.descriptor());
+                usedDescriptions.add(methodData.name() + methodData.descriptorWithoutReturnType());
             }
         }
         ClassData superClass = superClass();
         if (superClass != null) {
             for (ExecutableData superMethod : superClass.methods(requester)) {
-                if (usedDescriptions.add(superMethod.name() + superMethod.descriptor())) {
+                if (usedDescriptions.add(superMethod.name() + superMethod.descriptorWithoutReturnType())) {
                     methods.add(superMethod);
                 }
             }
@@ -87,7 +87,7 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         for (ClassData anInterface : interfaces()) {
             List<ExecutableData> interfaceMethods = anInterface.methods(requester);
             for (ExecutableData interfaceMethod : interfaceMethods) {
-                if (usedDescriptions.add(interfaceMethod.name() + interfaceMethod.descriptor())) {
+                if (usedDescriptions.add(interfaceMethod.name() + interfaceMethod.descriptorWithoutReturnType())) {
                     methods.add(interfaceMethod);
                 }
             }

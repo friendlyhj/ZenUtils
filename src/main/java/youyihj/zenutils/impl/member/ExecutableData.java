@@ -30,4 +30,14 @@ public interface ExecutableData extends AnnotatedMember {
         buf.append(returnType().descriptor());
         return buf.toString();
     }
+
+    default String descriptorWithoutReturnType() {
+        StringBuilder buf = new StringBuilder();
+        buf.append('(');
+        for (TypeData parameter : parameters()) {
+            buf.append(parameter.descriptor());
+        }
+        buf.append(')');
+        return buf.toString();
+    }
 }
