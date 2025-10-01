@@ -7,12 +7,15 @@ import com.teamacronymcoders.base.client.models.generator.generatedmodel.IGenera
 import com.teamacronymcoders.base.client.models.generator.generatedmodel.ModelType;
 import com.teamacronymcoders.base.util.files.templates.TemplateFile;
 import com.teamacronymcoders.base.util.files.templates.TemplateManager;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.aabb.MCAxisAlignedBB;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.blockpos.MCBlockPos;
+import com.teamacronymcoders.contenttweaker.api.ctobjects.blockstate.MCBlockState;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Facing;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.enums.Hand;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.resourcelocation.CTResourceLocation;
 import com.teamacronymcoders.contenttweaker.api.ctobjects.world.MCWorld;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import crafttweaker.mc1120.world.MCBlockAccess;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -31,7 +34,10 @@ import youyihj.zenutils.impl.util.SimpleCache;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.vecmath.*;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -122,10 +128,20 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
     @Nonnull
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return boxCache.get(Pair.of(
+        AxisAlignedBB box = boxCache.get(Pair.of(
                 state.getValue(getDirections().getBlockProperty()),
                 getExpandBlockRepresentation().isPlaneRotatable() ? state.getValue(PLANE_ROTATION_PROPERTY) : DirectionalBlockRepresentation.PlaneRotation.DOWN)
         );
+        if (getExpandBlockRepresentation().boundingBoxFunction == null) {
+            return box;
+        } else {
+            return getExpandBlockRepresentation().boundingBoxFunction.apply(
+                    new MCAxisAlignedBB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ),
+                    new MCBlockState(state),
+                    new MCBlockAccess(source),
+                    new MCBlockPos(pos)
+            ).getInternal();
+        }
     }
 
     @Override

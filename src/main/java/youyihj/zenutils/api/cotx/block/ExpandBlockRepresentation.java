@@ -7,10 +7,7 @@ import com.teamacronymcoders.contenttweaker.modules.vanilla.blocks.BlockRepresen
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenProperty;
 import youyihj.zenutils.Reference;
-import youyihj.zenutils.api.cotx.function.IBlockActivated;
-import youyihj.zenutils.api.cotx.function.IEntityCollided;
-import youyihj.zenutils.api.cotx.function.IEntityWalk;
-import youyihj.zenutils.api.cotx.function.IPlacementChecker;
+import youyihj.zenutils.api.cotx.function.*;
 import youyihj.zenutils.api.cotx.tile.TileEntityRepresentation;
 import youyihj.zenutils.api.zenscript.SidedZenRegister;
 
@@ -39,6 +36,9 @@ public class ExpandBlockRepresentation extends BlockRepresentation {
 
     @ZenProperty
     public IPlacementChecker placementChecker = null;
+
+    @ZenProperty
+    public IBoundingBoxFunction boundingBoxFunction = null;
 
     @Override
     public void register() {
