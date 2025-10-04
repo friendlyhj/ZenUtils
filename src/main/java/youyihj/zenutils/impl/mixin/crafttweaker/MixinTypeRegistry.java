@@ -141,17 +141,16 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                 try {
                     String genericInfo = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
                     String rawClassName = name.substring(1, name.indexOf("<")).replace('/', '.');
-                    //TODO: handle nested generic type
-                    String[] genericTypes = genericInfo.split(",");
+                    List<String> genericTypes = new MethodParameterParser("(" + genericInfo + ")").parse();
                     ClassData rawClassData = classDataFetcher.forName(rawClassName);
-                    if (genericTypes.length == 1) {
+                    if (genericTypes.size() == 1) {
                         if (classDataFetcher.forClass(List.class).isAssignableFrom(rawClassData)) {
-                            return new ZenTypeArrayList(getType(new LiteralType(genericTypes[0])));
+                            return new ZenTypeArrayList(getType(new LiteralType(genericTypes.get(0))));
                         }
                     }
-                    if (genericTypes.length == 2) {
+                    if (genericTypes.size() == 2) {
                         if (classDataFetcher.forClass(Map.class).isAssignableFrom(rawClassData)) {
-                            return new ZenTypeAssociative(getType(new LiteralType(genericTypes[1])), getType(new LiteralType(genericTypes[0])));
+                            return new ZenTypeAssociative(getType(new LiteralType(genericTypes.get(1))), getType(new LiteralType(genericTypes.get(0))));
                         }
                     }
                     return zu$checkNative(rawClassData);

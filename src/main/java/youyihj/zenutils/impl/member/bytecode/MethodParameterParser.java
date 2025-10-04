@@ -17,7 +17,7 @@ public class MethodParameterParser {
         this.signature = signature;
     }
 
-    List<String> parse() {
+    public List<String> parse() {
         String params = signature.substring(signature.indexOf('(') + 1, signature.indexOf(')'));
         boolean readingLongType = false;
 
