@@ -7,16 +7,13 @@ import crafttweaker.api.data.IData;
 import crafttweaker.util.EventList;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
 import youyihj.zenutils.Reference;
-import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
@@ -31,7 +28,10 @@ import java.util.function.Consumer;
  */
 public final class InternalUtils {
     private static final List<Runnable> ALL_EVENT_LISTS_CLEAR_ACTIONS = new ArrayList<>();
-
+    private static final BytecodeClassDataFetcher CLASS_DATA_FETCHER = new BytecodeClassDataFetcher(
+            new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
+            Collections.singletonList(Paths.get("mods"))
+    );
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
     private InternalUtils() {
@@ -106,52 +106,6 @@ public final class InternalUtils {
     }
 
     public static ClassDataFetcher getClassDataFetcher() {
-        return ModsClassDataFetcher.INSTANCE;
-    }
-
-    private enum ModsClassDataFetcher implements ClassDataFetcher {
-        INSTANCE;
-
-        private final ReflectionClassDataFetcher reflect = new ReflectionClassDataFetcher(Launch.classLoader);
-        private BytecodeClassDataFetcher bytecode;
-
-        @Override
-        public ClassData forName(String className) throws ClassNotFoundException {
-            if (Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
-                if (bytecode != null) {
-                    try {
-                        bytecode.close();
-                        bytecode = null;
-                    } catch (IOException ignored) {
-
-                    }
-                }
-                return reflect.forName(className);
-            } else {
-                if (bytecode == null) {
-                    bytecode = new BytecodeClassDataFetcher(reflect, Collections.singletonList(Paths.get("mods")));
-                }
-                return bytecode.forName(className);
-            }
-        }
-
-        @Override
-        public ClassData forClass(Class<?> clazz) {
-            if (Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION)) {
-                if (bytecode != null) {
-                    try {
-                        bytecode.close();
-                    } catch (IOException ignored) {
-
-                    }
-                }
-                return reflect.forClass(clazz);
-            } else {
-                if (bytecode == null) {
-                    bytecode = new BytecodeClassDataFetcher(reflect, Collections.singletonList(Paths.get("mods")));
-                }
-                return bytecode.forClass(clazz);
-            }
-        }
+        return CLASS_DATA_FETCHER;
     }
 }

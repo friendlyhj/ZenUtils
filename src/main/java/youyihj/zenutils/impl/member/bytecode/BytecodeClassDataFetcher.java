@@ -7,22 +7,22 @@ import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
  * @author youyihj
  */
 public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
-    private final List<FileSystem> jars = new ArrayList<>();
+    private ClassBytesProvider bytesProvider;
     private final Map<String, ClassData> cache = new HashMap<>();
     private final Set<String> absentTries = new HashSet<>();
     private final ClassDataFetcher parent;
     private boolean closed;
 
-    public BytecodeClassDataFetcher(ClassDataFetcher parent, List<Path> classpath) {
+    public BytecodeClassDataFetcher(ClassDataFetcher parent, ClassBytesProvider bytesProvider) {
         this.parent = parent;
+        this.bytesProvider = bytesProvider;
         cache.put("I", ReflectionClassData.of(int.class));
         cache.put("J", ReflectionClassData.of(long.class));
         cache.put("F", ReflectionClassData.of(float.class));
@@ -32,25 +32,17 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
         cache.put("B", ReflectionClassData.of(byte.class));
         cache.put("C", ReflectionClassData.of(char.class));
         cache.put("V", ReflectionClassData.of(void.class));
-        try {
-            for (Path path : classpath) {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.getFileName().toString().endsWith(".jar")) {
-                            jars.add(FileSystems.newFileSystem(file, null));
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read a jar of classpath", e);
-        }
+    }
+
+    public BytecodeClassDataFetcher(ClassDataFetcher parent, List<Path> classpath) {
+        this(parent, new ClasspathBytesProvider(classpath));
     }
 
     @Override
     public ClassData forName(String className) throws ClassNotFoundException {
+        if (closed) {
+            return parent.forName(className);
+        }
         if (cache.containsKey(className)) {
             return cache.get(className);
         } else {
@@ -79,14 +71,18 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
 
     @Override
     public void close() throws IOException {
-        closed = true;
-        for (FileSystem jar : jars) {
-            jar.close();
+        if (closed) {
+            return;
         }
+        bytesProvider.close();
+        closed = true;
+        bytesProvider = null;
+        cache.clear();
+        absentTries.clear();
     }
 
     /* package-private */ TypeData type(String descriptor, String genericInfo) {
-        if (descriptor.startsWith("L") || descriptor.length() == 1) {
+        if (descriptor.length() == 1) {
             try {
                 return forName(descriptor);
             } catch (ClassNotFoundException ignored) {
@@ -96,26 +92,10 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     }
 
     private ClassData findClass(String className) throws ClassNotFoundException {
-        if (!closed) {
-            String[] split = className.split("\\.");
-            String first = split[0];
-            String[] more = new String[split.length - 1];
-            System.arraycopy(split, 1, more, 0, more.length);
-            if (more.length > 0) {
-                more[more.length - 1] = more[more.length - 1] + ".class";
-            } else {
-                first += ".class";
-            }
-            for (FileSystem jar : jars) {
-                Path classPath = jar.getPath(first, more);
-                if (Files.exists(classPath)) {
-                    try {
-                        return new BytecodeClassData(Files.readAllBytes(classPath), this);
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
+        try {
+            return new BytecodeClassData(bytesProvider.getClassBytes(className), this);
+        } catch (ClassNotFoundException e) {
+            return parent.forName(className);
         }
-        return parent.forName(className);
     }
 }

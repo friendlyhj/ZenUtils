@@ -8,15 +8,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeArrayBasic;
-import stanhebben.zenscript.type.ZenTypeArrayList;
-import stanhebben.zenscript.type.ZenTypeAssociative;
+import stanhebben.zenscript.type.*;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.LiteralType;
+import youyihj.zenutils.impl.member.bytecode.MethodParameterParser;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeClass;
@@ -40,14 +39,33 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     @Final
     private Map<Class<?>, ZenType> types;
 
-    private final Map<String, ZenType> literalTypes = InternalUtils.make(new HashMap<>(), map -> {
+    private final Map<String, ZenType> predefinedTypes = InternalUtils.make(new HashMap<>(), map -> {
         map.put("Ljava/lang/Object;", ZenTypeJavaNative.OBJECT);
         map.put("Ljava/lang/String;", ZenType.STRING);
         map.put("Ljava/lang/Class;", ZenTypeClass.INSTANCE);
+        map.put("Ljava/lang/Boolean;", ZenType.BOOLOBJECT);
+        map.put("Ljava/lang/Integer;", ZenType.INTOBJECT);
+        map.put("Ljava/lang/Long;", ZenType.LONGOBJECT);
+        map.put("Ljava/lang/Float;", ZenType.FLOATOBJECT);
+        map.put("Ljava/lang/Double;", ZenType.DOUBLEOBJECT);
+        map.put("Ljava/lang/Byte;", ZenType.BYTEOBJECT);
+        map.put("Ljava/lang/Short;", ZenType.SHORTOBJECT);
+        map.put("I", ZenType.INT);
+        map.put("Z", ZenType.BOOL);
+        map.put("J", ZenType.LONG);
+        map.put("F", ZenType.FLOAT);
+        map.put("D", ZenType.DOUBLE);
+        map.put("B", ZenType.BYTE);
+        map.put("S", ZenType.SHORT);
+        map.put("V", ZenType.VOID);
     });
+
+    public final Map<String, ZenType> literalTypes = new HashMap<>();
 
     @Shadow
     public abstract ZenType getType(Type type);
+
+    @Shadow public abstract ZenType getClassType(Class cls);
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void registerClassType(CallbackInfo ci) {
@@ -57,7 +75,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     @Inject(method = "getType", at = @At(value = "HEAD"), cancellable = true)
     private void handleComplexTypes(Type type, CallbackInfoReturnable<ZenType> cir) {
         if (type instanceof LiteralType) {
-            if (literalTypes.containsKey(type.toString())) {
+            if (predefinedTypes.containsKey(type.toString())) {
+                cir.setReturnValue(predefinedTypes.get(type.toString()));
+            } else if (literalTypes.containsKey(type.toString())) {
                 cir.setReturnValue(literalTypes.get(type.toString()));
             } else {
                 ZenType zenLiteralType = zu$handleLiteralType(type.toString());
@@ -147,12 +167,22 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
     }
 
     @Unique
-    private ZenTypeJavaNative zu$checkNative(ClassData classData) {
+    private ZenType zu$checkNative(ClassData classData) {
         if (NativeClassValidate.isValid(classData)) {
             return new ZenTypeJavaNative(classData, this);
-        } else {
-            return ZenTypeJavaNative.OBJECT;
+        } else if (classData.isAnnotationPresent(ZenClass.class)) {
+            String zenName = classData.getAnnotation(ZenClass.class).value();
+            for (ZenType value : types.values()) {
+                if (value.getName().equals(zenName)) {
+                    return value;
+                }
+            }
+            try {
+                return getClassType(Class.forName(classData.name()));
+            } catch (ClassNotFoundException ignored) {
+            }
         }
+        return ZenTypeJavaNative.OBJECT;
     }
 
     /**

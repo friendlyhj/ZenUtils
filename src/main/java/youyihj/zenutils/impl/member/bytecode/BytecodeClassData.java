@@ -174,7 +174,8 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         return bytecode;
     }
 
-    public BytecodeClassDataFetcher getClassDataFetcher() {
+    @Override
+    public BytecodeClassDataFetcher fetcher() {
         return classDataFetcher;
     }
 

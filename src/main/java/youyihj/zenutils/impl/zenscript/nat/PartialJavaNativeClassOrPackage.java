@@ -52,13 +52,13 @@ public class PartialJavaNativeClassOrPackage implements IPartialExpression {
 
     @Override
     public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
-        environment.error(position, "no such class or method");
+        environment.error(position, "no such class or method: " + prefix);
         return new ExpressionInvalid(position);
     }
 
     @Override
     public ZenType[] predictCallTypes(int numArguments) {
-        return new ZenType[0];
+        return new ZenType[numArguments];
     }
 
     @Override

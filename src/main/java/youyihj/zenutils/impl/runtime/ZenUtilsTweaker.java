@@ -22,6 +22,7 @@ import stanhebben.zenscript.ZenModule;
 import stanhebben.zenscript.ZenParsedFile;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.compiler.TypeRegistry;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.type.ZenType;
 import youyihj.zenutils.api.reload.ActionReloadCallback;
@@ -120,8 +121,9 @@ public class ZenUtilsTweaker implements ITweaker {
         currentLoader = loaderName;
         try {
             resetPrimitiveCastingRules();
+            rebuildLiteralTypesCache();
         } catch (Exception e) {
-            CraftTweakerAPI.logError("Failed to reset primitive casting rules", e);
+            CraftTweakerAPI.logError("Failed to reset type info", e);
         }
         ScriptStatus origin = InternalUtils.getScriptStatus();
         if (isSyntaxCommand) {
@@ -479,5 +481,12 @@ public class ZenUtilsTweaker implements ITweaker {
         for (ZenType primitiveType : primitiveTypes) {
             castingRulesField.set(primitiveType, null);
         }
+    }
+
+    private static void rebuildLiteralTypesCache() throws Exception {
+        //noinspection JavaReflectionMemberAccess
+        Field field = TypeRegistry.class.getField("literalTypes");
+        Map<?, ?> literalTypes = (Map<?, ?>) field.get(GlobalRegistry.getTypes());
+        literalTypes.clear();
     }
 }

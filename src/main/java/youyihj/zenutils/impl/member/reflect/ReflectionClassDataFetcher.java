@@ -26,7 +26,7 @@ public class ReflectionClassDataFetcher implements ClassDataFetcher {
 
     @Override
     public ClassData forName(String className) throws ClassNotFoundException {
-        return ReflectionClassData.of(Class.forName(className, false, classLoader));
+        return ReflectionClassData.of(Class.forName(className.replace('/', '.'), false, classLoader));
     }
 
     @Override

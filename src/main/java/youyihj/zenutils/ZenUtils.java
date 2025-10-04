@@ -71,6 +71,11 @@ public class ZenUtils {
         PlayerInteractionSimulation.registerNetworkMessage();
         asmDataTable = event.getAsmData();
         readSidedZenRegisters(event.getSide());
+        try {
+            // switch read mod classes from mods folder to launch class loader (run transformers)
+            InternalUtils.getClassDataFetcher().close();
+        } catch (Exception ignored) {
+        }
     }
 
     @Mod.EventHandler

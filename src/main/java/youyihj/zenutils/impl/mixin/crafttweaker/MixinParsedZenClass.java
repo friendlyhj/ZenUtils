@@ -1,7 +1,5 @@
 package youyihj.zenutils.impl.mixin.crafttweaker;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -28,7 +26,6 @@ import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.member.ClassData;
-import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 import youyihj.zenutils.impl.mixin.itf.IEnvironmentClassExtension;
 import youyihj.zenutils.impl.mixin.itf.IParsedClassConstructorExtension;
 import youyihj.zenutils.impl.mixin.itf.IParsedZenClassExtension;
@@ -135,7 +132,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                     ClassData classData;
                     try {
                         classData = InternalUtils.getClassDataFetcher().forName(target);
-                        if (classData instanceof ReflectionClassData) {
+                        if (classData.fetcher() != InternalUtils.getClassDataFetcher()) {
                             if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
                                 isMixinClass = false;
                                 classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");

@@ -1,10 +1,7 @@
 package youyihj.zenutils.impl.member.reflect;
 
 import com.google.common.collect.Lists;
-import youyihj.zenutils.impl.member.ClassData;
-import youyihj.zenutils.impl.member.ExecutableData;
-import youyihj.zenutils.impl.member.FieldData;
-import youyihj.zenutils.impl.member.LookupRequester;
+import youyihj.zenutils.impl.member.*;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -118,7 +115,19 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
         if (classData instanceof ReflectionClassData) {
             return clazz.isAssignableFrom(((ReflectionClassData) classData).clazz);
         }
-        // TODO: check
+        if (name().equals(classData.name())) {
+            return true;
+        }
+        List<ClassData> interfaces = classData.interfaces();
+        for (ClassData anInterface : interfaces) {
+            if (name().equals(anInterface.name())) {
+                return true;
+            }
+        }
+        ClassData superClass = classData.superClass();
+        if (superClass != null) {
+            return isAssignableFrom(superClass);
+        }
         return false;
     }
 
@@ -153,5 +162,10 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
     @Override
     public String toString() {
         return descriptor();
+    }
+
+    @Override
+    public ClassDataFetcher fetcher() {
+        return new ReflectionClassDataFetcher(clazz.getClassLoader());
     }
 }

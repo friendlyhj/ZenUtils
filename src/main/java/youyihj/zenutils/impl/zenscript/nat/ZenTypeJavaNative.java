@@ -317,7 +317,7 @@ public class ZenTypeJavaNative extends ZenType {
             if (classes.containsKey(className)) {
                 return classes.get(className);
             } else {
-                classDataFetcherRef = new WeakReference<>(classData.getClassDataFetcher());
+                classDataFetcherRef = new WeakReference<>(classData.fetcher());
                 Class<?> clazz = loadClass(classData.name());
                 classes.put(className, clazz);
                 return clazz;

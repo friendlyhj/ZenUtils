@@ -30,4 +30,6 @@ public interface ClassData extends TypeData, AnnotatedMember {
     ClassData superClass();
 
     List<ClassData> interfaces();
+
+    ClassDataFetcher fetcher();
 }

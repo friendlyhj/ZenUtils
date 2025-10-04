@@ -53,13 +53,13 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
             String signature = methodNode.signature;
             String descriptor = Type.getReturnType(methodNode.desc).getDescriptor();
             if (signature == null) {
-                returnType = declaringClass.getClassDataFetcher().type(descriptor, null);
+                returnType = declaringClass.fetcher().type(descriptor, null);
             } else {
                 String returnAndException = signature.substring(signature.indexOf(')') + 1);
                 if (returnAndException.contains("^")) {
-                    returnType = declaringClass.getClassDataFetcher().type(descriptor, signature.substring(0, signature.indexOf('^')));
+                    returnType = declaringClass.fetcher().type(descriptor, signature.substring(0, signature.indexOf('^')));
                 } else {
-                    returnType = declaringClass.getClassDataFetcher().type(descriptor, returnAndException);
+                    returnType = declaringClass.fetcher().type(descriptor, returnAndException);
                 }
             }
         }
@@ -72,13 +72,13 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
             parameters = new ArrayList<>();
             if (methodNode.signature == null) {
                 for (Type parameter : Type.getMethodType(methodNode.desc).getArgumentTypes()) {
-                    parameters.add(declaringClass.getClassDataFetcher().type(parameter.getDescriptor(), null));
+                    parameters.add(declaringClass.fetcher().type(parameter.getDescriptor(), null));
                 }
             } else {
                 List<String> genericInfos = new MethodParameterParser(methodNode.signature).parse();
                 Type[] descriptors = Type.getMethodType(methodNode.desc).getArgumentTypes();
                 for (int i = 0; i < descriptors.length; i++) {
-                    parameters.add(declaringClass.getClassDataFetcher().type(descriptors[i].getDescriptor(), genericInfos.get(i)));
+                    parameters.add(declaringClass.fetcher().type(descriptors[i].getDescriptor(), genericInfos.get(i)));
                 }
             }
         }
