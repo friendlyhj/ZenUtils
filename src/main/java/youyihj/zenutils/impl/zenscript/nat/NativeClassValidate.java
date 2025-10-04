@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 
 /**
  * @author youyihj
@@ -43,7 +44,9 @@ public class NativeClassValidate {
             StringBuilder.class.getName(), // meh, ~ operator is same
             CharSequence.class.getName(),
             Class.class.getName(), // has extra checks
-            Color.class.getName()
+            Color.class.getName(),
+            Runnable.class.getName(),
+            Callable.class.getName()
     );
 
     static {
