@@ -52,7 +52,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
             fields.addAll(Arrays.asList(superclass.getDeclaredFields()));
         }
         return fields.stream()
-                .filter(it -> requester.allows(it.getModifiers()))
+                .filter(it -> requester.allows(it.getModifiers(), it.isAnnotationPresent(VisibleSynthetic.class)))
                 .map(ReflectionFieldData::new)
                 .collect(Collectors.toList());
     }
@@ -66,7 +66,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
         List<ExecutableData> methods = new ArrayList<>();
         Set<String> usedDescriptors = new HashSet<>();
         for (Method method : clazz.getDeclaredMethods()) {
-            if (requester.allows(method.getModifiers())) {
+            if (requester.allows(method.getModifiers(), method.isAnnotationPresent(VisibleSynthetic.class))) {
                 ReflectionExecutableData methodData = new ReflectionExecutableData(method);
                 methods.add(methodData);
                 usedDescriptors.add(methodData.name() + methodData.descriptorWithoutReturnType());
@@ -82,7 +82,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
         }
         for (Class<?> itf : clazz.getInterfaces()) {
             for (Method method : itf.getDeclaredMethods()) {
-                if (requester.allows(method.getModifiers())) {
+                if (requester.allows(method.getModifiers(), method.isAnnotationPresent(VisibleSynthetic.class))) {
                     ReflectionExecutableData interfaceMethodData = new ReflectionExecutableData(method);
                     if (usedDescriptors.add(interfaceMethodData.name() + interfaceMethodData.descriptorWithoutReturnType())) {
                         methods.add(interfaceMethodData);
@@ -100,7 +100,7 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
 
     private List<ExecutableData> constructors0(LookupRequester requester) {
         return Arrays.stream(clazz.getDeclaredConstructors())
-                .filter(it -> requester.allows(it.getModifiers()))
+                .filter(it -> requester.allows(it.getModifiers(), it.isAnnotationPresent(VisibleSynthetic.class)))
                 .map(ReflectionExecutableData::new)
                 .collect(Collectors.toList());
     }

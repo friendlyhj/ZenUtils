@@ -50,8 +50,9 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     private List<FieldData> fields0(LookupRequester requester) {
         List<FieldData> fieldData = new ArrayList<>();
         for (FieldNode field : classNode.fields) {
-            if (requester.allows(field.access)) {
-                fieldData.add(new BytecodeFieldData(field, this));
+            BytecodeFieldData data = new BytecodeFieldData(field, this);
+            if (requester.allows(field.access, data.isAnnotationPresent(VisibleSynthetic.class))) {
+                fieldData.add(data);
             }
         }
         ClassData superClass = superClass();
@@ -70,8 +71,8 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
         List<ExecutableData> methods = new ArrayList<>();
         Set<String> usedDescriptions = new HashSet<>();
         for (MethodNode method : classNode.methods) {
-            if (!method.name.startsWith("<") && requester.allows(method.access)) {
-                BytecodeMethodData methodData = new BytecodeMethodData(method, this);
+            BytecodeMethodData methodData = new BytecodeMethodData(method, this);
+            if (!method.name.startsWith("<") && requester.allows(method.access, methodData.isAnnotationPresent(VisibleSynthetic.class))) {
                 methods.add(methodData);
                 usedDescriptions.add(methodData.name() + methodData.descriptorWithoutReturnType());
             }
@@ -103,8 +104,9 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     private List<ExecutableData> constructors0(LookupRequester requester) {
         List<ExecutableData> constructors = new ArrayList<>();
         for (MethodNode method : classNode.methods) {
-            if (method.name.equals("<init>") && requester.allows(method.access)) {
-                constructors.add(new BytecodeMethodData(method, this));
+            BytecodeMethodData methodData = new BytecodeMethodData(method, this);
+            if (method.name.equals("<init>") && requester.allows(method.access, methodData.isAnnotationPresent(VisibleSynthetic.class))) {
+                constructors.add(methodData);
             }
         }
         return constructors;

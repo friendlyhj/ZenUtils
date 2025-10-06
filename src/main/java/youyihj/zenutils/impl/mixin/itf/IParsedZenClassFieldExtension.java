@@ -7,4 +7,8 @@ import stanhebben.zenscript.util.ZenPosition;
  */
 public interface IParsedZenClassFieldExtension {
     void setPosition(ZenPosition position);
+
+    void setSynthetic(boolean synthetic);
+
+    String getOwnerName();
 }

@@ -16,7 +16,7 @@ public enum LookupRequester {
         this.modifierMask = modifierMask;
     }
 
-    public boolean allows(int modifier) {
-        return (this == SELF || (modifierMask & modifier) != 0) && (modifier & Opcodes.ACC_SYNTHETIC) == 0;
+    public boolean allows(int modifier, boolean visibleSynthetic) {
+        return (this == SELF || (modifierMask & modifier) != 0) && (visibleSynthetic || (modifier & Opcodes.ACC_SYNTHETIC) == 0);
     }
 }

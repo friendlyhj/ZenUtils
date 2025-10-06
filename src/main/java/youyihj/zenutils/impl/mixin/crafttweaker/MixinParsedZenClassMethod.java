@@ -64,23 +64,32 @@ public abstract class MixinParsedZenClassMethod {
                     from = @At("HEAD"),
                     to = @At(value = "NEW", target = "(Lstanhebben/zenscript/util/MethodOutput;Lstanhebben/zenscript/compiler/IEnvironmentClass;)Lstanhebben/zenscript/compiler/EnvironmentMethod;")
             ))
-    private int modifyModifiers(int constant, @Share("isStatic") LocalBooleanRef isStatic, @Share("preprocessors") LocalRef<List<MixinPreprocessor>> mixinPreprocessors) {
+    private int modifyModifiers(int constant, @Share("isStatic") LocalBooleanRef isStatic, @Share("preprocessors") LocalRef<List<MixinPreprocessor>> mixinPreprocessors, @Share("isSynthetic") LocalBooleanRef isSynthetic) {
         int accessModifier = Opcodes.ACC_PUBLIC;
         int staticModifier = 0;
+        int syntheticModifier = 0;
         if (isStatic.get()) {
             staticModifier = Opcodes.ACC_STATIC;
+            syntheticModifier = Opcodes.ACC_SYNTHETIC;
         }
         for (MixinPreprocessor mixinPreprocessor : mixinPreprocessors.get()) {
             String type = mixinPreprocessor.getAnnotation().getLeft();
             if (type.equals("Inject") || type.equals("Redirect") || type.startsWith("Modify")) {
                 accessModifier = Opcodes.ACC_PRIVATE;
+                syntheticModifier = 0;
+            }
+            if (type.equals("Shadow")) {
+                syntheticModifier = 0;
             }
         }
-        return accessModifier | staticModifier;
+        if (syntheticModifier != 0) {
+            isSynthetic.set(true);
+        }
+        return accessModifier | staticModifier | syntheticModifier;
     }
 
     @Inject(method = "writeAll", at = @At(value = "INVOKE", target = "Lstanhebben/zenscript/util/MethodOutput;end()V"))
-    private void applyAnnotation(ClassVisitor newClass, IEnvironmentClass environmentNewClass, CallbackInfo ci, @Local MethodOutput methodOutput, @Share("preprocessors") LocalRef<List<MixinPreprocessor>> mixinPreprocessors) {
+    private void applyAnnotation(ClassVisitor newClass, IEnvironmentClass environmentNewClass, CallbackInfo ci, @Local MethodOutput methodOutput, @Share("preprocessors") LocalRef<List<MixinPreprocessor>> mixinPreprocessors, @Share("isSynthetic") LocalBooleanRef isSynthetic) {
         for (MixinPreprocessor mixinPreprocessor : mixinPreprocessors.get()) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             ZenPosition position = method.getPosition();
@@ -89,6 +98,9 @@ public abstract class MixinParsedZenClassMethod {
                     methodOutput.getVisitor()::visitAnnotation,
                     it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
             );
+        }
+        if (isSynthetic.get()) {
+            methodOutput.getVisitor().visitAnnotation("Lyouyihj/zenutils/impl/member/VisibleSynthetic;", true).visitEnd();
         }
     }
 }
