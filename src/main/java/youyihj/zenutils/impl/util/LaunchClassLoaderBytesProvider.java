@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
  */
 public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
     private final Method runTransformersMethod;
-    private final Method runExplicitTransformersMethod;
     private final Method transfromNameMethod;
     private final Method untransformNameMethod;
 
@@ -25,13 +24,6 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
             this.transfromNameMethod.setAccessible(true);
             this.untransformNameMethod = classLoaderClass.getDeclaredMethod("untransformName", String.class);
             this.untransformNameMethod.setAccessible(true);
-
-            if (!Reference.IS_CLEANROOM) {
-                this.runExplicitTransformersMethod = null;
-            } else {
-                this.runExplicitTransformersMethod = classLoaderClass.getDeclaredMethod("runExplicitTransformers", String.class, byte[].class);
-                this.runExplicitTransformersMethod.setAccessible(true);
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -51,11 +43,7 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
             if (untransformedBytecodes == null) {
                 throw new ClassNotFoundException(className);
             }
-            byte[] transformedBytecodes = (byte[]) runTransformersMethod.invoke(classLoader, untransformName, transformName, untransformedBytecodes);
-            if (Reference.IS_CLEANROOM) {
-                transformedBytecodes = (byte[]) runExplicitTransformersMethod.invoke(classLoader, transformName, transformedBytecodes);
-            }
-            return transformedBytecodes;
+            return (byte[]) runTransformersMethod.invoke(classLoader, untransformName, transformName, untransformedBytecodes);
         } catch (Exception e) {
             throw new ClassNotFoundException(className);
         }
