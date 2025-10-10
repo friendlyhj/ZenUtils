@@ -92,6 +92,7 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     }
 
     private ClassData findClass(String className) throws ClassNotFoundException {
+        className = className.replace('/', '.');
         try {
             return new BytecodeClassData(bytesProvider.getClassBytes(className), this);
         } catch (ClassExcludedException e) {
