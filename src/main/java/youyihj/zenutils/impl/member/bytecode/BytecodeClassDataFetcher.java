@@ -94,6 +94,8 @@ public class BytecodeClassDataFetcher implements ClassDataFetcher, Closeable {
     private ClassData findClass(String className) throws ClassNotFoundException {
         try {
             return new BytecodeClassData(bytesProvider.getClassBytes(className), this);
+        } catch (ClassExcludedException e) {
+            throw new ClassNotFoundException(className, e);
         } catch (ClassNotFoundException e) {
             return parent.forName(className);
         }

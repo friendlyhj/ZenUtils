@@ -4,6 +4,7 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.impl.member.bytecode.ClassBytesProvider;
+import youyihj.zenutils.impl.member.bytecode.ClassExcludedException;
 
 import java.lang.reflect.Method;
 
@@ -30,14 +31,15 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
     }
 
     @Override
-    public byte[] getClassBytes(String className) throws ClassNotFoundException {
+    public byte[] getClassBytes(String className) throws ClassNotFoundException, ClassExcludedException {
+        // minecraft obfuscated classes do not have package names
+        // and I don't believe any mod class would be in default package
+        if (!className.contains(".")) {
+            throw new ClassExcludedException(className);
+        }
         LaunchClassLoader classLoader = Launch.classLoader;
         try {
             String transformName = transfromNameMethod.invoke(classLoader, className).toString();
-            // obfuscated
-            if (!transformName.equals(className)) {
-                throw new ClassNotFoundException(className);
-            }
             String untransformName = untransformNameMethod.invoke(classLoader, className).toString();
             byte[] untransformedBytecodes = classLoader.getClassBytes(untransformName);
             if (untransformedBytecodes == null) {

@@ -7,7 +7,7 @@ import java.io.IOException;
  * @author youyihj
  */
 public interface ClassBytesProvider extends Closeable {
-    byte[] getClassBytes(String className) throws ClassNotFoundException;
+    byte[] getClassBytes(String className) throws ClassNotFoundException, ClassExcludedException;
 
     @Override
     default void close() throws IOException {
