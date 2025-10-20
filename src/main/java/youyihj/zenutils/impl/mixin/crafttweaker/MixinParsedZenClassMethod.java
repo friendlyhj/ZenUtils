@@ -74,7 +74,7 @@ public abstract class MixinParsedZenClassMethod {
         }
         for (MixinPreprocessor mixinPreprocessor : mixinPreprocessors.get()) {
             String type = mixinPreprocessor.getAnnotation().getLeft();
-            if (type.equals("Inject") || type.equals("Redirect") || type.startsWith("Modify")) {
+            if (type.equals("Inject") || type.equals("Redirect") || type.startsWith("Modify") || type.startsWith("Wrap")) {
                 accessModifier = Opcodes.ACC_PRIVATE;
                 syntheticModifier = 0;
             }

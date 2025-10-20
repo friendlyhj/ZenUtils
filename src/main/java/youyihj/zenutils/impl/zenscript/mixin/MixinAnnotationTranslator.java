@@ -2,6 +2,12 @@ package youyihj.zenutils.impl.zenscript.mixin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReceiver;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.IPreprocessor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -54,6 +60,13 @@ public class MixinAnnotationTranslator {
                 Redirect.class,
                 Surrogate.class,
                 Desc.class,
+
+                ModifyExpressionValue.class,
+                ModifyReceiver.class,
+                ModifyReturnValue.class,
+                WrapWithCondition.class,
+                WrapMethod.class,
+                WrapOperation.class,
 
                 At.class,
                 Slice.class,

@@ -19,6 +19,7 @@ import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfo;
 import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfoReturnable;
+import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinOperation;
 import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
 import java.lang.reflect.Method;
@@ -47,7 +48,9 @@ public abstract class MixinCraftTweakerAPI {
         if (Configuration.enableMixin) {
             GlobalRegistry.getRoot().put("mixin.CallbackInfo", pos -> new PartialType(pos, ZenTypeMixinCallbackInfo.INSTANCE), null);
             GlobalRegistry.getRoot().put("mixin.CallbackInfoReturnable", pos -> new PartialType(pos, ZenTypeMixinCallbackInfoReturnable.INSTANCE), null);
+            GlobalRegistry.getRoot().put("mixin.Operation", pos -> new PartialType(pos, ZenTypeMixinOperation.INSTANCE), null);
         }
+
         PreprocessorManager preprocessorManager = tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(SuppressErrorPreprocessor.NAME, SuppressErrorPreprocessor::new);
         preprocessorManager.registerPreprocessorAction(NoFixRecipeBookPreprocessor.NAME, NoFixRecipeBookPreprocessor::new);
