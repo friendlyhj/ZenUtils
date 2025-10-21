@@ -8,6 +8,9 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Cancellable;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.IPreprocessor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -70,7 +73,11 @@ public class MixinAnnotationTranslator {
 
                 At.class,
                 Slice.class,
-                Constant.class
+                Constant.class,
+
+                Cancellable.class,
+                Local.class,
+                Share.class
         );
     }
 
