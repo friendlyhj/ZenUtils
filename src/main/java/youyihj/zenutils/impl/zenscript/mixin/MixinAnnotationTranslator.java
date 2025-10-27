@@ -115,8 +115,7 @@ public class MixinAnnotationTranslator {
     public static void translate(String type, JsonElement json, ZenPosition position, BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer) throws ParseException {
         Class<?> annotationType = SUPPORTED_ANNOTATIONS.get(type);
         if (annotationType == null) {
-            error("unsupported mixin annotation: " + type, position);
-            return;
+            throw error("unsupported mixin annotation: " + type, position);
         }
         AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(annotationType), isVisibleOnRuntime(annotationType));
         for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
@@ -126,8 +125,7 @@ public class MixinAnnotationTranslator {
             try {
                 expectedType = annotationType.getMethod(key).getReturnType();
             } catch (NoSuchMethodException e) {
-                error(key + " does not exist in " + annotationType, position);
-                return;
+                throw error(key + " does not exist in " + annotationType, position);
             }
             writeContentToAnnotation(visitor, expectedType, key, value, position);
         }
@@ -207,13 +205,13 @@ public class MixinAnnotationTranslator {
         if (InternalUtils.hasMethod(annotationType, "remap")) {
             visitor.visit("remap", false);
             if (json.has("remap")) {
-                error("remap always is false", position);
+                throw error("remap always is false", position);
             }
         }
     }
 
-    private static void error(String message, ZenPosition position) throws ParseException {
-        throw new ParseException(position.getFile(), position.getLine() - 1, 0, message);
+    private static ParseException error(String message, ZenPosition position) {
+        return new ParseException(position.getFile(), position.getLine() - 1, 0, message);
     }
 
     public static class RepeatableAnnotationHelper {
