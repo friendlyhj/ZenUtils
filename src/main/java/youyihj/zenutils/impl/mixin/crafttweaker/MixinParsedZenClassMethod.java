@@ -129,6 +129,8 @@ public abstract class MixinParsedZenClassMethod {
 
     @Unique
     private void generatePlainMixinMethod(List<MixinPreprocessor> mixinPreprocessors, MethodOutput methodOutput) {
+        MixinAnnotationTranslator.RepeatableAnnotationHelper definitions = new MixinAnnotationTranslator.RepeatableAnnotationHelper("Definition");
+        MixinAnnotationTranslator.RepeatableAnnotationHelper expressions = new MixinAnnotationTranslator.RepeatableAnnotationHelper("Expression");
         for (MixinPreprocessor mixinPreprocessor : mixinPreprocessors) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             String annotationName = annotation.getLeft();
@@ -139,19 +141,22 @@ public abstract class MixinParsedZenClassMethod {
                 annotationBody.remove("parameter");
                 annotationBody.remove("ref");
                 MixinAnnotationTranslator.translate(
-                        annotationName, annotationBody,
-                        (name, visible) -> methodOutput.getVisitor().visitParameterAnnotation(parameterIndex >= 0 ? parameterIndex : method.getArguments().size() + parameterIndex, name, visible),
-                        it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
+                        annotationName, annotationBody, position,
+                        (name, visible) -> methodOutput.getVisitor().visitParameterAnnotation(parameterIndex >= 0 ? parameterIndex : method.getArguments().size() + parameterIndex, name, visible)
                 );
+            } else if ("Definition".equals(annotationName)) {
+                definitions.add(position, annotationBody);
+            } else if ("Expression".equals(annotationName)) {
+                expressions.add(position, annotationBody);
             } else {
                 MixinAnnotationTranslator.translate(
-                        annotationName, annotationBody,
-                        methodOutput.getVisitor()::visitAnnotation,
-                        it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
+                        annotationName, annotationBody, position,
+                        methodOutput.getVisitor()::visitAnnotation
                 );
             }
         }
-
+        definitions.writeAll(methodOutput.getVisitor()::visitAnnotation);
+        expressions.writeAll(methodOutput.getVisitor()::visitAnnotation);
     }
 
     @Unique

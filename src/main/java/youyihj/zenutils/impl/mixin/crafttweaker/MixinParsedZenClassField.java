@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import stanhebben.zenscript.definitions.zenclasses.ParsedZenClassField;
-import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.mixin.itf.IParsedZenClassFieldExtension;
@@ -77,9 +76,8 @@ public abstract class MixinParsedZenClassField implements IParsedZenClassFieldEx
         for (MixinPreprocessor mixinPreprocessor : MixinAnnotationTranslator.findAnnotation(position)) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             MixinAnnotationTranslator.translate(
-                    annotation.getLeft(), annotation.getRight(),
-                    instance::visitAnnotation,
-                    it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
+                    annotation.getLeft(), annotation.getRight(), position,
+                    instance::visitAnnotation
             );
         }
         if (isSynthetic) {

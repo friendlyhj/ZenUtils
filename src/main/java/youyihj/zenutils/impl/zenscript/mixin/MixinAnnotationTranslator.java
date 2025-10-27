@@ -2,6 +2,8 @@ package youyihj.zenutils.impl.zenscript.mixin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
@@ -15,6 +17,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.preprocessor.IPreprocessor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
 import org.spongepowered.asm.mixin.*;
@@ -24,6 +27,7 @@ import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -31,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * @author youyihj
@@ -77,7 +80,10 @@ public class MixinAnnotationTranslator {
 
                 Cancellable.class,
                 Local.class,
-                Share.class
+                Share.class,
+
+                Definition.class,
+                Expression.class
         );
     }
 
@@ -106,10 +112,11 @@ public class MixinAnnotationTranslator {
         return found;
     }
 
-    public static void translate(String type, JsonElement json, BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer, Function<String, ParseException> exceptionFactory) throws ParseException {
+    public static void translate(String type, JsonElement json, ZenPosition position, BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer) throws ParseException {
         Class<?> annotationType = SUPPORTED_ANNOTATIONS.get(type);
         if (annotationType == null) {
-            throw exceptionFactory.apply("unsupported mixin annotation: " + type);
+            error("unsupported mixin annotation: " + type, position);
+            return;
         }
         AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(annotationType), isVisibleOnRuntime(annotationType));
         for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
@@ -119,11 +126,12 @@ public class MixinAnnotationTranslator {
             try {
                 expectedType = annotationType.getMethod(key).getReturnType();
             } catch (NoSuchMethodException e) {
-                throw exceptionFactory.apply(key + " does not exist in " + annotationType);
+                error(key + " does not exist in " + annotationType, position);
+                return;
             }
-            writeContentToAnnotation(visitor, expectedType, key, value, exceptionFactory);
+            writeContentToAnnotation(visitor, expectedType, key, value, position);
         }
-        processAnnotation(annotationType, visitor, json.getAsJsonObject(), exceptionFactory);
+        processAnnotation(annotationType, visitor, json.getAsJsonObject(), position);
         visitor.visitEnd();
     }
 
@@ -152,7 +160,7 @@ public class MixinAnnotationTranslator {
         return targets;
     }
 
-    private static void writeContentToAnnotation(AnnotationVisitor visitor, Class<?> expectedType, String key, JsonElement value, Function<String, ParseException> exceptionFactory) {
+    private static void writeContentToAnnotation(AnnotationVisitor visitor, Class<?> expectedType, String key, JsonElement value, ZenPosition position) {
         if (expectedType == int.class) {
             visitor.visit(key, value.getAsInt());
         } else if (expectedType == long.class) {
@@ -179,19 +187,15 @@ public class MixinAnnotationTranslator {
             AnnotationVisitor arrayVisitor = visitor.visitArray(key);
             if (value.isJsonArray()) {
                 for (JsonElement content : value.getAsJsonArray()) {
-                    writeContentToAnnotation(arrayVisitor, expectedType.getComponentType(), key, content, exceptionFactory);
+                    writeContentToAnnotation(arrayVisitor, expectedType.getComponentType(), key, content, position);
                 }
                 arrayVisitor.visitEnd();
             } else {
-                writeContentToAnnotation(arrayVisitor, expectedType.getComponentType(), key, value, exceptionFactory);
+                writeContentToAnnotation(arrayVisitor, expectedType.getComponentType(), key, value, position);
                 arrayVisitor.visitEnd();
             }
-        } else if (expectedType == At.class) {
-            translate("At", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
-        } else if (expectedType == Slice.class) {
-            translate("Slice", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
-        } else if (expectedType == Constant.class) {
-            translate("Constant", value, (type, visible) -> visitor.visitAnnotation(key, type), exceptionFactory);
+        } else if (expectedType.isAnnotation()) {
+            translate(expectedType.getSimpleName(), value, position, (type, visible) -> visitor.visitAnnotation(key, type));
         }
     }
 
@@ -199,12 +203,49 @@ public class MixinAnnotationTranslator {
         return annotationType.getAnnotation(Retention.class).value() == RetentionPolicy.RUNTIME;
     }
 
-    private static void processAnnotation(Class<?> annotationType, AnnotationVisitor visitor, JsonObject json, Function<String, ParseException> exceptionFactory) throws ParseException {
+    private static void processAnnotation(Class<?> annotationType, AnnotationVisitor visitor, JsonObject json, ZenPosition position) throws ParseException {
         if (InternalUtils.hasMethod(annotationType, "remap")) {
             visitor.visit("remap", false);
             if (json.has("remap")) {
-                throw exceptionFactory.apply("remap always is false");
+                error("remap always is false", position);
             }
+        }
+    }
+
+    private static void error(String message, ZenPosition position) throws ParseException {
+        throw new ParseException(position.getFile(), position.getLine() - 1, 0, message);
+    }
+
+    public static class RepeatableAnnotationHelper {
+        private final List<Pair<ZenPosition, JsonElement>> elements = new ArrayList<>();
+        private final Class<?> repeatableContainer;
+        private final Class<?> annotationType;
+
+        public RepeatableAnnotationHelper(String type) {
+            Class<?> annotationType = SUPPORTED_ANNOTATIONS.get(type);
+            this.annotationType = annotationType;
+            if (annotationType == null || !annotationType.isAnnotationPresent(Repeatable.class)) {
+                throw new IllegalArgumentException("unsupported mixin repeatable annotation: " + type);
+            }
+            repeatableContainer = annotationType.getAnnotation(Repeatable.class).value();
+        }
+
+        public void add(ZenPosition position, JsonElement element) {
+            elements.add(Pair.of(position, element));
+        }
+
+        public void writeAll(BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer) throws ParseException {
+            if (elements.isEmpty()) {
+                return;
+            }
+            AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(repeatableContainer), isVisibleOnRuntime(repeatableContainer));
+            String valueKey = "value";
+            AnnotationVisitor arrayVisitor = visitor.visitArray(valueKey);
+            for (Pair<ZenPosition, JsonElement> element : elements) {
+                writeContentToAnnotation(arrayVisitor, annotationType, valueKey, element.getRight(), element.getLeft());
+            }
+            arrayVisitor.visitEnd();
+            visitor.visitEnd();
         }
     }
 }

@@ -20,7 +20,6 @@ import stanhebben.zenscript.definitions.zenclasses.ParsedClassConstructor;
 import stanhebben.zenscript.definitions.zenclasses.ParsedZenClass;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
@@ -174,11 +173,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
     private void applyAnnotation(IEnvironmentGlobal environmentGlobal, CallbackInfo ci, @Local ClassWriter cw) {
         for (MixinPreprocessor mixinPreprocessor : preprocessors) {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
-            MixinAnnotationTranslator.translate(
-                    annotation.getLeft(), annotation.getRight(),
-                    cw::visitAnnotation,
-                    it -> new ParseException(position.getFile(), position.getLine() - 1, 0, it)
-            );
+            MixinAnnotationTranslator.translate(annotation.getLeft(), annotation.getRight(), position, cw::visitAnnotation);
         }
     }
 
