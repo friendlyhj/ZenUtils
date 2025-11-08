@@ -1,10 +1,14 @@
 package youyihj.zenutils.impl.core;
 
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author youyihj
@@ -16,11 +20,11 @@ import java.util.Map;
     It is fine for us, but introduces a lot of RAM waste.
     So some mods change the cache to guava's Cache to save RAM but lost our bytecodes.
     VintageFix sets the cache that contents will be expired after 1 minute, which produces issue for us.
-    Loliasm sets the cache that contents are weak references. But our bytecodes are strongly referenced in ZenModule and never garbage collected.
+    Loliasm sets the cache that contents are weak references which can be GCed anytime, producing issue for us too.
     But the phase of them two setting up the cache is different. VintageFix sets the cache very early (FMLLoadingPlugin), while Loliasm sets the cache "very" late (FMLLoadCompleteEvent).
     VintageFix's optimization is still important when loading textures, sounds, etc. We can not break both of them.
 
-    This class is a wrapper for VintageFix's cache, concatenated with our bytecodes. Loliasm will set its cache later, but like talking before, our bytecodes won't be lost in its cache.
+    This class is a wrapper for VintageFix's cache, concatenated with our bytecodes. Loliasm will set its cache later, so our bytecodes are strong referenced here.
 */
 public class LaunchClassLoaderResourceCache extends ForwardingMap<String, byte[]> {
     private final Map<String, byte[]> delegate;
@@ -28,9 +32,13 @@ public class LaunchClassLoaderResourceCache extends ForwardingMap<String, byte[]
     // immutable to thread-safe
     private final ImmutableMap<String, byte[]> injected;
 
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
+    private static Object injectedClassesStrongReference;
+
     public LaunchClassLoaderResourceCache(Map<String, byte[]> delegate, ImmutableMap<String, byte[]> injected) {
         this.delegate = delegate;
         this.injected = injected;
+        injectedClassesStrongReference = injected;
     }
 
     @Override
@@ -45,6 +53,26 @@ public class LaunchClassLoaderResourceCache extends ForwardingMap<String, byte[]
             bytes = injected.get(key);
         }
         return bytes;
+    }
+
+    @Override
+    public Set<Entry<String, byte[]>> entrySet() {
+        return Sets.union(super.entrySet(), injected.entrySet());
+    }
+
+    @Override
+    public Collection<byte[]> values() {
+        return Collections2.transform(entrySet(), Entry::getValue);
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return Sets.union(super.keySet(), injected.keySet());
+    }
+
+    @Override
+    public int size() {
+        return super.size() + injected.size();
     }
 
     @Override
