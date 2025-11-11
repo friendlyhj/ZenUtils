@@ -21,28 +21,31 @@ import java.util.stream.Collectors;
  */
 public class PartialCallSuperConstructor implements IPartialExpression {
     private final ZenPosition position;
+    private final ZenTypeJavaNative type;
     private final List<ExecutableData> constructorCandidates;
     private final List<IJavaMethod> constructorCandidateJavaMethods;
 
-    public PartialCallSuperConstructor(ZenPosition position, List<ExecutableData> constructorCandidates, ITypeRegistry types) {
+    public PartialCallSuperConstructor(ZenPosition position, ZenTypeJavaNative type, List<ExecutableData> constructorCandidates, ITypeRegistry types) {
         this.position = position;
+        this.type = type.toSuper();
         this.constructorCandidates = constructorCandidates;
         this.constructorCandidateJavaMethods = constructorCandidates.stream().map(it -> new NativeMethod(it, types)).collect(Collectors.toList());
     }
 
     @Override
     public Expression eval(IEnvironmentGlobal environment) {
-        return new ExpressionInvalid(position);
+        return new ExpressionSuper(position, type);
     }
 
     @Override
     public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
+        environment.error(position, "not a valid lvalue");
         return new ExpressionInvalid(position);
     }
 
     @Override
     public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
-        return new ExpressionInvalid(position);
+        return type.getMember(position, environment, this, name);
     }
 
     @Override
@@ -68,7 +71,7 @@ public class PartialCallSuperConstructor implements IPartialExpression {
 
     @Override
     public ZenType getType() {
-        return ZenType.VOID;
+        return type;
     }
 
     @Override

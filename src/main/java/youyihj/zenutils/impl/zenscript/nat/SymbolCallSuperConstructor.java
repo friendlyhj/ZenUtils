@@ -20,6 +20,6 @@ public class SymbolCallSuperConstructor implements IZenSymbol {
 
     @Override
     public IPartialExpression instance(ZenPosition position) {
-        return new PartialCallSuperConstructor(position, superClass.getClassData().constructors(LookupRequester.SUBCLASS), types);
+        return new PartialCallSuperConstructor(position, superClass, superClass.getClassData().constructors(LookupRequester.SUBCLASS), types);
     }
 }

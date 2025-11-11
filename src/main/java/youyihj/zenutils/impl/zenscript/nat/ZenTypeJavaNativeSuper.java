@@ -23,4 +23,9 @@ public class ZenTypeJavaNativeSuper extends ZenTypeJavaNative {
     LookupRequester getLookupRequester(IEnvironmentGlobal environment) {
         return LookupRequester.SUBCLASS;
     }
+
+    @Override
+    public ZenTypeJavaNativeSuper toSuper() {
+        return this;
+    }
 }
