@@ -6,6 +6,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassWriter;
 import org.spongepowered.asm.mixin.*;
@@ -182,7 +185,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
         if (className.startsWith("youyihj/zenutils/impl/mixin")) {
             thisClass = Object.class;
         } else {
-            thisClass = ParsedZenClassCompile.compile(className, thisClassArray);
+            thisClass = ParsedZenClassCompile.compile(className, thisClassArray, Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION) ? Launch.classLoader : ZenTypeJavaNative.ClassInfoClassLoader.INSTANCE);
         }
         ci.cancel();
     }

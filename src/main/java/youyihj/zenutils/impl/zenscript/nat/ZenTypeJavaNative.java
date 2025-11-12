@@ -303,8 +303,8 @@ public class ZenTypeJavaNative extends ZenType {
         return LookupRequester.PUBLIC;
     }
 
-    private static class ClassInfoClassLoader extends ClassLoader {
-        private static final ClassInfoClassLoader INSTANCE = new ClassInfoClassLoader();
+    public static class ClassInfoClassLoader extends ClassLoader {
+        public static final ClassInfoClassLoader INSTANCE = new ClassInfoClassLoader();
 
         private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
         private WeakReference<BytecodeClassDataFetcher> classDataFetcherRef;
