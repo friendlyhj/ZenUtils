@@ -105,8 +105,12 @@ public enum MCPReobfuscation {
 
         for (int i = 1; i <= MAX_RETRY; i++) {
             LOGGER.info("{} attempts to download file", i);
-            downloadFile(fileUrl, dest);
-
+            try {
+                downloadFile(fileUrl, dest);
+            } catch (IOException e) {
+                LOGGER.error("Download failed: {}", e.getMessage());
+                continue;
+            }
             String actualSha1 = calcSha1(dest);
             if (expectedSha1.equalsIgnoreCase(actualSha1)) {
                 return;
