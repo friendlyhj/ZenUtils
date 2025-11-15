@@ -1,6 +1,5 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
-import net.minecraft.launchwrapper.Launch;
 import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.annotations.CompareType;
@@ -17,17 +16,13 @@ import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
 import stanhebben.zenscript.util.ZenTypeUtil;
-import youyihj.zenutils.impl.member.ClassData;
-import youyihj.zenutils.impl.member.ExecutableData;
-import youyihj.zenutils.impl.member.LookupRequester;
-import youyihj.zenutils.impl.member.TypeData;
+import youyihj.zenutils.impl.member.*;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassData;
-import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassData;
 import youyihj.zenutils.impl.mixin.itf.IEnvironmentClassExtension;
+import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -307,7 +302,6 @@ public class ZenTypeJavaNative extends ZenType {
         public static final ClassInfoClassLoader INSTANCE = new ClassInfoClassLoader();
 
         private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
-        private WeakReference<BytecodeClassDataFetcher> classDataFetcherRef;
 
         private ClassInfoClassLoader() {
         }
@@ -317,7 +311,6 @@ public class ZenTypeJavaNative extends ZenType {
             if (classes.containsKey(className)) {
                 return classes.get(className);
             } else {
-                classDataFetcherRef = new WeakReference<>(classData.fetcher());
                 Class<?> clazz = loadClass(classData.name());
                 classes.put(className, clazz);
                 return clazz;
@@ -334,10 +327,7 @@ public class ZenTypeJavaNative extends ZenType {
 
         @Override
         protected Class<?> findClass(String name) throws ClassNotFoundException {
-            BytecodeClassDataFetcher classDataFetcher = classDataFetcherRef.get();
-            if (classDataFetcher == null) {
-                return Launch.classLoader.loadClass(name);
-            }
+            ClassDataFetcher classDataFetcher = InternalUtils.getClassDataFetcher();
             ClassData classData = classDataFetcher.forName(name);
             if (classData instanceof ReflectionClassData) {
                 return ((Class<?>) classData.javaType());

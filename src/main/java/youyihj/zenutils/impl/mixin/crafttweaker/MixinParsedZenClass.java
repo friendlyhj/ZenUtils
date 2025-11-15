@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Type;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,6 +27,7 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.natives.ZenNativeMember;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.mixin.itf.IEnvironmentClassExtension;
@@ -37,13 +39,11 @@ import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 import youyihj.zenutils.impl.zenscript.mixin.ExpressionMixinThis;
 import youyihj.zenutils.impl.zenscript.mixin.MixinAnnotationTranslator;
 import youyihj.zenutils.impl.zenscript.mixin.ZenMixin;
-import youyihj.zenutils.impl.zenscript.nat.ExpressionSuper;
-import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
-import youyihj.zenutils.impl.zenscript.nat.ParsedZenClassCompile;
-import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
+import youyihj.zenutils.impl.zenscript.nat.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author youyihj
@@ -66,6 +66,10 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
     @Shadow
     @Final
     public String name;
+
+    @Shadow
+    @Final
+    private Map<String, ZenNativeMember> members;
 
     @Unique
     List<MixinPreprocessor> preprocessors;
@@ -154,6 +158,13 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                 break;
             }
         }
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void initClassGetter(ZenPosition position, String name, String className, EnvironmentScript classEnvironment, CallbackInfo ci) {
+        ZenNativeMember member = new ZenNativeMember();
+        members.put("class", member);
+        member.setGetter(new ClassConstantMethod(Type.getObjectType(this.className)));
     }
 
     @ModifyConstant(method = "writeClass", constant = @Constant(stringValue = "java/lang/Object"))
