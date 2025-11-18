@@ -37,6 +37,9 @@ public class Configuration {
     })
     public static String[] customScriptEntrypoint = {};
 
+    @Config.Comment("Provide custom access transformers (AT) to expose private members to zs. Use https://mcp.thiakil.com/ to generate AT lines")
+    public static String[] accessTransformers = {};
+
     static {
         ConfigAnytime.register(Configuration.class);
     }

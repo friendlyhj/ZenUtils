@@ -44,7 +44,7 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public String getAccessTransformerClass() {
-        return null;
+        return "youyihj.zenutils.impl.core.ConfigAccessTransformer";
     }
 
     @Override
