@@ -32,7 +32,7 @@ public abstract class MixinMethodOutput {
         if (value instanceof Integer) {
             int i = (Integer) value;
             if (i >= -1 && i <= 5) {
-                visitor.visitInsn(i + 3);
+                visitor.visitInsn(i + ICONST_0);
             } else if (i == (byte) i) {
                 visitor.visitIntInsn(BIPUSH, i);
             } else if (i == (short) i) {
