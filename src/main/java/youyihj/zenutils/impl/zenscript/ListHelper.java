@@ -17,6 +17,12 @@ public class ListHelper {
         list.addAll(Arrays.asList(elements));
     }
 
+    @SafeVarargs
+    @ReflectionInvoked
+    public static <E> void addAll(List<E> list, int index, E... elements) {
+        list.addAll(index, Arrays.asList(elements));
+    }
+
     @ReflectionInvoked
     public static <E> List<E> clone(List<E> list) {
         return new ArrayList<>(list);

@@ -10,8 +10,14 @@ import java.util.*;
  * @author youyihj
  */
 public class ListExpansionMethods {
-    public static final IJavaMethod ADD = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, List.class, "add", Object.class);
-    public static final IJavaMethod ADD_ALL = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, ListHelper.class, "addAll", List.class, Object[].class);
+    public static final List<IJavaMethod> ADD = Arrays.asList(
+            JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, List.class, "add", Object.class),
+            JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, List.class, "add", int.class, Object.class)
+    );
+    public static final List<IJavaMethod> ADD_ALL = Arrays.asList(
+            JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, ListHelper.class, "addAll", List.class, Object[].class),
+            JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, ListHelper.class, "addAll", List.class, int.class, Object[].class)
+    );
     public static final IJavaMethod CLONE = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, ListHelper.class, "clone", List.class);
     public static final IJavaMethod CLEAR = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, List.class, "clear");
     public static final IJavaMethod INDEX_OF = JavaMethod.get(ZenTypeUtil.EMPTY_REGISTRY, List.class, "indexOf", Object.class);
