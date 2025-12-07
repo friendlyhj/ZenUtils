@@ -82,4 +82,9 @@ public class CommandUtils {
     public static void notifyWrongUsage(ZenCommand command, ZenUtilsCommandSender sender) throws WrongUsageException {
         throw new WrongUsageException(command.getCommandUsage.getCommandUsage(sender));
     }
+
+    @ZenMethod
+    public static void notifyCommandFailure(String message, Object... replacements) throws CommandException {
+        throw new CommandException(message, replacements);
+    }
 }
