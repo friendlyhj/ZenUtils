@@ -4,6 +4,7 @@ import stanhebben.zenscript.compiler.IEnvironmentMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeAssociative;
+import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.ZenPosition;
 
 /**
@@ -23,11 +24,14 @@ public class ExpressionMapRemove extends Expression {
 
     @Override
     public void compile(boolean result, IEnvironmentMethod environment) {
+        MethodOutput output = environment.getOutput();
         map.compile(true, environment);
         key.compile(true, environment);
-        environment.getOutput().invokeInterface("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;");
+        output.invokeInterface("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;");
         if (!result) {
-            environment.getOutput().pop();
+            output.pop();
+        } else {
+            output.checkCast(mapType.getValueType().toASMType().getInternalName());
         }
     }
 
