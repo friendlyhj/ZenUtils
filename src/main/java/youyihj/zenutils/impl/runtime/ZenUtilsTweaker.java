@@ -17,6 +17,8 @@ import crafttweaker.zenscript.CrtStoringErrorLogger;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
 import rml.layer.compat.crt.RMLCrTLoader;
 import stanhebben.zenscript.ZenModule;
 import stanhebben.zenscript.ZenParsedFile;
@@ -219,6 +221,8 @@ public class ZenUtilsTweaker implements ITweaker {
 
         final String loaderName = loader.getMainName();
 
+        Multimap<String, String> scriptClassMap = InternalUtils.getScriptStatus() == ScriptStatus.RELOAD ? buildScriptClassMap() : ArrayListMultimap.create();
+
         for (ScriptFile scriptFile : scriptFiles) {
             // update class name generator
             environmentGlobal.getClassNameGenerator().setPrefix(scriptFile.loaderNamesConcatCapitalized());
@@ -264,6 +268,10 @@ public class ZenUtilsTweaker implements ITweaker {
                 if (zenParsedFile == null || scriptFile.isCompileBlocked() || !loadSuccessful) {
                     continue;
                 }
+
+                // Resets classes declared in this script on reload
+                resetClassesDeclaredInScript(scriptFile, scriptClassMap);
+
                 compileScripts(className, Collections.singletonList(zenParsedFile), environmentGlobal, scriptFile.isDebugEnabled());
 
                 // stops if the execution is disabled
@@ -488,5 +496,24 @@ public class ZenUtilsTweaker implements ITweaker {
         Field field = TypeRegistry.class.getField("literalTypes");
         Map<?, ?> literalTypes = (Map<?, ?>) field.get(GlobalRegistry.getTypes());
         literalTypes.clear();
+    }
+
+    private static Multimap<String, String> buildScriptClassMap() {
+        Multimap<String, String> scriptClassMap = ArrayListMultimap.create();
+        ZenModule.classes.forEach((name, bytes) -> {
+            try {
+                ClassNode classNode = new ClassNode();
+                ClassReader classReader = new ClassReader(bytes);
+                classReader.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
+                scriptClassMap.put(classNode.sourceFile, name);
+            } catch (Throwable ignored) {
+                // ignore malformed class
+            }
+        });
+        return scriptClassMap;
+    }
+
+    private static void resetClassesDeclaredInScript(ScriptFile scriptFile, Multimap<String, String> scriptClassMap) {
+        ZenModule.loadedClasses.keySet().removeAll(scriptClassMap.get(scriptFile.getEffectiveName()));
     }
 }

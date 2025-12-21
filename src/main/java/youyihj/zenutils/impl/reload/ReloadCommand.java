@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
-import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.reload.ScriptReloadEvent;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
@@ -64,7 +63,6 @@ public class ReloadCommand extends CraftTweakerCommand {
         }
         ZenUtils.tweaker.freezeActionApplying();
         ZenUtils.tweaker.clearLoaderTasks();
-        ZenModule.loadedClasses.clear();
         ZenUtils.crafttweakerLogger.clear();
         InternalUtils.setScriptStatus(ScriptStatus.RELOAD);
         CraftTweakerAPI.logDefault("Request to reload script, executing pre-reload event...");

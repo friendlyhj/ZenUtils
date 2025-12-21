@@ -18,6 +18,7 @@ public class NotReloadablePreprocessor extends PreprocessorActionBase {
     @Override
     public void executeActionOnFind(ScriptFile scriptFile) {
         if (InternalUtils.getScriptStatus() == ScriptStatus.RELOAD) {
+            scriptFile.setCompileBlocked(true);
             scriptFile.setExecutionBlocked(true);
         }
     }
