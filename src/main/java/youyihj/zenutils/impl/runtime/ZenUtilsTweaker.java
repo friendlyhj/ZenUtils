@@ -17,8 +17,6 @@ import crafttweaker.zenscript.CrtStoringErrorLogger;
 import crafttweaker.zenscript.GlobalRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.ClassNode;
 import rml.layer.compat.crt.RMLCrTLoader;
 import stanhebben.zenscript.ZenModule;
 import stanhebben.zenscript.ZenParsedFile;
@@ -221,11 +219,14 @@ public class ZenUtilsTweaker implements ITweaker {
 
         final String loaderName = loader.getMainName();
 
-        Multimap<String, String> scriptClassMap = InternalUtils.getScriptStatus() == ScriptStatus.RELOAD ? buildScriptClassMap() : ArrayListMultimap.create();
+        String reloadInfix = InternalUtils.getScriptStatus().isDebug() ? base62(startTime) : "";
+        if (!reloadInfix.isEmpty()) {
+            CraftTweakerAPI.logDefault("Reload infix for this load: '" + reloadInfix + "'");
+        }
 
         for (ScriptFile scriptFile : scriptFiles) {
             // update class name generator
-            environmentGlobal.getClassNameGenerator().setPrefix(scriptFile.loaderNamesConcatCapitalized());
+            environmentGlobal.getClassNameGenerator().setPrefix(scriptFile.loaderNamesConcatCapitalized() + reloadInfix);
 
             // check for network side
             if (!scriptFile.shouldBeLoadedOn(getNetworkSide())) {
@@ -250,7 +251,7 @@ public class ZenUtilsTweaker implements ITweaker {
                 }
 
                 parser = new ZenTokener(reader, environmentGlobal.getEnvironment(), filename, scriptFile.areBracketErrorsIgnored());
-                zenParsedFile = new ZenParsedFile(filename, className, parser, environmentGlobal);
+                zenParsedFile = new ZenParsedFile(filename, className + reloadInfix, parser, environmentGlobal);
 
             } catch (IOException ex) {
                 CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Could not load script " + scriptFile + ": " + ex.getMessage());
@@ -268,9 +269,6 @@ public class ZenUtilsTweaker implements ITweaker {
                 if (zenParsedFile == null || scriptFile.isCompileBlocked() || !loadSuccessful) {
                     continue;
                 }
-
-                // Resets classes declared in this script on reload
-                resetClassesDeclaredInScript(scriptFile, scriptClassMap);
 
                 compileScripts(className, Collections.singletonList(zenParsedFile), environmentGlobal, scriptFile.isDebugEnabled());
 
@@ -498,22 +496,21 @@ public class ZenUtilsTweaker implements ITweaker {
         literalTypes.clear();
     }
 
-    private static Multimap<String, String> buildScriptClassMap() {
-        Multimap<String, String> scriptClassMap = ArrayListMultimap.create();
-        ZenModule.classes.forEach((name, bytes) -> {
-            try {
-                ClassNode classNode = new ClassNode();
-                ClassReader classReader = new ClassReader(bytes);
-                classReader.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
-                scriptClassMap.put(classNode.sourceFile, name);
-            } catch (Throwable ignored) {
-                // ignore malformed class
-            }
-        });
-        return scriptClassMap;
-    }
+    private static String base62(long v) {
+        char[] chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
 
-    private static void resetClassesDeclaredInScript(ScriptFile scriptFile, Multimap<String, String> scriptClassMap) {
-        ZenModule.loadedClasses.keySet().removeAll(scriptClassMap.get(scriptFile.getEffectiveName()));
+        if (v == 0) {
+            return "0";
+        }
+
+        char[] buf = new char[11]; // log_62(2^64) ~= 10.7
+        int pos = buf.length;
+        while (Long.compareUnsigned(v, 0) > 0) {
+            long q = Long.divideUnsigned(v, 62);
+            int r = (int) Long.remainderUnsigned(v, 62);
+            buf[--pos] = chars[r];
+            v = q;
+        }
+        return new String(buf, pos, buf.length - pos);
     }
 }
