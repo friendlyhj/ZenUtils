@@ -178,7 +178,7 @@ public class MixinAnnotationTranslator {
         } else if (expectedType == short.class) {
             visitor.visit(key, value.getAsShort());
         } else if (expectedType == Class.class) {
-            visitor.visit(key, Type.getObjectType(value.getAsString()));
+            visitor.visit(key, Type.getType(value.getAsString()));
         } else if (expectedType.isEnum()) {
             visitor.visitEnum(key, Type.getDescriptor(expectedType), value.getAsString());
         } else if (expectedType.isArray()) {
