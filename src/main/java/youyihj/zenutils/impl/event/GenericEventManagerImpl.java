@@ -6,7 +6,6 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.IEventListener;
-import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.lang.invoke.MethodHandle;
@@ -66,7 +65,7 @@ public class GenericEventManagerImpl {
     }
 
     private static <T> Class<? extends T> findImplementationClass(Class<T> type) throws EventHandlerRegisterException {
-        Set<ASMDataTable.ASMData> implementData = ZenUtils.asmDataTable.getAll(type.getTypeName().replace('.', '/'));
+        Set<ASMDataTable.ASMData> implementData = InternalUtils.asmDataTable.getAll(type.getTypeName().replace('.', '/'));
         if (implementData.size() == 1) {
             String implementClassName = implementData.iterator().next().getClassName().replace('/', '.');
             try {

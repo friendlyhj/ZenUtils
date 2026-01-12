@@ -1,15 +1,19 @@
 package youyihj.zenutils.impl.util;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Suppliers;
 import com.google.common.reflect.TypeToken;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.util.EventList;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
+import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
@@ -22,16 +26,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author youyihj
  */
 public final class InternalUtils {
+    public static ASMDataTable asmDataTable;
+
     private static final List<Runnable> ALL_EVENT_LISTS_CLEAR_ACTIONS = new ArrayList<>();
-    private static final BytecodeClassDataFetcher CLASS_DATA_FETCHER = new BytecodeClassDataFetcher(
-            new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
-            Collections.singletonList(Paths.get("mods"))
-    );
+    private static final Supplier<ClassDataFetcher> CLASS_DATA_FETCHER = Suppliers.memoize(() -> {
+        Preconditions.checkNotNull(asmDataTable);
+        ModAPITransformer modAPITransformer = new ModAPITransformer();
+        modAPITransformer.initTable(asmDataTable);
+        return new BytecodeClassDataFetcher(
+                new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
+                new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), modAPITransformer)
+        );
+    });
+
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
     private InternalUtils() {
@@ -106,6 +119,6 @@ public final class InternalUtils {
     }
 
     public static ClassDataFetcher getClassDataFetcher() {
-        return CLASS_DATA_FETCHER;
+        return CLASS_DATA_FETCHER.get();
     }
 }

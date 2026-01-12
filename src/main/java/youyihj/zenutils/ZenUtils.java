@@ -10,7 +10,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.relauncher.Side;
@@ -45,7 +44,6 @@ public class ZenUtils {
     public static final Logger forgeLogger = LogManager.getLogger(Reference.MODID);
     public static ZenUtilsLogger crafttweakerLogger;
     public static ZenUtilsTweaker tweaker;
-    public static ASMDataTable asmDataTable;
 
     @SidedProxy(clientSide = "youyihj.zenutils.impl.player.IStatFormatterAdapter$Client", serverSide = "youyihj.zenutils.impl.player.IStatFormatterAdapter$Server")
     public static IStatFormatterAdapter statFormatterAdapter;
@@ -53,6 +51,9 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
+        if (InternalUtils.asmDataTable == null) {
+            InternalUtils.asmDataTable = event.getASMHarvestedData();
+        }
         try {
             crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
             tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;
@@ -69,7 +70,6 @@ public class ZenUtils {
         CraftTweakerAPI.logInfo("Hey! Here is ZenUtils.");
         ZenWorldCapabilityHandler.register();
         PlayerInteractionSimulation.registerNetworkMessage();
-        asmDataTable = event.getAsmData();
         readSidedZenRegisters(event.getSide());
         try {
             // switch read mod classes from mods folder to launch class loader (run transformers)
@@ -106,7 +106,7 @@ public class ZenUtils {
 
     @SuppressWarnings("unchecked")
     private static void readSidedZenRegisters(Side side) {
-        asmDataTable.getAll(SidedZenRegister.class.getCanonicalName()).forEach(data -> {
+        InternalUtils.asmDataTable.getAll(SidedZenRegister.class.getCanonicalName()).forEach(data -> {
             Map<String, Object> annotationInfo = data.getAnnotationInfo();
             List<String> modDeps = (List<String>) annotationInfo.get("modDeps");
             List<ModAnnotation.EnumHolder> sides = (List<ModAnnotation.EnumHolder>) annotationInfo.get("value");
