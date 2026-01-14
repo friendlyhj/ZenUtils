@@ -208,7 +208,14 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
         Point3f maxPoint = new Point3f((float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ);
         rot.transform(minPoint);
         rot.transform(maxPoint);
-        return new AxisAlignedBB(minPoint.x, minPoint.y, minPoint.z, maxPoint.x, maxPoint.y, maxPoint.z);
+        return new AxisAlignedBB(
+                round2Decimal(minPoint.x),
+                round2Decimal(minPoint.y),
+                round2Decimal(minPoint.z),
+                round2Decimal(maxPoint.x),
+                round2Decimal(maxPoint.y),
+                round2Decimal(maxPoint.z)
+        );
     }
 
     private static Matrix4f getRotationMatrix(EnumFacing facing, DirectionalBlockRepresentation.PlaneRotation planeRot) {
@@ -271,5 +278,9 @@ public abstract class DirectionalBlockContent extends ExpandBlockContent {
         result.mul(postTranslationMat, rotMat);
         result.mul(translationMat);
         return result;
+    }
+
+    private float round2Decimal(float value) {
+        return Math.round(value * 100f) / 100f;
     }
 }
