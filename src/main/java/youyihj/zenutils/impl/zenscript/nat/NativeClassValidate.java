@@ -85,6 +85,7 @@ public class NativeClassValidate {
         INativeClassExclude.filterClass(IFormatter.class);
 
         INativeClassExclude.filterClass("com.teamacronymcoders.contenttweaker.modules.materials.brackethandler.MaterialPartDefinition");
+        INativeClassExclude.filterClass("com.teamacronymcoders.contenttweaker.api.ctobjects.entity.player.CTPlayer");
         INativeClassExclude.filterClass(MCItemStack.class);
         INativeClassExclude.filterClass(IngredientAny.class);
     }
