@@ -23,6 +23,7 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
             transformers.add("youyihj.zenutils.impl.core.FMLModContainerTransformer");
         }
         transformers.add("youyihj.zenutils.impl.config.ClassProvider");
+        transformers.add("youyihj.zenutils.impl.core.TConTraitRepresentationTransformer");
         return transformers.toArray(new String[0]);
     }
 
