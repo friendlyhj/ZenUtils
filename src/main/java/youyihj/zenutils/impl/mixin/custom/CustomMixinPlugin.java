@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.mixin.custom;
 
+import crafttweaker.CraftTweakerAPI;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -45,7 +46,7 @@ public class CustomMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
+        CraftTweakerAPI.logInfo("Applying mixin class: " + mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1) + ", target: " + targetClassName);
     }
 
     @Override
