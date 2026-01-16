@@ -51,9 +51,6 @@ public class ZenUtils {
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
         InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
-        if (InternalUtils.asmDataTable == null) {
-            InternalUtils.asmDataTable = event.getASMHarvestedData();
-        }
         try {
             crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
             tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;
