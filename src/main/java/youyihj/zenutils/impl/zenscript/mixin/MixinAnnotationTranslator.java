@@ -117,6 +117,9 @@ public class MixinAnnotationTranslator {
         if (annotationType == null) {
             throw error("unsupported mixin annotation: " + type, position);
         }
+        if (InternalUtils.hasMethod(annotationType, "expect")) {
+            attachMixinZSHandlerAnnotation(visitorPrimer);
+        }
         AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(annotationType), isVisibleOnRuntime(annotationType));
         for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
             String key = entry.getKey();
@@ -212,6 +215,11 @@ public class MixinAnnotationTranslator {
 
     private static ParseException error(String message, ZenPosition position) {
         return new ParseException(position.getFile(), position.getLine() - 1, 0, message);
+    }
+
+    private static void attachMixinZSHandlerAnnotation(BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer) {
+        AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(MixinZSHandler.class), true);
+        visitor.visitEnd();
     }
 
     public static class RepeatableAnnotationHelper {
