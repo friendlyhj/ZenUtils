@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
+import com.llamalad7.mixinextras.utils.MixinInternals;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.api.network.NetworkSide;
 import crafttweaker.preprocessor.PreprocessorManager;
@@ -23,6 +24,7 @@ import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
 import youyihj.zenutils.impl.core.LaunchClassLoaderResourceCache;
 import youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin;
+import youyihj.zenutils.impl.mixin.custom.ExtensionCheckInjection;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
@@ -74,6 +76,7 @@ public class ZenMixin {
 
         Mixins.addConfiguration("mixins.zenutils.custom.json");
         Mixins.registerErrorHandlerClass("youyihj.zenutils.impl.mixin.custom.CustomMixinErrorHandler");
+        MixinInternals.registerExtension(new ExtensionCheckInjection());
 
         Field processorField = MixinTransformer.class.getDeclaredField("processor");
         processorField.setAccessible(true);
