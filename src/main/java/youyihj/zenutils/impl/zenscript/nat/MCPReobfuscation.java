@@ -15,7 +15,6 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
@@ -112,7 +111,7 @@ public enum MCPReobfuscation {
         int deobfNameLen = dis.read();
         byte[] deobfNameBytes = new byte[deobfNameLen];
         dis.readFully(deobfNameBytes);
-        String deobfName = StandardCharsets.US_ASCII.newDecoder().decode(ByteBuffer.wrap(deobfNameBytes)).toString();
+        String deobfName = new String(deobfNameBytes, StandardCharsets.US_ASCII);
         map.put(deobfName, (isMethod ? "func_" : "field_") + srgId + "_" + notchName);
     }
 }
