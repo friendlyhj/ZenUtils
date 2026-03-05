@@ -6,15 +6,20 @@ import org.objectweb.asm.*;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.impl.config.ConfigAnytimeAnytime;
+import youyihj.zenutils.ZenUtils;
+import youyihj.zenutils.api.config.ModMeta;
 import youyihj.zenutils.impl.config.ClassProvider;
+import youyihj.zenutils.impl.config.ConfigAnytimeAnytime;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 @ZenRegister
 @ZenClass("mods.zenutils.config.elements.ConfigGroup")
 public class ConfigGroup extends ConfigElement {
     protected List<ConfigElement> children;
+
+    protected ModMeta modMeta = null;
 
     public ConfigGroup(ConfigGroup parentIn, String nameIn) {
         super(parentIn, nameIn);
@@ -172,6 +177,19 @@ public class ConfigGroup extends ConfigElement {
     }
 
     @ZenMethod
+    public ConfigGroup withGui(@Optional @Nullable ModMeta modMeta) {
+        if(this.parent == null) {
+            if(modMeta == null)
+                this.modMeta = new ModMeta(this.name);
+            else
+                this.modMeta = modMeta;
+        } else {
+            ZenUtils.crafttweakerLogger.logError("Cannot register subcategories for mod config GUI");
+        }
+        return this;
+    }
+
+    @ZenMethod
     public void register() {
         register0();
         if (this.parent == null) {
@@ -179,7 +197,7 @@ public class ConfigGroup extends ConfigElement {
                 for (String clsN : this.getClasses()) {
                     CraftTweakerAPI.registerClass(Class.forName(clsN));
                 }
-                ConfigAnytimeAnytime.register(Class.forName(getClassName()));
+                ConfigAnytimeAnytime.register(Class.forName(getClassName()), modMeta == null ? null : modMeta.metadata);
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }
@@ -318,5 +336,4 @@ public class ConfigGroup extends ConfigElement {
 
         ClassProvider.classes.put(className.replace('/', '.'), classWriter.toByteArray());
     }
-
 }
