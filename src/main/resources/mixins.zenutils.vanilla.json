@@ -17,5 +17,7 @@
     "MixinForgeHooks"
   ],
   "client": [
+    "MixinFMLClientHandler",
+    "MixinGuiModList"
   ]
 }
