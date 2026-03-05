@@ -18,6 +18,7 @@
   ],
   "client": [
     "MixinFMLClientHandler",
-    "MixinGuiModList"
+    "MixinGuiModList",
+    "MixinGuiConfig"
   ]
 }

@@ -25,7 +25,7 @@ public abstract class MixinFMLClientHandler {
             remap = false
     )
     private void addDummyMods(ArrayList<ModContainer> mods, CallbackInfo ci) {
-        mods.addAll(ConfigAnytimeAnytime.registeredGuiSupportConfigs);
+        mods.addAll(ConfigAnytimeAnytime.registeredGuiContainers.values());
     }
 
     @Inject(
@@ -34,6 +34,6 @@ public abstract class MixinFMLClientHandler {
             remap = false
     )
     private void addDefaultGuiFactory(CallbackInfo ci){
-        ConfigAnytimeAnytime.registeredGuiSupportConfigs.forEach(container -> this.guiFactories.put(container, DefaultGuiFactory.forMod(container)));
+        ConfigAnytimeAnytime.registeredGuiContainers.values().forEach(container -> this.guiFactories.put(container, DefaultGuiFactory.forMod(container)));
     }
 }
