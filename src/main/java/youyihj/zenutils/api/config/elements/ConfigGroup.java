@@ -6,7 +6,6 @@ import org.objectweb.asm.*;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
-import youyihj.zenutils.ZenUtils;
 import youyihj.zenutils.api.config.ModMeta;
 import youyihj.zenutils.impl.config.ClassProvider;
 import youyihj.zenutils.impl.config.ConfigAnytimeAnytime;
@@ -184,7 +183,7 @@ public class ConfigGroup extends ConfigElement {
             else
                 this.modMeta = modMeta;
         } else {
-            ZenUtils.crafttweakerLogger.logError("Cannot register subcategories for mod config GUI");
+            CraftTweakerAPI.logError("Cannot register subcategories for mod config GUI");
         }
         return this;
     }

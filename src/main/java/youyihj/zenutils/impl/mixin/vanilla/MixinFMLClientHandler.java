@@ -14,15 +14,14 @@ import youyihj.zenutils.impl.config.ConfigAnytimeAnytime;
 
 import java.util.ArrayList;
 
-@Mixin(FMLClientHandler.class)
+@Mixin(value = FMLClientHandler.class, remap = false)
 public abstract class MixinFMLClientHandler {
     @Shadow
     private BiMap<ModContainer, IModGuiFactory> guiFactories;
 
     @Inject(
             method = "addSpecialModEntries",
-            at = @At("TAIL"),
-            remap = false
+            at = @At("TAIL")
     )
     private void addDummyMods(ArrayList<ModContainer> mods, CallbackInfo ci) {
         mods.addAll(ConfigAnytimeAnytime.registeredGuiContainers.values());
@@ -30,8 +29,7 @@ public abstract class MixinFMLClientHandler {
 
     @Inject(
             method = "finishMinecraftLoading",
-            at = @At("TAIL"),
-            remap = false
+            at = @At("TAIL")
     )
     private void addDefaultGuiFactory(CallbackInfo ci){
         ConfigAnytimeAnytime.registeredGuiContainers.values().forEach(container -> this.guiFactories.put(container, DefaultGuiFactory.forMod(container)));
