@@ -2,9 +2,9 @@ package youyihj.zenutils.api.config;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.*;
-import youyihj.zenutils.api.config.elements.ConfigGroup;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import youyihj.zenutils.api.config.elements.ConfigGroup;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +17,11 @@ public class ConfigUtils {
     @ZenMethod
     public static ConfigGroup named(String name) {
         return new ConfigGroup(null, name);
+    }
+
+    @ZenMethod
+    public static ModMeta createMeta(String name) {
+        return new ModMeta(name);
     }
 
     @ZenMethod
