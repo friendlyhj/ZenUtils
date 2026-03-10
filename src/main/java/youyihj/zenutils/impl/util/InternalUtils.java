@@ -5,12 +5,16 @@ import com.google.common.base.Suppliers;
 import com.google.common.reflect.TypeToken;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
+import crafttweaker.api.enchantments.IEnchantmentDefinition;
+import crafttweaker.mc1120.enchantments.MCEnchantmentDefinition;
 import crafttweaker.util.EventList;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import youyihj.zenutils.Reference;
+import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
@@ -120,5 +124,15 @@ public final class InternalUtils {
 
     public static ClassDataFetcher getClassDataFetcher() {
         return CLASS_DATA_FETCHER.get();
+    }
+
+    @ReflectionInvoked
+    public static Enchantment toMCEnchantment(IEnchantmentDefinition definition) {
+        return (Enchantment) definition.getInternal();
+    }
+
+    @ReflectionInvoked
+    public static IEnchantmentDefinition toCTEnchantment(Enchantment enchantment) {
+        return new MCEnchantmentDefinition(enchantment);
     }
 }
