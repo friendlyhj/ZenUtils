@@ -36,7 +36,7 @@ public class GenericEventManagerImpl {
         try {
             forgeEvent = ((Event) forgeEventClass.newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new EventHandlerRegisterException("Failed to construct forge event", e);
+            throw new EventHandlerRegisterException("Failed to construct forge event: " + typeOfT, e);
         }
         try {
             CraftTweakerAPI.apply(new EventHandlerRegisterAction(new CTEventHandlerAdapter<>(eventHandler, constructor, receiveCanceled), forgeEvent.getListenerList(), priority, busID, typeOfT.getSimpleName()));
@@ -86,7 +86,7 @@ public class GenericEventManagerImpl {
             }
         }
 
-        throw new EventHandlerRegisterException("This event type doesn't have proper implementation class");
+        throw new EventHandlerRegisterException(type + " doesn't have proper implementation class");
     }
 
     @SuppressWarnings("unchecked")
@@ -96,7 +96,7 @@ public class GenericEventManagerImpl {
                 return constructor;
             }
         }
-        throw new EventHandlerRegisterException("The implementation class doesn't have proper constructor");
+        throw new EventHandlerRegisterException("The implementation class: " + ctEventClass + " doesn't have proper constructor");
     }
 
     private static class CTEventHandlerAdapter<T> implements IEventListener {
