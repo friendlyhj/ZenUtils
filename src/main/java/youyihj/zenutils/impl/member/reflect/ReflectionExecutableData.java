@@ -8,6 +8,7 @@ import youyihj.zenutils.impl.member.TypeData;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -83,6 +84,16 @@ public class ReflectionExecutableData extends ReflectionAnnotatedMember implemen
             }
         }
         return parameters;
+    }
+
+    @Override
+    public List<String> parameterNames() {
+        Parameter[] parameters = executable.getParameters();
+        List<String> names = new ArrayList<>(parameters.length);
+        for (Parameter parameter : parameters) {
+            names.add(parameter.getName());
+        }
+        return Collections.unmodifiableList(names);
     }
 
     @Override

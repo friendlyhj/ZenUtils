@@ -18,6 +18,7 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     private final byte[] bytecode;
     private final BytecodeClassDataFetcher classDataFetcher;
     private final ClassNode classNode;
+    private ClassNode fullClassNode;
 
     private final Map<LookupRequester, List<FieldData>> fieldsCache = new EnumMap<>(LookupRequester.class);
     private final Map<LookupRequester, List<ExecutableData>> methodsCache = new EnumMap<>(LookupRequester.class);
@@ -174,6 +175,14 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
 
     public byte[] getBytecode() {
         return bytecode;
+    }
+
+    ClassNode getFullClassNode() {
+        if (fullClassNode == null) {
+            fullClassNode = new ClassNode();
+            new ClassReader(bytecode).accept(fullClassNode, 0);
+        }
+        return fullClassNode;
     }
 
     @Override

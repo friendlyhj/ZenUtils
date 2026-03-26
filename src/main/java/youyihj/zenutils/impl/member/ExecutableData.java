@@ -18,6 +18,8 @@ public interface ExecutableData extends AnnotatedMember {
 
     List<TypeData> parameters();
 
+    List<String> parameterNames();
+
     boolean isVarArgs();
 
     default String descriptor() {

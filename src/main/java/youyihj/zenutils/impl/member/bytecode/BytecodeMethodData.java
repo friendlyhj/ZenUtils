@@ -2,12 +2,16 @@ package youyihj.zenutils.impl.member.bytecode;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.ParameterNode;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.TypeData;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,6 +23,7 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
 
     private TypeData returnType;
     private List<TypeData> parameters;
+    private List<String> parameterNames;
 
     public BytecodeMethodData(MethodNode methodNode, BytecodeClassData declaringClass) {
         this.methodNode = methodNode;
@@ -69,7 +74,7 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
     @Override
     public List<TypeData> parameters() {
         if (parameters == null) {
-            parameters = new ArrayList<>();
+            parameters = new ArrayList<>(parameterCount());
             if (methodNode.signature == null) {
                 for (Type parameter : Type.getMethodType(methodNode.desc).getArgumentTypes()) {
                     parameters.add(declaringClass.fetcher().type(parameter.getDescriptor(), null));
@@ -83,6 +88,37 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
             }
         }
         return parameters;
+    }
+
+    @Override
+    public List<String> parameterNames() {
+        if (parameterNames == null) {
+            parameterNames = new ArrayList<>(parameterCount());
+            List<LocalVariableNode> lvt = declaringClass.getFullClassNode().methods.stream()
+                    .filter(m -> m.name.equals(methodNode.name) && m.desc.equals(methodNode.desc)).findFirst().map(m -> m.localVariables).orElse(null);
+            if (lvt != null) {
+                int startIndex = Modifier.isStatic(methodNode.access) ? 0 : 1;
+                for (int i = 0; i < parameterCount(); i++) {
+                    String nameFromBytecode = "";
+                    for (LocalVariableNode localVariableNode : lvt) {
+                        if (localVariableNode.index == i + startIndex) {
+                            nameFromBytecode = localVariableNode.name;
+                            break;
+                        }
+                    }
+                    parameterNames.add(nameFromBytecode);
+                }
+            } else if (methodNode.parameters != null) {
+                for (ParameterNode parameter : methodNode.parameters) {
+                    parameterNames.add(parameter.name);
+                }
+            } else {
+                for (int i = 0; i < parameterCount(); i++) {
+                    parameterNames.add("arg" + i);
+                }
+            }
+        }
+        return Collections.unmodifiableList(parameterNames);
     }
 
     @Override
