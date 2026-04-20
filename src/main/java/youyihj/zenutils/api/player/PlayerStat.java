@@ -1,11 +1,13 @@
 package youyihj.zenutils.api.player;
 
+import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.block.IBlockDefinition;
 import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.api.item.IItemDefinition;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.api.text.ITextComponent;
+import net.minecraft.entity.EntityList;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatBasic;
 import net.minecraft.stats.StatList;
@@ -76,13 +78,23 @@ public class PlayerStat {
     @ZenMethod
     public static PlayerStat getKillEntityStats(IEntityDefinition entity) {
         EntityEntry internal = (EntityEntry) entity.getInternal();
-        return PlayerStat.of(internal.getEgg().killEntityStat);
+        EntityList.EntityEggInfo egg = internal.getEgg();
+        if (egg == null) {
+            CraftTweakerAPI.logError("Entity " + entity.getId() + " does not have an egg, cannot get kill entity stat!");
+            return null;
+        }
+        return PlayerStat.of(egg.killEntityStat);
     }
 
     @ZenMethod
     public static PlayerStat getKilledByEntityStats(IEntityDefinition entity) {
         EntityEntry internal = (EntityEntry) entity.getInternal();
-        return PlayerStat.of(internal.getEgg().entityKilledByStat);
+        EntityList.EntityEggInfo egg = internal.getEgg();
+        if (egg == null) {
+            CraftTweakerAPI.logError("Entity " + entity.getId() + " does not have an egg, cannot get killed by entity stat!");
+            return null;
+        }
+        return PlayerStat.of(egg.entityKilledByStat);
     }
 
     @ZenMethod
