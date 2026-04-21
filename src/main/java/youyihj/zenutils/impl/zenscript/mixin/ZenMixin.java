@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.transformer.Proxy;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
+import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.core.LaunchClassLoaderResourceCache;
 import youyihj.zenutils.impl.mixin.custom.CustomMixinPlugin;
 import youyihj.zenutils.impl.mixin.custom.ExtensionCheckInjection;
@@ -48,6 +49,11 @@ public class ZenMixin {
     public static void load() throws Exception {
         ITweaker tweaker = CraftTweakerAPI.tweaker;
         Preconditions.checkState(tweaker instanceof ZenUtilsTweaker, "CraftTweaker ITweaker is not redirected. A mixin config is failed. please report to the mod author!");
+
+        if (!Configuration.fastScriptLoading) {
+            CraftTweakerAPI.logError("Since 1.27.0, mixinzs requires fast script loading mode to be enabled. Please note that this mode changes the behavior of preprocessors.");
+        }
+
         PreprocessorManager preprocessorManager = tweaker.getPreprocessorManager();
         preprocessorManager.registerPreprocessorAction(MixinPreprocessor.NAME, (IMultilinePreprocessorFactory<MixinPreprocessor>) MixinPreprocessor::new);
         Class<?> classLoaderClass = Reference.IS_CLEANROOM ? Class.forName("top.outlands.foundation.boot.ActualClassLoader") : LaunchClassLoader.class;
@@ -58,6 +64,7 @@ public class ZenMixin {
         tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
         tweaker.loadScript(false, MixinPreprocessor.NAME);
         ImmutableMap.Builder<String, byte[]> injectedClassesBuilder = ImmutableMap.builder();
+
         ZenModule.classes.forEach((name, bytecode) -> {
             if (name.startsWith("youyihj/zenutils/impl/mixin/custom/")) {
                 injectedClassesBuilder.put(name.replace('/', '.'), bytecode);
@@ -73,6 +80,8 @@ public class ZenMixin {
             }
         });
         lclBytecodesField.set(Launch.classLoader, new LaunchClassLoaderResourceCache(resourceCache, injectedClassesBuilder.build()));
+
+        ZenMainSchedule.onMixinLoaded();
 
         Mixins.addConfiguration("mixins.zenutils.custom.json");
         Mixins.registerErrorHandlerClass("youyihj.zenutils.impl.mixin.custom.CustomMixinErrorHandler");

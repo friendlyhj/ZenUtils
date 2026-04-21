@@ -32,6 +32,7 @@ import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.reload.AnnotatedActionReloadCallback;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.util.ReflectUtils;
+import youyihj.zenutils.impl.zenscript.mixin.ZenMainSchedule;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -280,7 +281,7 @@ public class ZenUtilsTweaker implements ITweaker {
                 ZenModule module = new ZenModule(classes, CraftTweakerAPI.class.getClassLoader());
                 Runnable runnable = module.getMain();
                 if (runnable != null)
-                    runnable.run();
+                    ZenMainSchedule.run(scriptFile, runnable);
             } catch (Throwable ex) {
                 CraftTweakerAPI.logError(getTweakerDescriptor(loaderName) + ": Error executing " + scriptFile + ": " + ex.getMessage(), ex);
             }
