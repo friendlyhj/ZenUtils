@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import youyihj.zenutils.api.network.IByteBuf;
 import youyihj.zenutils.api.network.IByteBufWriter;
-import youyihj.zenutils.impl.util.LogMTErrorRunnableWrapper;
 
 /**
  * @author youyihj
@@ -68,10 +67,15 @@ public abstract class ZenUtilsMessage implements IMessage {
 
         @Override
         public IMessage onMessage(Server2Client message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(LogMTErrorRunnableWrapper.create(() -> {
-                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
-                message.getByteBuf().getInternal().release();
-            }));
+            Minecraft.getMinecraft().addScheduledTask(() -> {
+                try {
+                    ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+                } catch (Throwable t) {
+                    CraftTweakerAPI.logError(null, t);
+                } finally {
+                    message.getByteBuf().getInternal().release();
+                }
+            });
             return null;
         }
     }
@@ -91,9 +95,15 @@ public abstract class ZenUtilsMessage implements IMessage {
         @Override
         public IMessage onMessage(Client2Server message, MessageContext ctx) {
             IByteBuf byteBuf = message.getByteBuf();
-            CraftTweaker.server.addScheduledTask(LogMTErrorRunnableWrapper.create(() ->
-                    ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, byteBuf, new MCPlayer(ctx.getServerHandler().player))
-            ));
+            CraftTweaker.server.addScheduledTask(() -> {
+                try {
+                    ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, byteBuf, new MCPlayer(ctx.getServerHandler().player));
+                } catch (Throwable t) {
+                    CraftTweakerAPI.logError(null, t);
+                } finally {
+                    message.getByteBuf().getInternal().release();
+                }
+            });
             return null;
         }
     }
