@@ -68,9 +68,10 @@ public abstract class ZenUtilsMessage implements IMessage {
 
         @Override
         public IMessage onMessage(Server2Client message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(LogMTErrorRunnableWrapper.create(() ->
-                    ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf())
-            ));
+            Minecraft.getMinecraft().addScheduledTask(LogMTErrorRunnableWrapper.create(() -> {
+                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+                message.getByteBuf().getInternal().release();
+            }));
             return null;
         }
     }
