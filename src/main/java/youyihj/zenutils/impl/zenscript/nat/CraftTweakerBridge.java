@@ -55,6 +55,8 @@ public enum CraftTweakerBridge {
             ClassData internalUtils = InternalUtils.getClassDataFetcher().forClass(InternalUtils.class);
             casters.put("net.minecraft.enchantment.Enchantment", internalUtils.methods("toCTEnchantment", LookupRequester.PUBLIC).get(0));
             casters.put("crafttweaker.api.enchantments.IEnchantmentDefinition", internalUtils.methods("toMCEnchantment", LookupRequester.PUBLIC).get(0));
+            casters.put("net.minecraftforge.fml.common.registry.EntityEntry", internalUtils.methods("toCTEntityDefinition", LookupRequester.PUBLIC).get(0));
+            casters.put("crafttweaker.api.entity.IEntityDefinition", internalUtils.methods("toMCEntityEntry", LookupRequester.PUBLIC).get(0));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

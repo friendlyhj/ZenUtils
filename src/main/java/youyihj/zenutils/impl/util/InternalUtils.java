@@ -6,13 +6,16 @@ import com.google.common.reflect.TypeToken;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.enchantments.IEnchantmentDefinition;
+import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.mc1120.enchantments.MCEnchantmentDefinition;
+import crafttweaker.mc1120.entity.MCEntityDefinition;
 import crafttweaker.util.EventList;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
@@ -128,11 +131,21 @@ public final class InternalUtils {
 
     @ReflectionInvoked
     public static Enchantment toMCEnchantment(IEnchantmentDefinition definition) {
-        return (Enchantment) definition.getInternal();
+        return definition == null ? null : (Enchantment) definition.getInternal();
     }
 
     @ReflectionInvoked
     public static IEnchantmentDefinition toCTEnchantment(Enchantment enchantment) {
-        return new MCEnchantmentDefinition(enchantment);
+        return enchantment == null ? null : new MCEnchantmentDefinition(enchantment);
+    }
+
+    @ReflectionInvoked
+    public static EntityEntry toMCEntityEntry(IEntityDefinition definition) {
+        return definition == null ? null : (EntityEntry) definition.getInternal();
+    }
+
+    @ReflectionInvoked
+    public static IEntityDefinition toCTEntityDefinition(EntityEntry entry) {
+        return entry == null ? null : new MCEntityDefinition(entry);
     }
 }
