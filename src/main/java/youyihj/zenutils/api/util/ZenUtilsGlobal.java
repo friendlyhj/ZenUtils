@@ -158,6 +158,41 @@ public class ZenUtilsGlobal {
         ScriptReloader.addReloadableLoader(loaderName);
     }
 
+    @ZenMethod
+    public static boolean isBool(Object object) {
+        return object instanceof Boolean;
+    }
+
+    @ZenMethod
+    public static boolean isInt(Object object) {
+        return object instanceof Integer;
+    }
+
+    @ZenMethod
+    public static boolean isFloat(Object object) {
+        return object instanceof Float;
+    }
+
+    @ZenMethod
+    public static boolean isDouble(Object object) {
+        return object instanceof Double;
+    }
+
+    @ZenMethod
+    public static boolean isByte(Object object) {
+        return object instanceof Byte;
+    }
+
+    @ZenMethod
+    public static boolean isShort(Object object) {
+        return object instanceof Short;
+    }
+
+    @ZenMethod
+    public static boolean isLong(Object object) {
+        return object instanceof Long;
+    }
+
     // Actually, these below are not global
     @ZenMethod
     public static String typeof(int unused) {

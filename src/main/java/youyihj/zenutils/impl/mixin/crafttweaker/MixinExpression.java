@@ -11,6 +11,7 @@ import stanhebben.zenscript.expression.ExpressionAs;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.ZenTypeUtil;
 import youyihj.zenutils.impl.zenscript.nat.CastingRuleCoerced;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeJavaNative;
 
@@ -35,7 +36,16 @@ public abstract class MixinExpression implements IPartialExpression {
     )
     private void javaNativeTypeCastExplicitly(ZenPosition position, IEnvironmentGlobal environment, ZenType type, CallbackInfoReturnable<Expression> cir) {
         if (type instanceof ZenTypeJavaNative || getType() instanceof ZenTypeJavaNative) {
-            cir.setReturnValue(new ExpressionAs(position, (Expression) (Object) this, new CastingRuleCoerced(getType(), type)));
+            if (!ZenTypeUtil.isPrimitive(type)) {
+                cir.setReturnValue(new ExpressionAs(position, (Expression) (Object) this, new CastingRuleCoerced(getType(), type)));
+            } else {
+                ZenType wrapper = ZenTypeUtil.checkPrimitive(type);
+                cir.setReturnValue(new ExpressionAs(
+                        position,
+                        new ExpressionAs(position, (Expression) (Object) this, new CastingRuleCoerced(getType(), wrapper)),
+                        wrapper.getCastingRule(type, environment)
+                ));
+            }
         }
     }
 }
