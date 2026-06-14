@@ -132,7 +132,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                 isMixinClass = true;
                 mixinTargets = MixinAnnotationTranslator.getMixinTargets(annotation.getRight().getAsJsonObject());
                 for (String target : mixinTargets) {
-                    if (target.startsWith("youyihj")) {
+                    if (target.startsWith("youyihj.zenutils")) {
                         classEnvironment.error(position, "why you try to mixin zenutils itself?");
                     }
                     ClassData classData;
