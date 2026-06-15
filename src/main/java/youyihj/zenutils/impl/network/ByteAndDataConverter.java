@@ -121,16 +121,11 @@ public class ByteAndDataConverter {
 
     private static void writeByteArray(IByteBuf byteBuf, DataByteArray byteArray) {
         byte[] bytes = byteArray.asByteArray();
-        byteBuf.writeInt(bytes.length);
-        byteBuf.getInternal().writeBytes(bytes);
+        byteBuf.writeBytes(bytes);
     }
 
     private static DataByteArray readByteArray(IByteBuf byteBuf) {
-        byte[] bytes = new byte[byteBuf.readInt()];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = byteBuf.readByte();
-        }
-        return new DataByteArray(bytes, true);
+        return new DataByteArray(byteBuf.readBytes(), true);
     }
 
     private static void writeDouble(IByteBuf byteBuf, DataDouble dataDouble) {
@@ -192,11 +187,11 @@ public class ByteAndDataConverter {
     }
 
     private static void writeShort(IByteBuf byteBuf, DataShort dataShort) {
-        byteBuf.getInternal().writeShort(dataShort.asShort());
+        byteBuf.writeShort(dataShort.asShort());
     }
 
     private static DataShort readShort(IByteBuf byteBuf) {
-        return new DataShort(byteBuf.getInternal().readShort());
+        return new DataShort(byteBuf.readShort());
     }
 
     private static void writeString(IByteBuf byteBuf, DataString dataString) {

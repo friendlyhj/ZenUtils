@@ -4,7 +4,6 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.data.IData;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.world.IBlockPos;
-import io.netty.buffer.ByteBuf;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import youyihj.zenutils.api.util.CrTUUID;
@@ -23,6 +22,12 @@ public interface IByteBuf {
 
     @ZenMethod
     void writeByte(byte value);
+
+    @ZenMethod
+    void writeBytes(byte[] value);
+
+    @ZenMethod
+    short writeShort(short value);
 
     @ZenMethod
     void writeLong(long value);
@@ -58,6 +63,12 @@ public interface IByteBuf {
     byte readByte();
 
     @ZenMethod
+    byte[] readBytes();
+
+    @ZenMethod
+    short readShort();
+
+    @ZenMethod
     long readLong();
 
     @ZenMethod
@@ -80,6 +91,4 @@ public interface IByteBuf {
 
     @ZenMethod
     CrTUUID readUUID();
-
-    ByteBuf getInternal();
 }

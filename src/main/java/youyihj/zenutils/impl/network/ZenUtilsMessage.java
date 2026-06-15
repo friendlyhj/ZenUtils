@@ -2,7 +2,6 @@ package youyihj.zenutils.impl.network;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.mc1120.CraftTweaker;
-import crafttweaker.mc1120.player.MCPlayer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -10,6 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import youyihj.zenutils.api.network.IByteBuf;
 import youyihj.zenutils.api.network.IByteBufWriter;
+import youyihj.zenutils.impl.util.LogMTErrorRunnableWrapper;
 
 /**
  * @author youyihj
@@ -24,17 +24,27 @@ public abstract class ZenUtilsMessage implements IMessage {
     }
 
     @Override
-    public final void fromBytes(ByteBuf buf) {
+    public void fromBytes(ByteBuf buf) {
         this.key = buf.readInt();
-        this.byteBuf = new ZenUtilsByteBuf(buf.copy());
-        readExtraBytes(byteBuf);
+        int packetContentLength = buf.readInt();
+        byte[] data = new byte[packetContentLength];
+
+        for (int i = 0; i < packetContentLength; i++) {
+            data[i] = buf.readByte();
+        }
+
+        this.byteBuf = new HeapReadOnlyByteBuf(data);
     }
 
     @Override
-    public final void toBytes(ByteBuf buf) {
-        this.byteBuf = new ZenUtilsByteBuf(buf);
-        this.byteBuf.writeInt(key);
-        this.writeExtraBytes(this.byteBuf);
+    public void toBytes(ByteBuf buf) {
+        buf.writeInt(key);
+        HeapWriteOnlyByteBuf heapWriteOnlyByteBuf = new HeapWriteOnlyByteBuf();
+        this.byteBuf = heapWriteOnlyByteBuf;
+        getByteBufWriter().write(heapWriteOnlyByteBuf);
+        int packetContentLength = heapWriteOnlyByteBuf.writeIndex();
+        buf.writeInt(packetContentLength);
+        buf.writeBytes(heapWriteOnlyByteBuf.getData(), 0, packetContentLength);
     }
 
     public final IByteBufWriter getByteBufWriter() {
@@ -45,65 +55,26 @@ public abstract class ZenUtilsMessage implements IMessage {
         this.byteBufWriter = byteBufWriter;
     }
 
-    protected abstract void writeExtraBytes(IByteBuf buf);
-
-    protected abstract void readExtraBytes(IByteBuf buf);
-
     public IByteBuf getByteBuf() {
         return byteBuf;
     }
 
     public static class Server2Client extends ZenUtilsMessage implements IMessageHandler<Server2Client, IMessage> {
-
-        @Override
-        protected void writeExtraBytes(IByteBuf buf) {
-            getByteBufWriter().write(buf);
-        }
-
-        @Override
-        protected void readExtraBytes(IByteBuf buf) {
-            // NO-OP
-        }
-
         @Override
         public IMessage onMessage(Server2Client message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> {
-                try {
-                    ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
-                } catch (Throwable t) {
-                    CraftTweakerAPI.logError(null, t);
-                } finally {
-                    message.getByteBuf().getInternal().release();
-                }
-            });
+            Minecraft.getMinecraft().addScheduledTask(LogMTErrorRunnableWrapper.create(() -> {
+                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+            }));
             return null;
         }
     }
 
     public static class Client2Server extends ZenUtilsMessage implements IMessageHandler<Client2Server, IMessage> {
-
-        @Override
-        protected void readExtraBytes(IByteBuf buf) {
-            // NO-OP
-        }
-
-        @Override
-        protected void writeExtraBytes(IByteBuf buf) {
-            getByteBufWriter().write(buf);
-        }
-
         @Override
         public IMessage onMessage(Client2Server message, MessageContext ctx) {
-            IByteBuf byteBuf = message.getByteBuf();
-            CraftTweaker.server.addScheduledTask(() -> {
-                try {
-                    ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, byteBuf, new MCPlayer(ctx.getServerHandler().player));
-                } catch (Throwable t) {
-                    CraftTweakerAPI.logError(null, t);
-                } finally {
-                    message.getByteBuf().getInternal().release();
-                }
-            });
+            CraftTweaker.server.addScheduledTask(LogMTErrorRunnableWrapper.create(() -> {
+                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+            }));
             return null;
         }
     }
