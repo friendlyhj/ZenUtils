@@ -93,19 +93,21 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
     @Override
     public List<String> parameterNames() {
         if (parameterNames == null) {
-            parameterNames = new ArrayList<>(parameterCount());
+            Type[] parameterTypes = Type.getMethodType(methodNode.desc).getArgumentTypes();
+            parameterNames = new ArrayList<>(parameterTypes.length);
             List<LocalVariableNode> lvt = declaringClass.getFullClassNode().methods.stream()
                     .filter(m -> m.name.equals(methodNode.name) && m.desc.equals(methodNode.desc)).findFirst().map(m -> m.localVariables).orElse(null);
             if (lvt != null) {
-                int startIndex = Modifier.isStatic(methodNode.access) ? 0 : 1;
-                for (int i = 0; i < parameterCount(); i++) {
+                int localVariableIndex = Modifier.isStatic(methodNode.access) ? 0 : 1;
+                for (Type parameterType : parameterTypes) {
                     String nameFromBytecode = "";
                     for (LocalVariableNode localVariableNode : lvt) {
-                        if (localVariableNode.index == i + startIndex) {
+                        if (localVariableNode.index == localVariableIndex) {
                             nameFromBytecode = localVariableNode.name;
                             break;
                         }
                     }
+                    localVariableIndex += parameterType.getSize();
                     parameterNames.add(nameFromBytecode);
                 }
             } else if (methodNode.parameters != null) {
