@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.util.NonNullList;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -144,6 +145,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                     List<String> genericTypes = new MethodParameterParser("(" + genericInfo + ")").parse();
                     ClassData rawClassData = classDataFetcher.forName(rawClassName);
                     if (genericTypes.size() == 1) {
+                        if (rawClassData.name().equals("net.minecraft.util.NonNullList")) {
+                            return new ZenTypeJavaNativeIterable(rawClassData, getType(new LiteralType(genericTypes.get(0))), this);
+                        }
                         if (classDataFetcher.forClass(List.class).isAssignableFrom(rawClassData)) {
                             return new ZenTypeArrayList(getType(new LiteralType(genericTypes.get(0))));
                         }
@@ -190,6 +194,9 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
      */
     @Overwrite
     private ZenType getListType(ParameterizedType type) {
+        if (type.getRawType() == NonNullList.class) {
+            return new ZenTypeJavaNativeIterable(InternalUtils.getClassDataFetcher().forClass(NonNullList.class), getType(type.getActualTypeArguments()[0]), this);
+        }
         return new ZenTypeArrayList(getType(type.getActualTypeArguments()[0]));
     }
 
