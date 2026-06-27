@@ -10,6 +10,7 @@ import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
+import stanhebben.zenscript.util.StringUtil;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
@@ -82,7 +83,7 @@ public class PartialJavaNativeMember implements IPartialExpression {
         return getNestedZenType(environment)
                 .map(it -> it.call(position, environment, isStatic() ? null : instanceValue.eval(environment), values))
                 .orElseGet(() -> {
-                    environment.error(position, "matched method " + name + ", but the argument types do not match");
+                    environment.error(position, StringUtil.methodMatchingError(methods, values));
                     return new ExpressionInvalid(position);
                 });
     }
