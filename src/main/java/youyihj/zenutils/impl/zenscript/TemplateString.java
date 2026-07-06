@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.zenscript;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.compiler.IEnvironmentGlobal;
@@ -12,6 +13,8 @@ import stanhebben.zenscript.parser.expression.ParsedExpressionValue;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,8 +84,32 @@ public class TemplateString {
                     if (templateStringTokener.optional(T_AOPEN) != null) {
                         expressions.add(new ParsedExpressionValue(position, new ExpressionString(position, literals.toString())));
                         literals = new StringBuilder();
-                        expressions.add(ParsedExpression.read(templateStringTokener.toLiteral(environment.getEnvironment()), environment));
-                        templateStringTokener.required(T_ACLOSE, "} expected");
+                        StringBuilder embedExpression =  new StringBuilder();
+                        boolean closedBracket = false;
+                        while (templateStringTokener.hasNext()) {
+                            if (templateStringTokener.optional(T_ACLOSE) == null) {
+                                embedExpression.append(templateStringTokener.next().getValue());
+                            } else {
+                                closedBracket = true;
+                                break;
+                            }
+                        }
+
+                        if (!closedBracket) {
+                            throw new ParseException(position.getFile(), position.getLine(), position.getLineOffset(), "Unclosed embedded expression");
+                        }
+
+                        if (embedExpression.length() > 0) {
+                            try {
+                                // TODO: long newline prefix to correct the line number of token, bad impl
+                                ZenTokener embedTokener = new ZenTokener(new StringReader(Strings.repeat("\n", position.getLine() - 1) + embedExpression + ";"), environment.getEnvironment(), position.getFileName(), false);
+                                expressions.add(ParsedExpression.read(embedTokener, environment));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (ParseException e) {
+                                throw new ParseException(position.getFile(), position.getLine(), position.getLineOffset(), "Malformed embedded expression: " + embedExpression);
+                            }
+                        }
                     } else {
                         literals.append('$');
                     }

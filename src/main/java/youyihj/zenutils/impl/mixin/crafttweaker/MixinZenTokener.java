@@ -53,6 +53,6 @@ public abstract class MixinZenTokener {
         FINALS = finalList.toIntArray();
         REGEXPS = regexpsList.toArray(new String[0]);
         DFA = new NFA(REGEXPS, FINALS).toDFA().optimize().compile();
-        TemplateStringTokener.setupDFAFromZenTokener(REGEXPS, FINALS);
+        TemplateStringTokener.setupDFAFromZenTokener();
     }
 }
