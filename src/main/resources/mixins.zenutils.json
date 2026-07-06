@@ -37,6 +37,7 @@
     "MixinPartialType",
     "MixinPlayerAnvilUpdateEvent",
     "MixinPreprocessorManager",
+    "MixinSyntaxCommand",
     "MixinTemplateStringTokener",
     "MixinTokenStream",
     "MixinTypeRegistry",

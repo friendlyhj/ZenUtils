@@ -55,6 +55,7 @@ public class ZenUtilsTweaker implements ITweaker {
     private final Multimap<String, ScriptFile> loaderTasks = ArrayListMultimap.create();
 
     private ZenUtilsGlobalEnvironment lastEnvironment = null;
+    private ZenUtilsGlobalEnvironment lastSyntaxEnvironment = null;
 
     public ZenUtilsTweaker(ITweaker tweaker) {
         this.tweaker = tweaker;
@@ -200,10 +201,13 @@ public class ZenUtilsTweaker implements ITweaker {
         IEnvironmentGlobal environmentGlobal;
 
         if (Configuration.crossLoaderAccess) {
-            ZenUtilsGlobalEnvironment environment = new ZenUtilsGlobalEnvironment(lastEnvironment, loader.getMainName());
+            ZenUtilsGlobalEnvironment environment = new ZenUtilsGlobalEnvironment(isSyntaxCommand ? lastSyntaxEnvironment : lastEnvironment, loader.getMainName());
             environmentGlobal = environment;
             if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
                 lastEnvironment = environment;
+            }
+            if (isSyntaxCommand) {
+                lastSyntaxEnvironment = environment;
             }
             classes = environment.getClasses();
         } else {
@@ -449,6 +453,10 @@ public class ZenUtilsTweaker implements ITweaker {
 
     public String getCurrentLoader() {
         return currentLoader;
+    }
+
+    public void finishSyntaxCommand() {
+        lastSyntaxEnvironment = null;
     }
 
     private boolean validateAction(IAction action) {

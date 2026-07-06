@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.runtime.ScriptLoader;
 import youyihj.zenutils.ZenUtils;
-import youyihj.zenutils.api.logger.LogLevel;
 import youyihj.zenutils.api.preprocessor.ReloadablePreprocessor;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 
@@ -39,13 +38,15 @@ public class ScriptReloader {
         ScriptLoader loader = new ScriptLoader(reloadableLoaders.toArray(new String[0]));
         ZenUtilsLogger logger = ZenUtils.crafttweakerLogger;
         logger.clear();
-        logger.getLogOption().setMinLogLevel(LogLevel.WARNING);
-        CraftTweakerAPI.tweaker.loadScript(true, loader);
-        if (loader.getLoaderStage() == ScriptLoader.LoaderStage.ERROR || logger.hasError()) {
-            return false;
-        }
+        // TODO: run syntax command before actual reload
+        // the reload context should inherit from initialization, but not affect subsequent reload
+//        logger.getLogOption().setMinLogLevel(LogLevel.WARNING);
+//        CraftTweakerAPI.tweaker.loadScript(true, loader);
+//        if (loader.getLoaderStage() == ScriptLoader.LoaderStage.ERROR || logger.hasError()) {
+//            return false;
+//        }
         loader.setLoaderStage(ScriptLoader.LoaderStage.NOT_LOADED);
-        logger.clear();
+//        logger.clear();
         CraftTweakerAPI.tweaker.loadScript(false, loader);
         return loader.getLoaderStage() != ScriptLoader.LoaderStage.ERROR;
     }
