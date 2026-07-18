@@ -30,6 +30,7 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.ZenNativeMember;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.member.ClassData;
+import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.mixin.itf.IEnvironmentClassExtension;
 import youyihj.zenutils.impl.mixin.itf.IParsedClassConstructorExtension;
 import youyihj.zenutils.impl.mixin.itf.IParsedZenClassExtension;
@@ -138,7 +139,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                     ClassData classData;
                     try {
                         classData = InternalUtils.getClassDataFetcher().forName(target);
-                        if (classData.fetcher() != InternalUtils.getClassDataFetcher()) {
+                        if (classData.fetcher() instanceof ReflectionClassDataFetcher) {
                             if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
                                 isMixinClass = false;
                                 classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");
