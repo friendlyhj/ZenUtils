@@ -50,7 +50,7 @@ public class StripOptionalTransformer implements IClassTransformer {
 
     private void stripInterface(ClassNode classNode, AnnotationNode annotation) {
         String iface = Annotations.getValue(annotation, "iface");
-        String modid =  Annotations.getValue(annotation, "modid");
+        String modid = Annotations.getValue(annotation, "modid");
         boolean striprefs = Annotations.getValue(annotation, "striprefs", Boolean.FALSE);
 
         if (ModDiscoverer.isModPresent(modid)) {
@@ -84,19 +84,15 @@ public class StripOptionalTransformer implements IClassTransformer {
     private static class RemovingSignatureWriter extends SignatureWriter {
         private final String itfName;
 
-        RemovingSignatureWriter(String itfName)
-        {
+        RemovingSignatureWriter(String itfName) {
             this.itfName = itfName;
         }
 
         @Override
-        public void visitClassType(String name)
-        {
+        public void visitClassType(String name) {
             if (name.equals(itfName)) {
                 super.visitClassType("java/lang/Object");
-            }
-            else
-            {
+            } else {
                 super.visitClassType(name);
             }
         }

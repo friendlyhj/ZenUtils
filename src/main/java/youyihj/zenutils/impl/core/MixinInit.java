@@ -47,6 +47,7 @@ public class MixinInit implements IMixinConnector {
             for (String name : EARLY_CLASS_LOADING_ERROR_TRIGGERS) {
                 if (classLoader$findLoadedClass.invoke(Launch.classLoader, name) != null) {
                     CraftTweakerAPI.logError("Mixin scripts shouldn't execute code (i.e. top level statements) related to Minecraft.");
+                    break;
                 }
             }
         } catch (Exception ignored) {}
