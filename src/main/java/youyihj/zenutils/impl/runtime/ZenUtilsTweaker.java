@@ -15,9 +15,6 @@ import crafttweaker.util.IEventHandler;
 import crafttweaker.util.SuppressErrorFlag;
 import crafttweaker.zenscript.CrtStoringErrorLogger;
 import crafttweaker.zenscript.GlobalRegistry;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
-import rml.layer.compat.crt.RMLCrTLoader;
 import stanhebben.zenscript.ZenModule;
 import stanhebben.zenscript.ZenParsedFile;
 import stanhebben.zenscript.ZenTokener;
@@ -63,13 +60,7 @@ public class ZenUtilsTweaker implements ITweaker {
         if (!globalDir.exists())
             globalDir.mkdirs();
         ScriptProviderDirectory provider = new ScriptProviderDirectory(globalDir);
-        if (!Loader.isModLoaded("rml")) {
-            setScriptProvider(provider);
-        } else {
-            // zenutils tweaker breaks rml crt support, we fix it here
-            MinecraftForge.EVENT_BUS.register(RMLCrTLoader.class);
-            setScriptProvider(RMLCrTLoader.inject(provider));
-        }
+        setScriptProvider(provider);
     }
 
     @Override

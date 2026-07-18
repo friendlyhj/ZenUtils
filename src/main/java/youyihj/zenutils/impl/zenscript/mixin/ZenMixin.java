@@ -11,13 +11,9 @@ import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.transformer.MixinProcessor;
-import org.spongepowered.asm.mixin.transformer.MixinTransformer;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.Reference;
@@ -30,9 +26,9 @@ import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
+import zone.rong.mixinbooter.util.Environment;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +57,7 @@ public class ZenMixin {
         lclBytecodesField.setAccessible(true);
         //noinspection unchecked
         Map<String, byte[]> resourceCache = (Map<String, byte[]>) lclBytecodesField.get(Launch.classLoader);
-        tweaker.setNetworkSide(FMLCommonHandler.instance().getSide().isClient() ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
+        tweaker.setNetworkSide(Environment.side().equals("CLIENT") ? NetworkSide.SIDE_CLIENT : NetworkSide.SIDE_SERVER);
         tweaker.loadScript(false, MixinPreprocessor.NAME);
         ImmutableMap.Builder<String, byte[]> injectedClassesBuilder = ImmutableMap.builder();
 
@@ -87,12 +83,7 @@ public class ZenMixin {
         Mixins.registerErrorHandlerClass("youyihj.zenutils.impl.mixin.custom.CustomMixinErrorHandler");
         MixinInternals.registerExtension(new ExtensionCheckInjection());
 
-        Field processorField = MixinTransformer.class.getDeclaredField("processor");
-        processorField.setAccessible(true);
-        MixinProcessor processor = (MixinProcessor) processorField.get(Proxy.transformer);
-        Method selectMethod = processor.getClass().getDeclaredMethod("select", MixinEnvironment.class);
-        selectMethod.setAccessible(true);
-        selectMethod.invoke(processor, Reference.IS_CLEANROOM ? MixinEnvironment.getDefaultEnvironment() : MixinEnvironment.getCurrentEnvironment());
+        Proxy.refreshMixins();
     }
 
     public static String handleMixinClassName(String className) {

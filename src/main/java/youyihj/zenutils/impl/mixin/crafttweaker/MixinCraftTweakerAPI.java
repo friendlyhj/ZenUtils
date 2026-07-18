@@ -2,7 +2,6 @@ package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.mc1120.preprocessors.ModLoadedPreprocessor;
-import crafttweaker.mc1120.util.CraftTweakerHacks;
 import crafttweaker.preprocessor.PreprocessorManager;
 import crafttweaker.runtime.ITweaker;
 import crafttweaker.zenscript.GlobalRegistry;
@@ -17,11 +16,13 @@ import youyihj.zenutils.api.preprocessor.*;
 import youyihj.zenutils.api.util.ZenUtilsGlobal;
 import youyihj.zenutils.impl.core.Configuration;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
+import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfo;
 import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinCallbackInfoReturnable;
 import youyihj.zenutils.impl.zenscript.mixin.ZenTypeMixinOperation;
 import youyihj.zenutils.impl.zenscript.nat.PartialJavaNativeClassOrPackage;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -42,8 +43,15 @@ public abstract class MixinCraftTweakerAPI {
         zu$registerGlobalMethods();
 
         GlobalRegistry.getRoot().put("native", pos -> new PartialJavaNativeClassOrPackage(pos, ""), null);
-        List<Class<? extends IPartialExpression>> nonCapturedExpressions = CraftTweakerHacks.getPrivateStaticObject(EnvironmentMethodLambda.class, "nonCapturedExpressions");
-        nonCapturedExpressions.add(PartialJavaNativeClassOrPackage.class);
+
+        try {
+            Field nonCapturedExpressionsField = EnvironmentMethodLambda.class.getDeclaredField("nonCapturedExpressions");
+            nonCapturedExpressionsField.setAccessible(true);
+            List<Class<? extends IPartialExpression>> nonCapturedExpressions = InternalUtils.cast(nonCapturedExpressionsField.get(null));
+            nonCapturedExpressions.add(PartialJavaNativeClassOrPackage.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         if (Configuration.enableMixin) {
             GlobalRegistry.getRoot().put("mixin.CallbackInfo", pos -> new PartialType(pos, ZenTypeMixinCallbackInfo.INSTANCE), null);

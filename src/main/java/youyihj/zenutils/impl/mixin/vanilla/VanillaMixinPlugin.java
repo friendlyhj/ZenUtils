@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
-import youyihj.zenutils.impl.core.Configuration;
 
 import java.util.Collections;
 import java.util.List;

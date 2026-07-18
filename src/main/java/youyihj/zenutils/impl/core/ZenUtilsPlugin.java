@@ -2,7 +2,6 @@ package youyihj.zenutils.impl.core;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import youyihj.zenutils.api.util.ReflectionInvoked;
-import zone.rong.mixinbooter.IEarlyMixinLoader;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.Map;
 @ReflectionInvoked
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.SortingIndex(-1)
-public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
+public class ZenUtilsPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
         List<String> transformers = new ArrayList<>();
@@ -46,18 +45,5 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public String getAccessTransformerClass() {
         return "youyihj.zenutils.impl.core.ConfigAccessTransformer";
-    }
-
-    @Override
-    public List<String> getMixinConfigs() {
-        List<String> configs = new ArrayList<>();
-        configs.add("mixins.zenutils.vanilla.json");
-        if (Configuration.enableMixin) {
-            configs.add("mixins.zenutils.zenbootstrap.json");
-        }
-        if (Configuration.enableRandomTickEvent) {
-            configs.add("mixins.zenutils.randomtickevent.json");
-        }
-        return configs;
     }
 }
