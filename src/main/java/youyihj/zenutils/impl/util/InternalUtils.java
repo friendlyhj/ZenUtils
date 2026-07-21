@@ -9,12 +9,13 @@ import crafttweaker.util.EventList;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import org.spongepowered.asm.service.MixinService;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
+import youyihj.zenutils.impl.member.bytecode.BundledBytesProvider;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
-import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
 import java.lang.invoke.MethodHandles;
@@ -36,7 +37,10 @@ public final class InternalUtils {
     private static final List<Runnable> ALL_EVENT_LISTS_CLEAR_ACTIONS = new ArrayList<>();
     private static final Supplier<ClassDataFetcher> CLASS_DATA_FETCHER = Suppliers.memoize(() -> new BytecodeClassDataFetcher(
             new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
-            new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), new StripOptionalTransformer())
+            new BundledBytesProvider(
+                    new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), new StripOptionalTransformer()),
+                    new DeobfMinecraftBytesProvider()
+            )
     ));
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
@@ -46,13 +50,6 @@ public final class InternalUtils {
 
     public static void checkDataMap(IData data) {
         Preconditions.checkArgument(data instanceof DataMap, "data argument must be DataMap");
-    }
-
-    public static void checkCraftTweakerVersion(String requiredVersion, IVersionChecker versionChecker) {
-        boolean result = versionChecker.getResult();
-        if (!result) {
-            throw new InvalidCraftTweakerVersionException(requiredVersion);
-        }
     }
 
     public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
@@ -114,5 +111,17 @@ public final class InternalUtils {
 
     public static ClassDataFetcher getClassDataFetcher() {
         return CLASS_DATA_FETCHER.get();
+    }
+
+    public static boolean isCoreModPhase() {
+        return !MixinService.getService().getClassTracker().isClassLoaded("net.minecraftforge.fml.common.Loader");
+    }
+
+    public static String getLoaderState() {
+        if (isCoreModPhase()) {
+            return "COREMOD";
+        } else {
+            return Loader.instance().getLoaderState().toString();
+        }
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.transformer.Proxy;
 import stanhebben.zenscript.ZenModule;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.zenscript.IMultilinePreprocessorFactory;
@@ -82,7 +83,7 @@ public class ZenMixin {
         Mixins.registerErrorHandlerClass("youyihj.zenutils.impl.mixin.custom.CustomMixinErrorHandler");
         MixinInternals.registerExtension(new ExtensionCheckInjection());
 
-//        Proxy.refreshMixins();
+        Proxy.refreshMixins();
     }
 
     public static String handleMixinClassName(String className) {

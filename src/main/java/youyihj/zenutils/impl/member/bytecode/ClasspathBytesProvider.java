@@ -14,8 +14,8 @@ public class ClasspathBytesProvider implements ClassBytesProvider {
     private boolean closed;
 
     public ClasspathBytesProvider(List<Path> classpath) {
-        try {
-            for (Path path : classpath) {
+        for (Path path : classpath) {
+            try {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -25,9 +25,8 @@ public class ClasspathBytesProvider implements ClassBytesProvider {
                         return FileVisitResult.CONTINUE;
                     }
                 });
+            } catch (IOException ignored) {
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read a jar of classpath", e);
         }
     }
 

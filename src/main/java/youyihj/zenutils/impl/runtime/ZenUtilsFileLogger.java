@@ -1,11 +1,11 @@
 package youyihj.zenutils.impl.runtime;
 
 import crafttweaker.api.player.IPlayer;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.thread.SidedThreadGroup;
 import net.minecraftforge.fml.relauncher.Side;
 import youyihj.zenutils.api.logger.ICleanableLogger;
 import youyihj.zenutils.api.logger.LogLevel;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,6 +25,7 @@ public class ZenUtilsFileLogger implements ICleanableLogger {
     private boolean disableTrace;
 
     private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
+
 
     public ZenUtilsFileLogger(Path output) {
         this.output = output;
@@ -89,7 +90,7 @@ public class ZenUtilsFileLogger implements ICleanableLogger {
     }
 
     private void log(LogLevel level, String message) {
-        printWriter.printf("[%s][%s][%s] %s", Loader.instance().getLoaderState(), getEffectiveSide(), level, getTextWithoutFormattingCodes(message));
+        printWriter.printf("[%s][%s][%s] %s", InternalUtils.getLoaderState(), getEffectiveSide(), level, getTextWithoutFormattingCodes(message));
         printWriter.println();
     }
 

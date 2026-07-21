@@ -1,7 +1,5 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.LookupRequester;
@@ -9,6 +7,7 @@ import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -19,14 +18,14 @@ public enum CraftTweakerBridge {
 
     private final Map<String, ExecutableData> casters = new HashMap<>();
 
-    private LoaderState loaderState;
+    private String loaderState;
 
     CraftTweakerBridge() {
         refresh();
     }
 
     private void refresh() {
-        loaderState = Loader.instance().getLoaderState();
+        loaderState = InternalUtils.getLoaderState();
         casters.clear();
         try {
             ClassData craftTweakerMC = InternalUtils.getClassDataFetcher().forName("crafttweaker.api.minecraft.CraftTweakerMC");
@@ -63,7 +62,7 @@ public enum CraftTweakerBridge {
     }
 
     public Optional<ExecutableData> getCaster(final ClassData clazz) {
-        if (loaderState != Loader.instance().getLoaderState()) {
+        if (!Objects.equals(loaderState, InternalUtils.getLoaderState())) {
             refresh();
         }
         return Optional.ofNullable(casters.get(clazz.name()));
