@@ -18,6 +18,7 @@ import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
@@ -25,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -45,7 +47,23 @@ public final class InternalUtils {
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
+    private static final MethodHandle ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES;
+
     private InternalUtils() {
+    }
+
+    static {
+        if (Reference.IS_CLEANROOM) {
+            try {
+                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                Class<?> actualClassLoaderClass = Class.forName("top.outlands.foundation.boot.ActualClassLoader");
+                ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES = lookup.findVirtual(actualClassLoaderClass, "getCachedClasses", MethodType.methodType(Map.class));
+            } catch (Throwable ex) {
+                throw new RuntimeException("Failed to initialize ActualClassLoader.getCachedClasses method handle", ex);
+            }
+        } else {
+            ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES = null;
+        }
     }
 
     public static void checkDataMap(IData data) {
@@ -113,8 +131,21 @@ public final class InternalUtils {
         return CLASS_DATA_FETCHER.get();
     }
 
+    public static boolean isClassLoadedOnLCL(String className) {
+        if (!Reference.IS_CLEANROOM) {
+            return MixinService.getService().getClassTracker().isClassLoaded(className);
+        } else {
+            try {
+                Map<String, Class<?>> cachedClasses = cast(ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES.invoke(Launch.classLoader));
+                return cachedClasses.containsKey(className);
+            } catch (Throwable e) {
+                throw new RuntimeException("Failed to invoke ActualClassLoader.getCachedClasses", e);
+            }
+        }
+    }
+
     public static boolean isCoreModPhase() {
-        return !MixinService.getService().getClassTracker().isClassLoaded("net.minecraftforge.fml.common.Loader");
+        return !isClassLoadedOnLCL("net.minecraftforge.fml.common.Loader");
     }
 
     public static String getLoaderState() {

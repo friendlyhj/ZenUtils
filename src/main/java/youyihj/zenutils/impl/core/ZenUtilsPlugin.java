@@ -4,8 +4,8 @@ import crafttweaker.CraftTweakerAPI;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import org.spongepowered.asm.service.MixinService;
 import youyihj.zenutils.api.util.ReflectionInvoked;
+import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.mixin.ZenMixin;
 import zone.rong.mixinbooter.util.Environment;
 
@@ -61,7 +61,6 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        System.out.println("Running ZenMixinBooter.injectIntoClassLoader");
         if (Configuration.enableMixin) {
             try {
                 injectZenscriptEngineIntoClassLoader(Launch.classLoader);
@@ -73,7 +72,7 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin {
 
         try {
             for (String name : EARLY_CLASS_LOADING_ERROR_TRIGGERS) {
-                if (MixinService.getService().getClassTracker().isClassLoaded(name)) {
+                if (InternalUtils.isClassLoadedOnLCL(name)) {
                     CraftTweakerAPI.logError("Mixin scripts shouldn't execute code (i.e. top level statements) related to Minecraft.");
                     break;
                 }
