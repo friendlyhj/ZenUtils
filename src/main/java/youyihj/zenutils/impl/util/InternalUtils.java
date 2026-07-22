@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import org.spongepowered.asm.service.MixinService;
 import youyihj.zenutils.Reference;
+import youyihj.zenutils.impl.core.ConfigAccessTransformer;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.BundledBytesProvider;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
@@ -18,6 +19,7 @@ import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -37,13 +39,19 @@ public final class InternalUtils {
     public static ASMDataTable asmDataTable;
 
     private static final List<Runnable> ALL_EVENT_LISTS_CLEAR_ACTIONS = new ArrayList<>();
-    private static final Supplier<ClassDataFetcher> CLASS_DATA_FETCHER = Suppliers.memoize(() -> new BytecodeClassDataFetcher(
-            new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
-            new BundledBytesProvider(
-                    new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), new StripOptionalTransformer()),
-                    new DeobfMinecraftBytesProvider()
-            )
-    ));
+    private static final Supplier<ClassDataFetcher> CLASS_DATA_FETCHER = Suppliers.memoize(() -> {
+        try {
+            return new BytecodeClassDataFetcher(
+                    new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
+                    new BundledBytesProvider(
+                            new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), new StripOptionalTransformer()),
+                            new TransformedClassBytesProvider(new DeobfMinecraftBytesProvider(), new ConfigAccessTransformer())
+                    )
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 

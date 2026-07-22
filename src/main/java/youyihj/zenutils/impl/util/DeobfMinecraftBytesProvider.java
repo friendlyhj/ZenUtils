@@ -2,6 +2,7 @@ package youyihj.zenutils.impl.util;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer;
+import net.minecraftforge.fml.common.patcher.ClassPatchManager;
 import youyihj.zenutils.impl.member.bytecode.ClassBytesProvider;
 import youyihj.zenutils.impl.member.bytecode.ClassExcludedException;
 import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
@@ -36,6 +37,6 @@ public class DeobfMinecraftBytesProvider implements ClassBytesProvider {
             throw new ClassExcludedException(className);
         }
         String obfName = deobf.unmapClassName(className);
-        return deobf.transform(obfName, className, minecraftLib.getClassBytes(obfName));
+        return deobf.transform(obfName, className, ClassPatchManager.INSTANCE.applyPatch(obfName, className, minecraftLib.getClassBytes(obfName)));
     }
 }
