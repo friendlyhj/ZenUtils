@@ -1,35 +1,33 @@
 package youyihj.zenutils.api.logger;
 
-import net.minecraft.util.text.TextFormatting;
-
 /**
  * @author youyihj
  */
 public enum LogLevel {
     TRACE,
     INFO,
-    WARNING(TextFormatting.YELLOW),
-    ERROR(TextFormatting.RED),
-    FATAL(TextFormatting.DARK_RED);
+    WARNING('e'),
+    ERROR('c'),
+    FATAL('4');
 
-    private final TextFormatting textFormatting;
+    private final char controlText;
     private final boolean logPlayer;
 
-    LogLevel(TextFormatting textFormatting) {
-        this.textFormatting = textFormatting;
+    LogLevel(char controlText) {
+        this.controlText = controlText;
         this.logPlayer = true;
     }
 
     LogLevel() {
+        this.controlText = 'r';
         this.logPlayer = false;
-        this.textFormatting = TextFormatting.RESET;
     }
 
     public boolean isLogPlayer() {
         return logPlayer;
     }
 
-    public TextFormatting getTextFormatting() {
-        return textFormatting;
+    public String getControlText() {
+        return "§" + controlText;
     }
 }

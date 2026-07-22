@@ -27,9 +27,11 @@ import youyihj.zenutils.impl.network.ZenUtilsNetworkHandler;
 import youyihj.zenutils.impl.player.IStatFormatterAdapter;
 import youyihj.zenutils.impl.player.PlayerInteractionSimulation;
 import youyihj.zenutils.impl.reload.ReloadCommand;
+import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 import youyihj.zenutils.impl.runtime.ZenUtilsLogger;
 import youyihj.zenutils.impl.runtime.ZenUtilsTweaker;
+import youyihj.zenutils.impl.util.IVersionChecker;
 import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.List;
@@ -50,7 +52,7 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
-        InternalUtils.checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
+        checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
         try {
             crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
             tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;
@@ -117,5 +119,12 @@ public class ZenUtils {
                 }
             }
         });
+    }
+
+    private static void checkCraftTweakerVersion(String requiredVersion, IVersionChecker versionChecker) {
+        boolean result = versionChecker.getResult();
+        if (!result) {
+            throw new InvalidCraftTweakerVersionException(requiredVersion);
+        }
     }
 }

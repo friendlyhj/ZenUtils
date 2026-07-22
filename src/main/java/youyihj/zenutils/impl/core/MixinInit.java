@@ -1,23 +1,24 @@
 package youyihj.zenutils.impl.core;
 
-import com.google.common.collect.Lists;
-import net.minecraftforge.fml.common.Loader;
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.connect.IMixinConnector;
 import youyihj.zenutils.api.util.ReflectionInvoked;
-import zone.rong.mixinbooter.ILateMixinLoader;
-
-import java.util.List;
+import zone.rong.mixinbooter.service.ModDiscoverer;
 
 /**
  * @author youyihj
  */
 @ReflectionInvoked
-public class MixinInit implements ILateMixinLoader {
+public class MixinInit implements IMixinConnector {
     @Override
-    public List<String> getMixinConfigs() {
-        List<String> config = Lists.newArrayList("mixins.zenutils.json");
-        if (Loader.isModLoaded("simpledimensions")) {
-            config.add("mixins.zenutils.simpledimensions.json");
+    public void connect() {
+        Mixins.addConfiguration("mixins.zenutils.vanilla.json");
+        Mixins.addConfiguration("mixins.zenutils.json");
+        if (Configuration.enableRandomTickEvent) {
+            Mixins.addConfiguration("mixins.zenutils.randomtickevent.json");
         }
-        return config;
+        if (ModDiscoverer.isModPresent("simpledimensions")) {
+            Mixins.addConfiguration("mixins.zenutils.simpledimensions.json");
+        }
     }
 }

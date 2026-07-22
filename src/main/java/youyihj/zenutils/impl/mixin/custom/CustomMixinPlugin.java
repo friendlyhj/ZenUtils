@@ -1,9 +1,7 @@
 package youyihj.zenutils.impl.mixin.custom;
 
 import crafttweaker.CraftTweakerAPI;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -33,7 +31,7 @@ public class CustomMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return false;
+        return true;
     }
 
     @Override
@@ -53,13 +51,5 @@ public class CustomMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-    }
-
-    private boolean isAnnotated(MethodNode methodNode, Class<?> annotationClass) {
-        String descriptor = Type.getDescriptor(annotationClass);
-        if (methodNode.visibleAnnotations != null) {
-            return methodNode.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(descriptor));
-        }
-        return false;
     }
 }

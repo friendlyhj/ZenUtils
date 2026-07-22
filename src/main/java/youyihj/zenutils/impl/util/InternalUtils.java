@@ -5,26 +5,22 @@ import com.google.common.base.Suppliers;
 import com.google.common.reflect.TypeToken;
 import crafttweaker.api.data.DataMap;
 import crafttweaker.api.data.IData;
-import crafttweaker.api.enchantments.IEnchantmentDefinition;
-import crafttweaker.api.entity.IEntityDefinition;
-import crafttweaker.mc1120.enchantments.MCEnchantmentDefinition;
-import crafttweaker.mc1120.entity.MCEntityDefinition;
 import crafttweaker.util.EventList;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.asm.transformers.ModAPITransformer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.registry.EntityEntry;
+import org.spongepowered.asm.service.MixinService;
 import youyihj.zenutils.Reference;
-import youyihj.zenutils.api.util.ReflectionInvoked;
+import youyihj.zenutils.impl.core.ConfigAccessTransformer;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
+import youyihj.zenutils.impl.member.bytecode.BundledBytesProvider;
 import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
-import youyihj.zenutils.impl.runtime.InvalidCraftTweakerVersionException;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
 
+import java.io.IOException;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
@@ -32,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -43,29 +40,42 @@ public final class InternalUtils {
 
     private static final List<Runnable> ALL_EVENT_LISTS_CLEAR_ACTIONS = new ArrayList<>();
     private static final Supplier<ClassDataFetcher> CLASS_DATA_FETCHER = Suppliers.memoize(() -> {
-        Preconditions.checkNotNull(asmDataTable);
-        ModAPITransformer modAPITransformer = new ModAPITransformer();
-        modAPITransformer.initTable(asmDataTable);
-        return new BytecodeClassDataFetcher(
-                new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
-                new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), modAPITransformer)
-        );
+        try {
+            return new BytecodeClassDataFetcher(
+                    new BytecodeClassDataFetcher(new ReflectionClassDataFetcher(Launch.classLoader), new LaunchClassLoaderBytesProvider()),
+                    new BundledBytesProvider(
+                            new TransformedClassBytesProvider(new ClasspathBytesProvider(Collections.singletonList(Paths.get("mods"))), new StripOptionalTransformer()),
+                            new TransformedClassBytesProvider(new DeobfMinecraftBytesProvider(), new ConfigAccessTransformer())
+                    )
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     });
 
     private static ScriptStatus scriptStatus = ScriptStatus.INIT;
 
+    private static final MethodHandle ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES;
+
     private InternalUtils() {
+    }
+
+    static {
+        if (Reference.IS_CLEANROOM) {
+            try {
+                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                Class<?> actualClassLoaderClass = Class.forName("top.outlands.foundation.boot.ActualClassLoader");
+                ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES = lookup.findVirtual(actualClassLoaderClass, "getCachedClasses", MethodType.methodType(Map.class));
+            } catch (Throwable ex) {
+                throw new RuntimeException("Failed to initialize ActualClassLoader.getCachedClasses method handle", ex);
+            }
+        } else {
+            ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES = null;
+        }
     }
 
     public static void checkDataMap(IData data) {
         Preconditions.checkArgument(data instanceof DataMap, "data argument must be DataMap");
-    }
-
-    public static void checkCraftTweakerVersion(String requiredVersion, IVersionChecker versionChecker) {
-        boolean result = versionChecker.getResult();
-        if (!result) {
-            throw new InvalidCraftTweakerVersionException(requiredVersion);
-        }
     }
 
     public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
@@ -129,23 +139,28 @@ public final class InternalUtils {
         return CLASS_DATA_FETCHER.get();
     }
 
-    @ReflectionInvoked
-    public static Enchantment toMCEnchantment(IEnchantmentDefinition definition) {
-        return definition == null ? null : (Enchantment) definition.getInternal();
+    public static boolean isClassLoadedOnLCL(String className) {
+        if (!Reference.IS_CLEANROOM) {
+            return MixinService.getService().getClassTracker().isClassLoaded(className);
+        } else {
+            try {
+                Map<String, Class<?>> cachedClasses = cast(ACTUAL_CLASS_LOADER_GET_CACHED_CLASSES.invoke(Launch.classLoader));
+                return cachedClasses.containsKey(className);
+            } catch (Throwable e) {
+                throw new RuntimeException("Failed to invoke ActualClassLoader.getCachedClasses", e);
+            }
+        }
     }
 
-    @ReflectionInvoked
-    public static IEnchantmentDefinition toCTEnchantment(Enchantment enchantment) {
-        return enchantment == null ? null : new MCEnchantmentDefinition(enchantment);
+    public static boolean isCoreModPhase() {
+        return !isClassLoadedOnLCL("net.minecraftforge.fml.common.Loader");
     }
 
-    @ReflectionInvoked
-    public static EntityEntry toMCEntityEntry(IEntityDefinition definition) {
-        return definition == null ? null : (EntityEntry) definition.getInternal();
-    }
-
-    @ReflectionInvoked
-    public static IEntityDefinition toCTEntityDefinition(EntityEntry entry) {
-        return entry == null ? null : new MCEntityDefinition(entry);
+    public static String getLoaderState() {
+        if (isCoreModPhase()) {
+            return "COREMOD";
+        } else {
+            return Loader.instance().getLoaderState().toString();
+        }
     }
 }

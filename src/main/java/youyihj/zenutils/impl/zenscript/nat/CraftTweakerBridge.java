@@ -1,7 +1,5 @@
 package youyihj.zenutils.impl.zenscript.nat;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.LookupRequester;
@@ -9,6 +7,7 @@ import youyihj.zenutils.impl.util.InternalUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -19,14 +18,14 @@ public enum CraftTweakerBridge {
 
     private final Map<String, ExecutableData> casters = new HashMap<>();
 
-    private LoaderState loaderState;
+    private String loaderState;
 
     CraftTweakerBridge() {
         refresh();
     }
 
     private void refresh() {
-        loaderState = Loader.instance().getLoaderState();
+        loaderState = InternalUtils.getLoaderState();
         casters.clear();
         try {
             ClassData craftTweakerMC = InternalUtils.getClassDataFetcher().forName("crafttweaker.api.minecraft.CraftTweakerMC");
@@ -52,18 +51,18 @@ public enum CraftTweakerBridge {
             casters.put("crafttweaker.api.item.IIngredient", craftTweakerMC.methods("getIngredient", LookupRequester.PUBLIC).get(0));
             casters.put("net.minecraft.item.crafting.Ingredient", craftTweakerMC.methods("getIIngredient", LookupRequester.PUBLIC).get(0));
 
-            ClassData internalUtils = InternalUtils.getClassDataFetcher().forClass(InternalUtils.class);
-            casters.put("net.minecraft.enchantment.Enchantment", internalUtils.methods("toCTEnchantment", LookupRequester.PUBLIC).get(0));
-            casters.put("crafttweaker.api.enchantments.IEnchantmentDefinition", internalUtils.methods("toMCEnchantment", LookupRequester.PUBLIC).get(0));
-            casters.put("net.minecraftforge.fml.common.registry.EntityEntry", internalUtils.methods("toCTEntityDefinition", LookupRequester.PUBLIC).get(0));
-            casters.put("crafttweaker.api.entity.IEntityDefinition", internalUtils.methods("toMCEntityEntry", LookupRequester.PUBLIC).get(0));
+            ClassData zenUtilsMC = InternalUtils.getClassDataFetcher().forName("youyihj.zenutils.impl.zenscript.nat.ZenUtilsMC");
+            casters.put("net.minecraft.enchantment.Enchantment", zenUtilsMC.methods("toCTEnchantment", LookupRequester.PUBLIC).get(0));
+            casters.put("crafttweaker.api.enchantments.IEnchantmentDefinition", zenUtilsMC.methods("toMCEnchantment", LookupRequester.PUBLIC).get(0));
+            casters.put("net.minecraftforge.fml.common.registry.EntityEntry", zenUtilsMC.methods("toCTEntityDefinition", LookupRequester.PUBLIC).get(0));
+            casters.put("crafttweaker.api.entity.IEntityDefinition", zenUtilsMC.methods("toMCEntityEntry", LookupRequester.PUBLIC).get(0));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Optional<ExecutableData> getCaster(final ClassData clazz) {
-        if (loaderState != Loader.instance().getLoaderState()) {
+        if (!Objects.equals(loaderState, InternalUtils.getLoaderState())) {
             refresh();
         }
         return Optional.ofNullable(casters.get(clazz.name()));

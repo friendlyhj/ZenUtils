@@ -115,9 +115,9 @@ public class ZenUtilsLogger extends MTLogger implements ICleanableLogger {
         }
         if (logLevel.isLogPlayer()) {
             if (playerList.isEmpty()) {
-                messagesToSendPlayer.add(logLevel.getTextFormatting() + getMessageToSendPlayer(message, exception));
+                messagesToSendPlayer.add(logLevel.getControlText() + getMessageToSendPlayer(message, exception));
             } else {
-                playerList.forEach(it -> it.sendChat(logLevel.getTextFormatting() + getMessageToSendPlayer(message, exception)));
+                playerList.forEach(it -> it.sendChat(logLevel.getControlText() + getMessageToSendPlayer(message, exception)));
             }
         }
     }

@@ -2,7 +2,6 @@ package youyihj.zenutils.impl.mixin.crafttweaker;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.util.NonNullList;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,7 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.compiler.ITypeRegistry;
 import stanhebben.zenscript.compiler.TypeRegistry;
-import stanhebben.zenscript.type.*;
+import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.ZenTypeArrayBasic;
+import stanhebben.zenscript.type.ZenTypeArrayList;
+import stanhebben.zenscript.type.ZenTypeAssociative;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.LiteralType;
@@ -194,8 +196,10 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
      */
     @Overwrite
     private ZenType getListType(ParameterizedType type) {
-        if (type.getRawType() == NonNullList.class) {
-            return new ZenTypeJavaNativeIterable(InternalUtils.getClassDataFetcher().forClass(NonNullList.class), getType(type.getActualTypeArguments()[0]), this);
+        if (type.getRawType().getTypeName().equals("net.minecraft.util.NonNullList")) {
+            try {
+                return new ZenTypeJavaNativeIterable(InternalUtils.getClassDataFetcher().forName("net.minecraft.util.NonNullList"), getType(type.getActualTypeArguments()[0]), this);
+            } catch (ClassNotFoundException ignored) {}
         }
         return new ZenTypeArrayList(getType(type.getActualTypeArguments()[0]));
     }

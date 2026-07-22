@@ -7,8 +7,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Type;
@@ -138,10 +136,10 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                     ClassData classData;
                     try {
                         classData = InternalUtils.getClassDataFetcher().forName(target);
-                        if (classData.fetcher() != InternalUtils.getClassDataFetcher()) {
+                        if (InternalUtils.isClassLoadedOnLCL(classData.name())) {
                             if (InternalUtils.getScriptStatus() == ScriptStatus.INIT) {
                                 isMixinClass = false;
-                                classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is a non-mod class or already loaded");
+                                classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is already loaded");
                             }
                         } else if (!NativeClassValidate.isValid(classData, true)) {
                             isMixinClass = false;
@@ -150,6 +148,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
                     } catch (ClassNotFoundException e) {
                         isMixinClass = false;
                         classEnvironment.warning(position, "Skip loading mixin class " + name + ", because the target " + target + " is not found");
+                        classEnvironment.error(null, e);
                     }
                 }
                 if (isMixinClass) {
@@ -196,7 +195,7 @@ public abstract class MixinParsedZenClass implements IParsedZenClassExtension {
         if (className.startsWith("youyihj/zenutils/impl/mixin")) {
             thisClass = Object.class;
         } else {
-            thisClass = ParsedZenClassCompile.compile(className, thisClassArray, Loader.instance().hasReachedState(LoaderState.PREINITIALIZATION) ? Launch.classLoader : ZenTypeJavaNative.ClassInfoClassLoader.INSTANCE);
+            thisClass = ParsedZenClassCompile.compile(className, thisClassArray, InternalUtils.isCoreModPhase() ? ZenTypeJavaNative.ClassInfoClassLoader.INSTANCE : Launch.classLoader);
         }
         ci.cancel();
     }

@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import net.minecraft.util.JsonUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
@@ -107,9 +106,9 @@ public abstract class MixinParsedZenClassMethod {
             Pair<String, JsonElement> annotation = mixinPreprocessor.getAnnotation();
             String annotationName = annotation.getLeft();
             JsonObject annotationBody = annotation.getRight().getAsJsonObject();
-            if (("Local".equals(annotationName) && JsonUtils.getBoolean(annotationBody, "ref", false))
+            if (("Local".equals(annotationName) && getJsonBoolean(annotationBody, "ref", false))
                     || "Share".equals(annotationName)) {
-                int parameterIndex = JsonUtils.getInt(annotationBody, "parameter", -1);
+                int parameterIndex = getJsonInt(annotationBody, "parameter", -1);
                 int actualParameterIndex = parameterIndex >= 0 ? parameterIndex : method.getArguments().size() + parameterIndex;
                 if (!(method.getArguments().get(actualParameterIndex).getType() instanceof ZenTypeArrayBasic)) {
                     throw new ParseException(method.getPosition().getFile(), method.getPosition().getLine() - 1, 0, "Array type expected for LocalRef representation");
@@ -137,7 +136,7 @@ public abstract class MixinParsedZenClassMethod {
             JsonObject annotationBody = annotation.getRight().getAsJsonObject();
             ZenPosition position = method.getPosition();
             if ("Cancellable".equals(annotationName) || "Local".equals(annotationName)) {
-                int parameterIndex = JsonUtils.getInt(annotationBody, "parameter", -1);
+                int parameterIndex = getJsonInt(annotationBody, "parameter", -1);
                 annotationBody.remove("parameter");
                 annotationBody.remove("ref");
                 MixinAnnotationTranslator.translate(
@@ -317,5 +316,21 @@ public abstract class MixinParsedZenClassMethod {
         }
 
         methodOutput.end();
+    }
+
+    @Unique
+    private int getJsonInt(JsonObject json, String key, int fallback) {
+        if (json.has(key)) {
+            return json.get(key).getAsInt();
+        }
+        return fallback;
+    }
+
+    @Unique
+    private boolean getJsonBoolean(JsonObject json, String key, boolean fallback) {
+        if (json.has(key)) {
+            return json.get(key).getAsBoolean();
+        }
+        return fallback;
     }
 }
