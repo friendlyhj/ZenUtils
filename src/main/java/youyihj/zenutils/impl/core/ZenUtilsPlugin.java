@@ -4,6 +4,8 @@ import crafttweaker.CraftTweakerAPI;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.mixin.ZenMixin;
@@ -28,6 +30,8 @@ import java.util.jar.JarFile;
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.SortingIndex(1)
 public class ZenUtilsPlugin implements IFMLLoadingPlugin {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private static final String[] EARLY_CLASS_LOADING_ERROR_TRIGGERS = new String[]{
             "net.minecraft.item.ItemStack",
             "net.minecraft.block.Block",
@@ -63,10 +67,13 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
         if (Configuration.enableMixin) {
             try {
+                LOGGER.info("Loading MixinZS...");
                 injectZenscriptEngineIntoClassLoader(Launch.classLoader);
                 ZenMixin.load();
+                LOGGER.info("MixinZS loaded.");
             } catch (Exception e) {
                 CraftTweakerAPI.logError("Failed to load ZenMixin.", e);
+                LOGGER.error("Failed to load ZenMixin.", e);
             }
         }
 
@@ -74,6 +81,7 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin {
             for (String name : EARLY_CLASS_LOADING_ERROR_TRIGGERS) {
                 if (InternalUtils.isClassLoadedOnLCL(name)) {
                     CraftTweakerAPI.logError("Mixin scripts shouldn't execute code (i.e. top level statements) related to Minecraft.");
+                    LOGGER.fatal("Mixin scripts shouldn't execute code (i.e. top level statements) related to Minecraft.");
                     break;
                 }
             }
