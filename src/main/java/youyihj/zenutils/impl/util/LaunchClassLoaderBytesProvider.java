@@ -6,6 +6,7 @@ import youyihj.zenutils.Reference;
 import youyihj.zenutils.impl.member.bytecode.ClassBytesProvider;
 import youyihj.zenutils.impl.member.bytecode.ClassExcludedException;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -101,5 +102,10 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
             }
             return true;
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+
     }
 }

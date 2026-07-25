@@ -1,5 +1,7 @@
 package youyihj.zenutils.impl.member.bytecode;
 
+import java.io.IOException;
+
 /**
  * @author youyihj
  */
@@ -18,6 +20,15 @@ public class BundledBytesProvider implements ClassBytesProvider {
             return first.getClassBytes(className);
         } catch (ClassNotFoundException e) {
             return second.getClassBytes(className);
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            first.close();
+        } finally {
+            second.close();
         }
     }
 }

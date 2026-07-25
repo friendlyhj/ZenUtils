@@ -7,6 +7,7 @@ import youyihj.zenutils.impl.member.bytecode.ClassBytesProvider;
 import youyihj.zenutils.impl.member.bytecode.ClassExcludedException;
 import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,5 +39,10 @@ public class DeobfMinecraftBytesProvider implements ClassBytesProvider {
         }
         String obfName = deobf.unmapClassName(className);
         return deobf.transform(obfName, className, ClassPatchManager.INSTANCE.applyPatch(obfName, className, minecraftLib.getClassBytes(obfName)));
+    }
+
+    @Override
+    public void close() throws IOException {
+        minecraftLib.close();
     }
 }
