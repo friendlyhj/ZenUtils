@@ -90,6 +90,8 @@ public class BytecodeAnnotatedMember implements AnnotatedMember {
                     return void.class;
                 case BOOLEAN:
                     return boolean.class;
+                case CHAR:
+                    return char.class;
                 case BYTE:
                     return byte.class;
                 case SHORT:
