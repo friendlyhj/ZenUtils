@@ -1,9 +1,12 @@
 package youyihj.zenutils.impl.mixin.zenscript;
 
+import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import org.objectweb.asm.tree.*;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.service.MixinService;
 import stanhebben.zenscript.ZenTokener;
+import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
 import youyihj.zenutils.impl.zenscript.ExtendZenTokens;
 
@@ -21,7 +24,8 @@ import static org.objectweb.asm.Opcodes.*;
 public class ZenscriptMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
-
+        MixinService.getService().getLogger(Reference.MODID).info("Initializing MixinExtras...");
+        MixinExtrasBootstrap.init();
     }
 
     @Override
