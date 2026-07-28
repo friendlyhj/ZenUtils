@@ -13,7 +13,8 @@ public class MixinInit implements IMixinConnector {
     @Override
     public void connect() {
         Mixins.addConfiguration("mixins.zenutils.vanilla.json");
-        Mixins.addConfiguration("mixins.zenutils.json");
+        Mixins.addConfiguration("mixins.zenutils.zenscript.json");
+        Mixins.addConfiguration("mixins.zenutils.crafttweaker.json");
         if (Configuration.enableRandomTickEvent) {
             Mixins.addConfiguration("mixins.zenutils.randomtickevent.json");
         }

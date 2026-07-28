@@ -12,7 +12,7 @@ import youyihj.zenutils.ZenUtils;
  * @author youyihj
  */
 @Mixin(targets = "crafttweaker.mc1120.commands.Commands$27", remap = false)
-public class MixinSyntaxCommand {
+public abstract class MixinSyntaxCommand {
     @Inject(method = "executeCommand", at = @At("TAIL"))
     private void onExecuteCommand(MinecraftServer server, ICommandSender sender, String[] args, CallbackInfo ci) {
         ZenUtils.tweaker.finishSyntaxCommand();

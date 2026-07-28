@@ -6,7 +6,7 @@ import stanhebben.zenscript.ZenParsedFile;
 import stanhebben.zenscript.ZenTokener;
 import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.util.ZenPosition;
-import youyihj.zenutils.impl.mixin.crafttweaker.TokenStreamAccessor;
+import youyihj.zenutils.impl.mixin.zenscript.TokenStreamAccessor;
 
 import java.io.IOException;
 
