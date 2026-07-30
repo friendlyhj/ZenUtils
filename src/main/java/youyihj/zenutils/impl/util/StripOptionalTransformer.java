@@ -9,7 +9,6 @@ import org.objectweb.asm.signature.SignatureWriter;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.util.Annotations;
-import zone.rong.mixinbooter.service.ModDiscoverer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class StripOptionalTransformer implements IClassTransformer {
         String modid = Annotations.getValue(annotation, "modid");
         boolean striprefs = Annotations.getValue(annotation, "striprefs", Boolean.FALSE);
 
-        if (ModDiscoverer.isModPresent(modid)) {
+        if (InternalUtils.isModLoaded(modid)) {
             return;
         }
 
@@ -75,7 +74,7 @@ public class StripOptionalTransformer implements IClassTransformer {
             AnnotationNode optionalMethodAnnotation = Annotations.getVisible(methodNode, Optional.Method.class);
             if (optionalMethodAnnotation != null) {
                 String modid = Annotations.getValue(optionalMethodAnnotation, "modid");
-                return !ModDiscoverer.isModPresent(modid);
+                return !InternalUtils.isModLoaded(modid);
             }
             return false;
         });

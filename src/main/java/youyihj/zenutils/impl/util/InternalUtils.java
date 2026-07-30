@@ -18,6 +18,7 @@ import youyihj.zenutils.impl.member.bytecode.BytecodeClassDataFetcher;
 import youyihj.zenutils.impl.member.bytecode.ClasspathBytesProvider;
 import youyihj.zenutils.impl.member.reflect.ReflectionClassDataFetcher;
 import youyihj.zenutils.impl.runtime.ScriptStatus;
+import zone.rong.mixinbooter.service.ModDiscoverer;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
@@ -88,7 +89,7 @@ public final class InternalUtils {
     }
 
     public static boolean isContentTweakerInstalled() {
-        return Loader.isModLoaded(Reference.MOD_COT);
+        return isModLoaded(Reference.MOD_COT);
     }
 
     public static void registerEventList(EventList<?> eventList) {
@@ -112,9 +113,9 @@ public final class InternalUtils {
         Preconditions.checkArgument(arrayClass.isArray(), "argument should be an array");
         try {
             return MethodHandles.publicLookup()
-                                .findVirtual(arrayClass, "clone", MethodType.methodType(Object.class))
-                                .bindTo(array)
-                                .invokeExact();
+                    .findVirtual(arrayClass, "clone", MethodType.methodType(Object.class))
+                    .bindTo(array)
+                    .invokeExact();
         } catch (Throwable e) {
             throw new RuntimeException("Failed to clone the array", e);
         }
@@ -132,7 +133,7 @@ public final class InternalUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T cast(Object o) {
-        return (T)o;
+        return (T) o;
     }
 
     public static ClassDataFetcher getClassDataFetcher() {
@@ -161,6 +162,19 @@ public final class InternalUtils {
             return "COREMOD";
         } else {
             return Loader.instance().getLoaderState().toString();
+        }
+    }
+
+    public static boolean isModLoaded(String modName) {
+        if (isCoreModPhase()) {
+            for (String presentMod : ModDiscoverer.getPresentMods()) {
+                if (presentMod.equalsIgnoreCase(modName)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return Loader.isModLoaded(modName);
         }
     }
 }

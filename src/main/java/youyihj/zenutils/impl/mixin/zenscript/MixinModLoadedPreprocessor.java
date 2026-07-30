@@ -4,7 +4,7 @@ import crafttweaker.mc1120.preprocessors.ModLoadedPreprocessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import zone.rong.mixinbooter.service.ModDiscoverer;
+import youyihj.zenutils.impl.util.InternalUtils;
 
 /**
  * @author youyihj
@@ -12,7 +12,7 @@ import zone.rong.mixinbooter.service.ModDiscoverer;
 @Mixin(value = ModLoadedPreprocessor.class, remap = false)
 public abstract class MixinModLoadedPreprocessor {
     @Redirect(method = "checkAreLoaded", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/Loader;isModLoaded(Ljava/lang/String;)Z"))
-    private boolean redirectEarlyModLoaded(String modid) {
-        return ModDiscoverer.isModPresent(modid);
+    private boolean redirectEarlyModLoaded(String modname) {
+        return InternalUtils.isModLoaded(modname);
     }
 }
