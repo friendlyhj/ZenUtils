@@ -166,15 +166,11 @@ public final class InternalUtils {
     }
 
     public static boolean isModLoaded(String modName) {
-        if (isCoreModPhase()) {
-            for (String presentMod : ModDiscoverer.getPresentMods()) {
-                if (presentMod.equalsIgnoreCase(modName)) {
-                    return true;
-                }
+        for (String presentMod : ModDiscoverer.getPresentMods()) {
+            if (presentMod.equalsIgnoreCase(modName)) {
+                return true;
             }
-            return false;
-        } else {
-            return Loader.isModLoaded(modName);
         }
+        return false;
     }
 }
