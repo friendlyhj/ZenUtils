@@ -45,9 +45,9 @@ public class FMLModContainerTransformer implements IClassTransformer, Opcodes {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             if (name.equals("invoke")) {
-                super.visitIntInsn(ALOAD, 0);
+                super.visitVarInsn(ALOAD, 0);
                 super.visitFieldInsn(GETFIELD, "net/minecraftforge/fml/common/FMLModContainer", "modInstance", "Ljava/lang/Object;");
-                super.visitIntInsn(ALOAD, 1);
+                super.visitVarInsn(ALOAD, 1);
                 super.visitInsn(ICONST_1);
                 super.visitMethodInsn(INVOKESTATIC,
                         "youyihj/zenutils/impl/zenscript/entrypoint/CustomScriptEntrypoint",
@@ -56,9 +56,9 @@ public class FMLModContainerTransformer implements IClassTransformer, Opcodes {
                         false
                 );
                 super.visitMethodInsn(opcode, owner, name, desc, itf);
-                super.visitIntInsn(ALOAD, 0);
+                super.visitVarInsn(ALOAD, 0);
                 super.visitFieldInsn(GETFIELD, "net/minecraftforge/fml/common/FMLModContainer", "modInstance", "Ljava/lang/Object;");
-                super.visitIntInsn(ALOAD, 1);
+                super.visitVarInsn(ALOAD, 1);
                 super.visitInsn(ICONST_0);
                 super.visitMethodInsn(INVOKESTATIC,
                         "youyihj/zenutils/impl/zenscript/entrypoint/CustomScriptEntrypoint",
