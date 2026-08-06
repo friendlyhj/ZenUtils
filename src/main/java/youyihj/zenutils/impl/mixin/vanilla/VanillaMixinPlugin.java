@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import youyihj.zenutils.Reference;
 import youyihj.zenutils.api.util.ReflectionInvoked;
+import youyihj.zenutils.impl.core.Configuration;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +30,10 @@ public class VanillaMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (Configuration.customScriptEntrypoint.length == 0 && mixinClassName.equals("youyihj.zenutils.impl.mixin.vanilla.MixinLoadController")) {
+            return false;
+        }
+
         if (Reference.IS_CLEANROOM) {
             return !(ArrayUtils.contains(new String[]{
                     "youyihj.zenutils.impl.mixin.vanilla.MixinAnvilUpdateEvent",

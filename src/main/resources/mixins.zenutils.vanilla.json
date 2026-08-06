@@ -14,11 +14,12 @@
     "ContainerRepairAccessor",
     "MixinAnvilUpdateEvent",
     "MixinEntityItem",
-    "MixinForgeHooks"
+    "MixinForgeHooks",
+    "MixinLoadController"
   ],
   "client": [
     "MixinFMLClientHandler",
-    "MixinGuiModList",
-    "MixinGuiConfig"
+    "MixinGuiConfig",
+    "MixinGuiModList"
   ]
 }
