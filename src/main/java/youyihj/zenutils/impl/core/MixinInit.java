@@ -1,5 +1,6 @@
 package youyihj.zenutils.impl.core;
 
+import net.minecraft.launchwrapper.Launch;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.connect.IMixinConnector;
 import youyihj.zenutils.api.util.ReflectionInvoked;
@@ -12,6 +13,7 @@ import zone.rong.mixinbooter.service.ModDiscoverer;
 public class MixinInit implements IMixinConnector {
     @Override
     public void connect() {
+        ZenUtilsPlugin.injectZenscriptEngineIntoClassLoader(Launch.classLoader);
         Mixins.addConfiguration("mixins.zenutils.vanilla.json");
         Mixins.addConfiguration("mixins.zenutils.zenscript.json");
         Mixins.addConfiguration("mixins.zenutils.crafttweaker.json");

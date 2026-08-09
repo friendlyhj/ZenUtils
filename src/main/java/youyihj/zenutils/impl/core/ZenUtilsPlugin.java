@@ -90,7 +90,7 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin {
         return "youyihj.zenutils.impl.core.ConfigAccessTransformer";
     }
 
-    private void injectZenscriptEngineIntoClassLoader(LaunchClassLoader classLoader) {
+    static void injectZenscriptEngineIntoClassLoader(LaunchClassLoader classLoader) {
         if (Environment.inDev()) {
             return;
         }
@@ -105,7 +105,7 @@ public class ZenUtilsPlugin implements IFMLLoadingPlugin {
         }
     }
 
-    private URL findCraftTweakerJar() throws IOException {
+    private static URL findCraftTweakerJar() throws IOException {
         File modDir = new File(Launch.minecraftHome, "mods");
         for (File file : Objects.requireNonNull(modDir.listFiles())) {
             if (file.getName().endsWith(".jar")) {
