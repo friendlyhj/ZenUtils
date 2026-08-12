@@ -3,6 +3,7 @@
   "compatibilityLevel": "JAVA_8",
   "package": "youyihj.zenutils.impl.mixin.simpledimensions",
   "minVersion": "0.7.11",
+  "target": "@env(DEFAULT)",
   "setSourceFile": true,
   "priority": 1000,
   "refmap": "mixins.zenutils.refmap.json",
