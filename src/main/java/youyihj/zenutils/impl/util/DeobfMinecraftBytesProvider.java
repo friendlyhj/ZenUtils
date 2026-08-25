@@ -28,11 +28,7 @@ public class DeobfMinecraftBytesProvider implements ClassBytesProvider {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final DeobfuscationTransformer deobf = new DeobfuscationTransformer();
-    private final ClassBytesProvider minecraftLib;
-
-    public DeobfMinecraftBytesProvider() {
-        minecraftLib = new ClasspathBytesProvider(getClassPath());
-    }
+    private final ClassBytesProvider minecraftLib = new ClasspathBytesProvider(getClassPath());
 
     @Override
     public byte[] getClassBytes(String className) throws ClassNotFoundException, ClassExcludedException {

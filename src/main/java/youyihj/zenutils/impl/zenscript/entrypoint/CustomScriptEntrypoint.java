@@ -172,7 +172,7 @@ public class CustomScriptEntrypoint {
     }
 
     private static Method defineEntrypointMethod(String modid, Class<? extends FMLEvent> eventClass, boolean before) {
-        String className = "youyihj/zenutils/impl/zenscript/entrypoint/" + eventClass.getSimpleName() + modid + "Exec";
+        String className = "youyihj/zenutils/impl/zenscript/entrypoint/" + eventClass.getSimpleName() + modid + "Exec" + (before ? 1 : 0);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_8, ACC_PUBLIC | ACC_SUPER | ACC_FINAL, className, null, "java/lang/Object", null);
 
