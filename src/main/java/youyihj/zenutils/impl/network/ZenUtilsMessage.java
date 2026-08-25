@@ -1,6 +1,7 @@
 package youyihj.zenutils.impl.network;
 
 import crafttweaker.CraftTweakerAPI;
+import crafttweaker.api.minecraft.CraftTweakerMC;
 import crafttweaker.mc1120.CraftTweaker;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -73,7 +74,7 @@ public abstract class ZenUtilsMessage implements IMessage {
         @Override
         public IMessage onMessage(Client2Server message, MessageContext ctx) {
             CraftTweaker.server.addScheduledTask(LogMTErrorRunnableWrapper.create(() -> {
-                ZenUtilsNetworkHandler.INSTANCE.getClientMessageHandler(message.key).handle(CraftTweakerAPI.client.getPlayer(), message.getByteBuf());
+                ZenUtilsNetworkHandler.INSTANCE.getServerMessageHandler(message.key).handle(CraftTweakerAPI.server, message.getByteBuf(), CraftTweakerMC.getIPlayer(ctx.getServerHandler().player));
             }));
             return null;
         }
