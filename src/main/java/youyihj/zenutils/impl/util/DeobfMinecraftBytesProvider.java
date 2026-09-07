@@ -63,6 +63,8 @@ public class DeobfMinecraftBytesProvider implements ClassBytesProvider {
         } else {
             // server
             String forgeClassPath = System.getProperty("java.class.path");
+            LOGGER.info("Loading classpath, forge path: {}", forgeClassPath);
+            paths.add(Paths.get(forgeClassPath));
             try (JarFile forgeJar = new JarFile(forgeClassPath)) {
                 String path = forgeJar.getManifest().getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
                 for (StringTokenizer st = new StringTokenizer(path); st.hasMoreTokens(); ) {
