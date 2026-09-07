@@ -318,6 +318,7 @@ public class ZenUtilsTweaker implements ITweaker {
         }
 
         // Collecting all preprocessors
+        getPreprocessorManager().clean();
         for (ScriptFile scriptFile : scriptFiles) {
             scriptFile.addAll(getPreprocessorManager().checkFileForPreprocessors(scriptFile));
         }
