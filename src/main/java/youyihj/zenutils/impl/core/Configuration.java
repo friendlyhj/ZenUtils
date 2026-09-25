@@ -1,8 +1,8 @@
 package youyihj.zenutils.impl.core;
 
-import com.cleanroommc.configanytime.ConfigAnytime;
 import net.minecraftforge.common.config.Config;
 import youyihj.zenutils.Reference;
+import youyihj.zenutils.impl.config.ConfigAnytimeAnytime;
 
 /**
  * @author youyihj
@@ -41,6 +41,6 @@ public class Configuration {
     public static String[] accessTransformers = {};
 
     static {
-        ConfigAnytime.register(Configuration.class);
+        ConfigAnytimeAnytime.register(Configuration.class, null);
     }
 }
