@@ -135,7 +135,7 @@ public abstract class MixinParsedZenClassMethod {
             String annotationName = annotation.getLeft();
             JsonObject annotationBody = annotation.getRight().getAsJsonObject();
             ZenPosition position = method.getPosition();
-            if ("Cancellable".equals(annotationName) || "Local".equals(annotationName)) {
+            if ("Cancellable".equals(annotationName) || "Local".equals(annotationName) || "Share".equals(annotationName)) {
                 int parameterIndex = getJsonInt(annotationBody, "parameter", -1);
                 annotationBody.remove("parameter");
                 annotationBody.remove("ref");
