@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import stanhebben.zenscript.parser.ParseException;
 import stanhebben.zenscript.util.ZenPosition;
 import youyihj.zenutils.impl.util.InternalUtils;
+import youyihj.zenutils.impl.util.JavaConstantEvaluator;
 import youyihj.zenutils.impl.zenscript.MixinPreprocessor;
 
 import java.lang.annotation.Repeatable;
@@ -163,23 +164,47 @@ public class MixinAnnotationTranslator {
 
     private static void writeContentToAnnotation(AnnotationVisitor visitor, Class<?> expectedType, String key, JsonElement value, ZenPosition position) {
         if (expectedType == int.class) {
-            visitor.visit(key, value.getAsInt());
+            if (isString(value)) {
+                visitor.visit(key, JavaConstantEvaluator.evaluate(value.getAsString()).asInt());
+            } else {
+                visitor.visit(key, value.getAsInt());
+            }
         } else if (expectedType == long.class) {
-            visitor.visit(key, value.getAsLong());
+            if (isString(value)) {
+                visitor.visit(key, JavaConstantEvaluator.evaluate(value.getAsString()).asLong());
+            } else {
+                visitor.visit(key, value.getAsLong());
+            }
         } else if (expectedType == float.class) {
-            visitor.visit(key, value.getAsFloat());
+            if (isString(value)) {
+                visitor.visit(key, JavaConstantEvaluator.evaluate(value.getAsString()).asFloat());
+            } else {
+                visitor.visit(key, value.getAsFloat());
+            }
         } else if (expectedType == double.class) {
-            visitor.visit(key, value.getAsDouble());
+            if (isString(value)) {
+                visitor.visit(key, JavaConstantEvaluator.evaluate(value.getAsString()).asDouble());
+            } else {
+                visitor.visit(key, value.getAsDouble());
+            }
         } else if (expectedType == boolean.class) {
             visitor.visit(key, value.getAsBoolean());
         } else if (expectedType == String.class) {
             visitor.visit(key, value.getAsString());
         } else if (expectedType == byte.class) {
-            visitor.visit(key, value.getAsByte());
+            if (isString(value)) {
+                visitor.visit(key, JavaConstantEvaluator.evaluate(value.getAsString()).asByte());
+            } else {
+                visitor.visit(key, value.getAsByte());
+            }
         } else if (expectedType == char.class) {
             visitor.visit(key, value.getAsCharacter());
         } else if (expectedType == short.class) {
-            visitor.visit(key, value.getAsShort());
+            if (isString(value)) {
+                visitor.visit(key, JavaConstantEvaluator.evaluate(value.getAsString()).asShort());
+            } else {
+                visitor.visit(key, value.getAsShort());
+            }
         } else if (expectedType == Class.class) {
             visitor.visit(key, Type.getType(value.getAsString()));
         } else if (expectedType.isEnum()) {
@@ -220,6 +245,10 @@ public class MixinAnnotationTranslator {
     private static void attachMixinZSHandlerAnnotation(BiFunction<String, Boolean, AnnotationVisitor> visitorPrimer) {
         AnnotationVisitor visitor = visitorPrimer.apply(Type.getDescriptor(MixinZSHandler.class), true);
         visitor.visitEnd();
+    }
+
+    private static boolean isString(JsonElement json) {
+        return json.isJsonPrimitive() && json.getAsJsonPrimitive().isString();
     }
 
     public static class RepeatableAnnotationHelper {
