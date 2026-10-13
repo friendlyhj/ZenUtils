@@ -11,6 +11,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,8 +23,7 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
     private static final MethodHandle TRANSFORM_NAME;
     private static final MethodHandle UNTRANSFORM_NAME;
 
-    private static final Object TRANSFORMER_EXCEPTIONS;
-    private static final MethodHandle TRIE_TREE_GET_FIRST_KEY_VALUE_NODE;
+    private static final Collection<String> TRANSFORMER_EXCEPTIONS;
 
     static {
         try {
@@ -36,14 +37,9 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
             TRANSFORM_NAME = lclLookup.findVirtual(classLoaderClass, "transformName", MethodType.methodType(String.class, String.class));
             UNTRANSFORM_NAME = lclLookup.findVirtual(classLoaderClass, "untransformName", MethodType.methodType(String.class, String.class));
 
-            Class<?> transformerExceptionsType = Reference.IS_CLEANROOM ? Class.forName("top.outlands.foundation.trie.PrefixTrie") : Set.class;
-            TRANSFORMER_EXCEPTIONS = Reference.IS_CLEANROOM ?
-                    lclLookup.findStaticGetter(classLoaderClass, "transformerExceptions", transformerExceptionsType).invoke() :
-                    lclLookup.findGetter(classLoaderClass, "transformerExceptions", transformerExceptionsType).invoke(Launch.classLoader);
-
-            TRIE_TREE_GET_FIRST_KEY_VALUE_NODE = Reference.IS_CLEANROOM ?
-                    lclLookup.findVirtual(transformerExceptionsType, "getFirstKeyValueNode", MethodType.methodType(Class.forName("top.outlands.foundation.trie.TrieNode"), String.class)) :
-                    null;
+            TRANSFORMER_EXCEPTIONS = InternalUtils.cast(Reference.IS_CLEANROOM ?
+                    lclLookup.findVirtual(classLoaderClass, "getTransformerExclusions", MethodType.methodType(List.class)).invoke(Launch.classLoader) :
+                    lclLookup.findGetter(classLoaderClass, "transformerExceptions", Set.class).invoke(Launch.classLoader));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -87,21 +83,12 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
         if (className.startsWith("java.")) {
             return false;
         }
-        if (Reference.IS_CLEANROOM) {
-            try {
-                return TRIE_TREE_GET_FIRST_KEY_VALUE_NODE.invoke(TRANSFORMER_EXCEPTIONS, className) == null;
-            } catch (Throwable e) {
-                return true;
+        for (String exception : TRANSFORMER_EXCEPTIONS) {
+            if (className.startsWith(exception)) {
+                return false;
             }
-        } else {
-            Set<String> exceptions = InternalUtils.cast(TRANSFORMER_EXCEPTIONS);
-            for (String exception : exceptions) {
-                if (className.startsWith(exception)) {
-                    return false;
-                }
-            }
-            return true;
         }
+        return true;
     }
 
     @Override
