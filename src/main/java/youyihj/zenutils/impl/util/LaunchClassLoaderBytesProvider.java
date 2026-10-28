@@ -56,6 +56,11 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
         if (className.endsWith("-info")) {
             throw new ClassExcludedException(className);
         }
+        // no need to execute the transformers if the class is already loaded on the LCL
+        if (InternalUtils.isClassLoadedOnLCL(className)) {
+            throw new ClassNotFoundException(className);
+        }
+
         LaunchClassLoader classLoader = Launch.classLoader;
         try {
             if (!shouldTransform(className)) {
