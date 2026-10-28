@@ -13,6 +13,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author youyihj
@@ -24,6 +25,7 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
     private TypeData returnType;
     private List<TypeData> parameters;
     private List<String> parameterNames;
+    private Map<String, String> typeVariableBounds;
 
     public BytecodeMethodData(MethodNode methodNode, BytecodeClassData declaringClass) {
         this.methodNode = methodNode;
@@ -55,21 +57,13 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
     @Override
     public TypeData returnType() {
         if (returnType == null) {
-            String signature = methodNode.signature;
             String descriptor = Type.getReturnType(methodNode.desc).getDescriptor();
-            if (signature == null) {
-                returnType = declaringClass.fetcher().type(descriptor, null);
-            } else {
-                String returnAndException = signature.substring(signature.indexOf(')') + 1);
-                if (returnAndException.contains("^")) {
-                    returnType = declaringClass.fetcher().type(descriptor, signature.substring(0, signature.indexOf('^')));
-                } else {
-                    returnType = declaringClass.fetcher().type(descriptor, returnAndException);
-                }
-            }
+            String genericSignature = GenericSignatureUtils.eraseMethodReturnSignature(methodNode.signature, typeVariableBounds());
+            returnType = declaringClass.fetcher().type(descriptor, genericSignature);
         }
         return returnType;
     }
+
 
     @Override
     public List<TypeData> parameters() {
@@ -80,14 +74,25 @@ public class BytecodeMethodData extends BytecodeAnnotatedMember implements Execu
                     parameters.add(declaringClass.fetcher().type(parameter.getDescriptor(), null));
                 }
             } else {
-                List<String> genericInfos = new MethodParameterParser(methodNode.signature).parse();
                 Type[] descriptors = Type.getMethodType(methodNode.desc).getArgumentTypes();
+                List<String> genericInfos = GenericSignatureUtils.eraseMethodParameterSignatures(methodNode.signature, typeVariableBounds());
                 for (int i = 0; i < descriptors.length; i++) {
-                    parameters.add(declaringClass.fetcher().type(descriptors[i].getDescriptor(), genericInfos.get(i)));
+                    String genericInfo = i < genericInfos.size() ? genericInfos.get(i) : null;
+                    parameters.add(declaringClass.fetcher().type(descriptors[i].getDescriptor(), genericInfo));
                 }
             }
         }
         return parameters;
+    }
+
+    private Map<String, String> typeVariableBounds() {
+        if (typeVariableBounds == null) {
+            typeVariableBounds = GenericSignatureUtils.mergeTypeVariableBounds(
+                    declaringClass.typeVariableBounds(),
+                    methodNode.signature
+            );
+        }
+        return typeVariableBounds;
     }
 
     @Override

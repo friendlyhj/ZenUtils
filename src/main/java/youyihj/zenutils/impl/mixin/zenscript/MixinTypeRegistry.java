@@ -18,7 +18,7 @@ import stanhebben.zenscript.type.ZenTypeAssociative;
 import youyihj.zenutils.impl.member.ClassData;
 import youyihj.zenutils.impl.member.ClassDataFetcher;
 import youyihj.zenutils.impl.member.LiteralType;
-import youyihj.zenutils.impl.member.bytecode.MethodParameterParser;
+import youyihj.zenutils.impl.member.bytecode.GenericSignatureUtils;
 import youyihj.zenutils.impl.util.InternalUtils;
 import youyihj.zenutils.impl.zenscript.nat.NativeClassValidate;
 import youyihj.zenutils.impl.zenscript.nat.ZenTypeClass;
@@ -144,7 +144,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                 try {
                     String genericInfo = name.substring(name.indexOf("<") + 1, name.lastIndexOf(">"));
                     String rawClassName = name.substring(1, name.indexOf("<")).replace('/', '.');
-                    List<String> genericTypes = new MethodParameterParser("(" + genericInfo + ")").parse();
+                    List<String> genericTypes = GenericSignatureUtils.extractMethodParameterSignatures('(' + genericInfo + ')');
                     ClassData rawClassData = classDataFetcher.forName(rawClassName);
                     if (genericTypes.size() == 1) {
                         if (rawClassData.name().equals("net.minecraft.util.NonNullList")) {
@@ -160,7 +160,7 @@ public abstract class MixinTypeRegistry implements ITypeRegistry {
                         }
                     }
                     return zu$checkNative(rawClassData);
-                } catch (ClassNotFoundException e) {
+                } catch (IllegalArgumentException | ClassNotFoundException e) {
                     return ZenTypeJavaNative.OBJECT;
                 }
             }

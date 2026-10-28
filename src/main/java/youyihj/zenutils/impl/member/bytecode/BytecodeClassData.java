@@ -19,6 +19,7 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
     private final BytecodeClassDataFetcher classDataFetcher;
     private final ClassNode classNode;
     private ClassNode fullClassNode;
+    private Map<String, String> typeVariableBounds;
 
     private final Map<LookupRequester, List<FieldData>> fieldsCache = new EnumMap<>(LookupRequester.class);
     private final Map<LookupRequester, List<ExecutableData>> methodsCache = new EnumMap<>(LookupRequester.class);
@@ -183,6 +184,17 @@ public class BytecodeClassData extends BytecodeAnnotatedMember implements ClassD
             new ClassReader(bytecode).accept(fullClassNode, 0);
         }
         return fullClassNode;
+    }
+
+    String eraseTypeVariables(String signature) {
+        return GenericSignatureUtils.eraseTypeVariables(signature, typeVariableBounds());
+    }
+
+    Map<String, String> typeVariableBounds() {
+        if (typeVariableBounds == null) {
+            typeVariableBounds = GenericSignatureUtils.extractTypeVariableErasureBounds(classNode.signature);
+        }
+        return typeVariableBounds;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class ClasspathBytesProvider implements ClassBytesProvider {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         if (file.getFileName().toString().endsWith(".jar")) {
-                            jars.add(FileSystems.newFileSystem(file, null));
+                            jars.add(FileSystems.newFileSystem(file, (ClassLoader) null));
                         }
                         return FileVisitResult.CONTINUE;
                     }
