@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -42,6 +43,7 @@ public class CustomScriptEntrypoint {
             FMLPostInitializationEvent.class,
             FMLLoadCompleteEvent.class
     );
+    private static final Pattern LOADER_NAME_REGEX = Pattern.compile("^[a-z0-9_]+$");
 
     private static final Field EVENT_METHODS_FIELD;
 
@@ -138,6 +140,12 @@ public class CustomScriptEntrypoint {
             String loaderName = split[0];
             String modid = split[1];
             String stageMarker = split[2];
+
+            if (!LOADER_NAME_REGEX.matcher(loaderName).matches()) {
+                CraftTweakerAPI.logError("CustomScriptEntrypoint: Invalid loader name: " + loaderName + ", only lowercase letters, numbers, and underscores are available");
+                continue;
+            }
+
             String pos = split[3];
             Class<? extends FMLEvent> event;
             switch (stageMarker) {
@@ -154,6 +162,7 @@ public class CustomScriptEntrypoint {
                     event = FMLLoadCompleteEvent.class;
                     break;
                 default:
+                    CraftTweakerAPI.logError("CustomScriptEntrypoint: Invalid stage marker: " + stageMarker);
                     continue;
             }
             boolean before;
@@ -165,6 +174,7 @@ public class CustomScriptEntrypoint {
                     before = false;
                     break;
                 default:
+                    CraftTweakerAPI.logError("CustomScriptEntrypoint: Invalid position: " + pos);
                     continue;
             }
             entrypointToRun.put(event, new EntrypointKey(modid, before), loaderName);
