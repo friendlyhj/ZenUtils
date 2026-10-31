@@ -12,6 +12,8 @@ import youyihj.zenutils.impl.member.ExecutableData;
 import youyihj.zenutils.impl.member.TypeData;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static stanhebben.zenscript.type.natives.JavaMethod.*;
 
@@ -156,7 +158,7 @@ public class NativeMethod implements IJavaMethod {
 
     @Override
     public String getErrorDescription() {
-        return executable.descriptor();
+        return Arrays.stream(parameterTypes).map(ZenType::getName).collect(Collectors.joining(", ",  '\n' + executable.name() + '(', ")"));
     }
 
     public ExecutableData getExecutable() {
