@@ -57,9 +57,10 @@ public class LaunchClassLoaderBytesProvider implements ClassBytesProvider {
             throw new ClassExcludedException(className);
         }
         // no need to execute the transformers if the class is already loaded on the LCL
-        if (InternalUtils.isClassLoadedOnLCL(className)) {
-            throw new ClassNotFoundException(className);
-        }
+        // FIXME: It causes 2 type mismatch issues of e2ee modpack
+//        if (InternalUtils.isClassLoadedOnLCL(className)) {
+//            throw new ClassNotFoundException(className);
+//        }
 
         LaunchClassLoader classLoader = Launch.classLoader;
         try {
