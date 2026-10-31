@@ -115,20 +115,25 @@ public class ReflectionClassData extends ReflectionAnnotatedMember implements Cl
         if (classData instanceof ReflectionClassData) {
             return clazz.isAssignableFrom(((ReflectionClassData) classData).clazz);
         }
+        return isAssignableFrom(classData, new HashSet<>());
+    }
+
+    private boolean isAssignableFrom(ClassData classData, Set<String> visited) {
+        if (classData == null || !visited.add(classData.name())) {
+            return false;
+        }
         if (name().equals(classData.name())) {
             return true;
         }
-        List<ClassData> interfaces = classData.interfaces();
-        for (ClassData anInterface : interfaces) {
-            if (name().equals(anInterface.name())) {
+        if ("java.lang.Object".equals(name()) && classData.isInterface()) {
+            return true;
+        }
+        for (ClassData anInterface : classData.interfaces()) {
+            if (isAssignableFrom(anInterface, visited)) {
                 return true;
             }
         }
-        ClassData superClass = classData.superClass();
-        if (superClass != null) {
-            return isAssignableFrom(superClass);
-        }
-        return false;
+        return isAssignableFrom(classData.superClass(), visited);
     }
 
     @Override
