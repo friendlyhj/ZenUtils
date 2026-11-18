@@ -1,10 +1,9 @@
 package youyihj.zenutils;
 
 import crafttweaker.CraftTweakerAPI;
-import crafttweaker.api.player.IPlayer;
+import crafttweaker.api.data.IDataConverter;
 import crafttweaker.mc1120.CraftTweaker;
 import crafttweaker.mc1120.commands.CTChatCommand;
-import crafttweaker.mc1120.player.expand.ExpandPlayer;
 import net.minecraft.command.CommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
@@ -52,7 +51,7 @@ public class ZenUtils {
 
     @Mod.EventHandler
     public static void onConstruct(FMLConstructionEvent event) {
-        checkCraftTweakerVersion("4.1.20.692", () -> InternalUtils.hasMethod(ExpandPlayer.class, "isSpectator", IPlayer.class));
+        checkCraftTweakerVersion("4.1.20.718", () -> InternalUtils.hasMethod(IDataConverter.class, "fromLongArray", long[].class));
         try {
             crafttweakerLogger = (ZenUtilsLogger) CraftTweakerAPI.getLogger();
             tweaker = (ZenUtilsTweaker) CraftTweakerAPI.tweaker;

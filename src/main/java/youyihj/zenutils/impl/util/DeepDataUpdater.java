@@ -241,6 +241,31 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         return new DataIntArray(value, true);
     }
 
+    @Override
+    public IData fromLongArray(long[] value) {
+        if (data == null || updateOperation == null) {
+            return new DataLongArray(value, true);
+        }
+        if (data instanceof DataList) {
+            return fromList(new DataLongArray(value, true).asList());
+        }
+        long[] origin = data.asLongArray();
+        if (origin == null) {
+            return new DataLongArray(value, true);
+        }
+        switch (updateOperation.asInt() & Operation.SUB_OPERATOR_MASK) {
+            case Operation.OVERWRITE:
+                return new DataLongArray(value, true);
+            case Operation.APPEND:
+                return new DataLongArray(ArrayUtils.addAll(origin, value), true);
+            case Operation.MERGE:
+                return new DataLongArray(mergeLongArrays(origin, value), true);
+            case Operation.REMOVE:
+                return new DataLongArray(value.length == 0 ? value : removeLongArrays(origin, value), true);
+        }
+        return new DataLongArray(value, true);
+    }
+
     private static boolean isCollection(IData data) {
         return (data != null) && (data instanceof DataList || data instanceof DataIntArray || data instanceof DataByteArray || data.asList() != null);
     }
@@ -300,6 +325,23 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         return Arrays.copyOf(result, addedIndex);
     }
 
+    private static long[] mergeLongArrays(long[] a, long[] b) {
+        boolean binarySearch = shouldBinarySearch(a.length, b.length);
+        long[] checkArray = a;
+        if (binarySearch) {
+            checkArray = a.clone();
+            Arrays.sort(checkArray);
+        }
+        long[] result = Arrays.copyOf(a, a.length + b.length);
+        int addedIndex = a.length;
+        for (long i : b) {
+            if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
+                result[addedIndex++] = i;
+            }
+        }
+        return Arrays.copyOf(result, addedIndex);
+    }
+
     private static int[] removeIntArrays(int[] array, int[] toRemove) {
         boolean binarySearch = shouldBinarySearch(array.length, toRemove.length);
         int[] checkArray = array;
@@ -327,6 +369,23 @@ public class DeepDataUpdater implements IDataConverter<IData> {
         byte[] result = new byte[array.length];
         int addedIndex = 0;
         for (byte i : array) {
+            if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
+                result[addedIndex++] = i;
+            }
+        }
+        return Arrays.copyOf(result, addedIndex);
+    }
+
+    private static long[] removeLongArrays(long[] array, long[] toRemove) {
+        boolean binarySearch = shouldBinarySearch(array.length, toRemove.length);
+        long[] checkArray = array;
+        if (binarySearch) {
+            checkArray = array.clone();
+            Arrays.sort(checkArray);
+        }
+        long[] result = new long[array.length];
+        int addedIndex = 0;
+        for (long i : array) {
             if ((binarySearch ? Arrays.binarySearch(checkArray, i) : ArrayUtils.indexOf(checkArray, i)) != ArrayUtils.INDEX_NOT_FOUND) {
                 result[addedIndex++] = i;
             }
